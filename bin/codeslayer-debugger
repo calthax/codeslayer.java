@@ -1,1 +1,1 @@
-java -cp .:$CODESLAYER_JAVA_HOME/lib/tools.jar -jar $CODESLAYER_JAVA_HOME/dist/codeslayer-java.jar $@
+java -cp .:$CODESLAYER_JAVA_HOME/lib/tools.jar:$CODESLAYER_JAVA_HOME/dist/codeslayer-java.jar org.codeslayer.debugger.Main $@
