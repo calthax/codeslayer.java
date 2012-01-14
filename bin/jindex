@@ -1,1 +1,0 @@
-java -cp .:$JFIND_HOME/lib/tools.jar -jar $JFIND_HOME/dist/jfind.jar $@
