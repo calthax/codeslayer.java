@@ -21,25 +21,25 @@ import java.util.List;
 
 public class Formatter {
 
-    public String format(List<Method> methods) {
+    public String format(List<Index> indexes) {
 
         StringBuilder xml = new StringBuilder();
 
-        xml.append("<methods>");
+        xml.append("<indexes>");
 
-        for (Method method : methods) {
-            xml.append("<method ");
-            xml.append(" name=\"").append(escape(method.getName())).append("\"");
-            xml.append(" parameters=\"").append(escape(method.getParameters())).append("\"");
-            xml.append(" modifier=\"").append(escape(method.getModifier())).append("\"");
-            xml.append(" line_number=\"").append(escape(method.getLineNumber())).append("\"");
-            xml.append(" file_path=\"").append(escape(method.getFilePath())).append("\"");
-            xml.append(" class_name=\"").append(escape(method.getClassName())).append("\"");
-            xml.append(" package_name=\"").append(escape(method.getPackageName())).append("\"");
+        for (Index index : indexes) {
+            xml.append("<index ");
+            xml.append(" name=\"").append(escape(index.getName())).append("\"");
+            xml.append(" parameters=\"").append(escape(index.getParameters())).append("\"");
+            xml.append(" modifier=\"").append(escape(index.getModifier())).append("\"");
+            xml.append(" line_number=\"").append(escape(index.getLineNumber())).append("\"");
+            xml.append(" file_path=\"").append(escape(index.getFilePath())).append("\"");
+            xml.append(" class_name=\"").append(escape(index.getClassName())).append("\"");
+            xml.append(" package_name=\"").append(escape(index.getPackageName())).append("\"");
             xml.append("/>");
         }
 
-        xml.append("</methods>");
+        xml.append("</indexes>");
 
         return xml.toString();
     }

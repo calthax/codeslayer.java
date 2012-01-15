@@ -17,7 +17,7 @@
  */
 package org.codeslayer.indexer;
 
-public class Method {
+public class Index {
 
     private String name;
     private String parameters;

@@ -42,10 +42,10 @@ import javax.tools.FileObject;
 
 public class Indexer {
 
-    public List<Method> indexSourceFiles(File[] sourceFiles)
+    public List<Index> indexSourceFiles(File[] sourceFiles)
             throws Exception {
 
-        List<Method> methods = new ArrayList<Method>();
+        List<Index> methods = new ArrayList<Index>();
         
         try {
             JavacTask javacTask = getJavacTask(sourceFiles);
@@ -77,9 +77,9 @@ public class Indexer {
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final LineMap lineMap;
-        private final List<Method> methods;
+        private final List<Index> methods;
 
-        private MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Method> methods) {
+        private MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Index> methods) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
@@ -90,7 +90,7 @@ public class Indexer {
         @Override
         public Void visitMethod(MethodTree methodTree, Void arg1) {
 
-            Method method = new Method();
+            Index method = new Index();
             method.setName(methodTree.getName().toString());
             method.setParameters(getParameters(methodTree));
             method.setLineNumber(getLineNumber(methodTree));

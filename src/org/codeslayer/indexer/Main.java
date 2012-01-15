@@ -31,12 +31,12 @@ public class Main {
 
         try {
             Indexer indexer = new Indexer();
-            List<Method> methods = indexer.indexSourceFiles(IndexUtils.getSourceFiles(sourcePath));
+            List<Index> methods = indexer.indexSourceFiles(IndexerUtils.getSourceFiles(sourcePath));
             Formatter formatter = new Formatter();
             String results = formatter.format(methods);
             System.out.println(results);
 
-            File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/methods/jmesa.xml");
+            File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/jmesa.xml");
             Writer out = new OutputStreamWriter(new FileOutputStream(file));
             try {
                 out.write(results);

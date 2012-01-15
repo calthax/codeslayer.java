@@ -22,7 +22,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IndexUtils {
+public class IndexerUtils {
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
