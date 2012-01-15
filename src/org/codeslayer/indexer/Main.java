@@ -31,9 +31,9 @@ public class Main {
 
         try {
             Indexer indexer = new Indexer();
-            List<Index> methods = indexer.indexSourceFiles(IndexerUtils.getSourceFiles(sourcePath));
+            List<Index> indexes = indexer.indexSourceFiles(IndexerUtils.getSourceFiles(sourcePath));
             Formatter formatter = new Formatter();
-            String results = formatter.format(methods);
+            String results = formatter.format(indexes);
             System.out.println(results);
 
             File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/jmesa.xml");
