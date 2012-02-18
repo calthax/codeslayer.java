@@ -17,6 +17,7 @@
  */
 package org.codeslayer.indexer;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -29,33 +30,40 @@ import java.util.jar.JarFile;
 
 public class JarIndexer implements Indexer {
 
-    private final String jarPath;
+    private final File[] files;
 
-    public JarIndexer(String jarPath) {
+    public JarIndexer(File[] jarFiles) {
 
-        this.jarPath = jarPath;
+        this.files = jarFiles;
     }
 
     public List<Index> createIndexes()
             throws Exception {
         
         List<Index> results = new ArrayList<Index>();
+        
+        for (File file : files) {
+            String jarPath = file.getAbsolutePath();
+            
+            System.out.println(jarPath);
+            
+            JarFile jarFile = new JarFile(jarPath);
 
-        JarFile jarFile = new JarFile(jarPath);
-        
-        URLClassLoader jarClassLoader = new URLClassLoader(new URL[]{new URL("jar:file:"+jarPath+"!/")}, this.getClass().getClassLoader());
-        
-        Enumeration<JarEntry> enumeration = jarFile.entries();
-        while (enumeration.hasMoreElements()) {
-            JarEntry jarEntry = (JarEntry) enumeration.nextElement();
-            String className = jarEntry.getName();
-            if (className.endsWith(".class")) {
-                className = className.substring(0, className.length() - ".class".length());
-                try {
-                    Class clazz = Class.forName(className.replace('/', '.'), true, jarClassLoader);
-                    results.addAll(reflectOnClass(clazz));
-                } catch (ClassNotFoundException e) {
-                    System.err.println(e);
+            URLClassLoader jarClassLoader = new URLClassLoader(new URL[]{new URL("jar:file:"+jarPath+"!/")}, this.getClass().getClassLoader());
+
+            Enumeration<JarEntry> enumeration = jarFile.entries();
+            while (enumeration.hasMoreElements()) {
+                JarEntry jarEntry = (JarEntry) enumeration.nextElement();
+                String className = jarEntry.getName();
+                if (className.endsWith(".class")) {
+                    className = className.substring(0, className.length() - ".class".length());
+                    try {
+                        Class clazz = Class.forName(className.replace('/', '.'), true, jarClassLoader);
+                        results.addAll(reflectOnClass(clazz));
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        System.err.println(t);
+                    }
                 }
             }
         }
@@ -67,26 +75,25 @@ public class JarIndexer implements Indexer {
         
         List<Index> results = new ArrayList<Index>();
         
-        try {
-            for (Method method : clazz.getDeclaredMethods()) {
-                
-                Index index = new Index();
-                
-                index.setName(method.getName());
-                index.setModifier(getModifier(method));
-                index.setParameters(getParameters(method));
-                index.setReturnType(method.getReturnType().getSimpleName());
+        for (Method method : clazz.getDeclaredMethods()) {
 
-                Class<?> declaringClass = method.getDeclaringClass();
-                index.setPackageName(declaringClass.getPackage().getName());
-                index.setClassName(declaringClass.getSimpleName());
-                
-                results.add(index);
-            }
-         }
-         catch (Throwable e) {
-            System.err.println(e);
-         }        
+            Index index = new Index();
+
+            index.setName(method.getName());
+            index.setModifier(getModifier(method));
+            
+            String parameters = getParameters(method);
+            index.setParameters(parameters);
+            index.setCompletion(parameters);
+            
+            index.setReturnType(method.getReturnType().getSimpleName());
+
+            Class<?> declaringClass = method.getDeclaringClass();
+            index.setPackageName(declaringClass.getPackage().getName());
+            index.setClassName(declaringClass.getSimpleName());
+
+            results.add(index);
+        }
         
         return results;
     }

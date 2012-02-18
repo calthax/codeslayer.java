@@ -24,6 +24,7 @@ public class Index {
     private String name;
     private String modifier;
     private String parameters;
+    private String completion;
     private String returnType;
     private String filePath;
     private String lineNumber;
@@ -76,6 +77,16 @@ public class Index {
     public void setParameters(String parameters) {
 
         this.parameters = parameters;
+    }
+
+    public String getCompletion() {
+        
+        return completion;
+    }
+
+    public void setCompletion(String completion) {
+     
+        this.completion = completion;
     }
 
     public String getReturnType() {

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -28,20 +29,40 @@ public class Main {
     public static void main(String[] args) {
 
         try {
-//            String sourcePath = "/home/jeff/workspace/jmesa/src";
-//            Indexer indexer = new SourceIndexer(IndexerUtils.getSourceFiles(sourcePath));
-//            File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/jmesa.xml");
-//            XmlFormatter formatter = new XmlFormatter();
+            Modifiers modifiers = new Modifiers(args);
             
-            Indexer indexer = new JarIndexer("/home/jeff/workspace/jmesa/lib/joda-time-1.6.jar");
-            File file = new File("/home/jeff/indexes/dependencies.txt");
-            Formatter formatter = new TabFormatter();
+            List<Index> indexes = new ArrayList<Index>();
             
-            List<Index> indexes = indexer.createIndexes();
-            if (indexes != null && indexes.size() > 0) {
+            List<String> sourceFolders = modifiers.getSourceFolders();
+            for (String sourceFolder : sourceFolders) {
+                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder));
+                indexes.addAll(indexer.createIndexes());
+            }
+            
+            List<String> libFolders = modifiers.getLibFolders();
+            for (String libFolder : libFolders) {
+                Indexer indexer = new JarIndexer(IndexerUtils.getJarFiles(libFolder));
+                indexes.addAll(indexer.createIndexes());
+            }
+            
+            List<String> jarFiles = modifiers.getJarFiles();
+            for (String jarFile : jarFiles) {
+                Indexer indexer = new JarIndexer(IndexerUtils.getFiles(jarFile));
+                indexes.addAll(indexer.createIndexes());
+            }
+            
+            List<String> zipFiles = modifiers.getZipFiles();
+            for (String zipFile : zipFiles) {
+                String tmpFile = modifiers.getTmpFile();
+                Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile));
+                indexes.addAll(indexer.createIndexes());
+            }
+            
+            File file = new File(modifiers.getIndexFile());
+            Formatter formatter = new Formatter();
+            
+            if (indexes != null && !indexes.isEmpty()) {
                 String results = formatter.format(indexes);
-//                System.out.println(results);
-
                 Writer out = new OutputStreamWriter(new FileOutputStream(file));
                 try {
                     out.write(results);
@@ -52,7 +73,7 @@ public class Main {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Not able to generate the index.");
+            System.err.println(e);
         }
 
         System.exit(1);

@@ -19,7 +19,42 @@ package org.codeslayer.indexer;
 
 import java.util.List;
 
-public interface Formatter {
-    
-    public String format(List<Index> indexes);
+public class Formatter {
+
+    public String format(List<Index> indexes) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        for (Index index : indexes) {
+            sb.append(index.getPackageName());
+            sb.append("\t");
+            sb.append(index.getClassName());
+            sb.append("\t");
+            sb.append(index.getModifier());
+            sb.append("\t");
+            sb.append(index.getName());
+            sb.append("\t");
+            sb.append(index.getParameters());
+            sb.append("\t");
+            sb.append(index.getCompletion());
+            sb.append("\t");
+            sb.append(index.getReturnType());
+            
+            String filePath = index.getFilePath();
+            if (filePath != null) {
+                sb.append("\t");
+                sb.append(filePath);
+            }
+            
+            String lineNumber = index.getLineNumber();
+            if (lineNumber != null) {
+                sb.append("\t");
+                sb.append(lineNumber);                
+            }
+            
+            sb.append("\n");
+        }
+        
+        return sb.toString();
+    }
 }

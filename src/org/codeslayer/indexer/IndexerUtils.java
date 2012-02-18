@@ -17,24 +17,23 @@
  */
 package org.codeslayer.indexer;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class IndexerUtils {
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
-    public static File[] getSourceFiles(String sourcePath) {
+    public static File[] getFiles(String path) {
 
         List<File> files = new ArrayList<File>();
 
-        String[] paths = sourcePath.split(",");
-        for (String path : paths) {
-            File file = new File(path);
-            walkFileTree(file, files);
-        }
+        File file = new File(path);
+        walkFileTree(file, files);
 
         return files.toArray(new File[files.size()]);
     }
@@ -54,6 +53,7 @@ public class IndexerUtils {
     }
 
     private static class JavaFileFilter implements FileFilter {
+
         public boolean accept(File file) {
             if (file.isDirectory()) {
                 return true;
@@ -64,5 +64,75 @@ public class IndexerUtils {
             String name = file.getName();
             return name.endsWith(".java");
         }
+    }
+    
+    public static File[] getJarFiles(String path) {
+
+        File file = new File(path);
+        return file.listFiles();
+    }
+
+    public static File[] getZipFiles(String path, String tmpPath) {
+        
+        List<File> files = new ArrayList<File>();
+        
+        File tmpFile = new File(tmpPath);
+        if (tmpFile.exists()) {
+            deleteDir(tmpFile);
+        }
+        tmpFile.mkdir();
+
+        try {
+            ZipFile zipFile = new ZipFile(path);
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry zipEntry = entries.nextElement();
+
+                File file = new File(tmpPath, zipEntry.getName());
+                
+                if (zipEntry.isDirectory()) {
+                    if (!file.exists()) {
+                        file.mkdir();
+                    }
+                    continue;
+                }
+                
+                if (!zipEntry.getName().endsWith(".java")) {
+                    continue;
+                }
+
+                file.createNewFile();
+
+                InputStream inputStream = zipFile.getInputStream(zipEntry);
+                OutputStream out = new FileOutputStream(file);
+
+                int len;
+                byte buf[] = new byte[1024];
+                while ((len = inputStream.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+
+                out.close();
+                inputStream.close();
+
+                files.add(file);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e);
+        }
+
+        return files.toArray(new File[files.size()]);
+    }
+    
+    private static void deleteDir(File file) {
+        
+        File[] listFiles = file.listFiles();
+        if (listFiles != null) {
+            for (File child : listFiles) {
+                deleteDir(child);
+            }
+        }
+        file.delete();
     }
 }

@@ -17,22 +17,17 @@
  */
 package org.codeslayer.indexer;
 
+import com.sun.source.tree.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.ModifiersTree;
-import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreeScanner;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
@@ -42,11 +37,11 @@ import javax.tools.FileObject;
 
 public class SourceIndexer implements Indexer {
     
-    private final File[] sourceFiles;
+    private final File[] files;
 
-    public SourceIndexer(File[] sourceFiles) {
+    public SourceIndexer(File[] files) {
      
-        this.sourceFiles = sourceFiles;
+        this.files = files;
     }
 
     public List<Index> createIndexes() 
@@ -55,7 +50,7 @@ public class SourceIndexer implements Indexer {
         List<Index> methods = new ArrayList<Index>();
         
         try {
-            JavacTask javacTask = getJavacTask(sourceFiles);
+            JavacTask javacTask = getJavacTask(files);
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             
@@ -63,19 +58,20 @@ public class SourceIndexer implements Indexer {
                 compilationUnitTree.accept(new MethodScanner(compilationUnitTree, sourcePositions, methods), null);
             }
         } catch (Exception e) {
-            System.err.println("Not able to generate the index.");
+            e.printStackTrace();
+            System.err.println(e);
         }
 
         return methods;
     }
 
-    private JavacTask getJavacTask(File[] sourceFiles)
+    private JavacTask getJavacTask(File[] files)
             throws Exception {
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticsCollector, null, null);
-        Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(sourceFiles);
+        Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(files);
         return (JavacTask) compiler.getTask(null, fileManager, diagnosticsCollector, null, null, fileObjects);
     }
 
@@ -97,45 +93,24 @@ public class SourceIndexer implements Indexer {
         @Override
         public Void visitMethod(MethodTree methodTree, Void arg1) {
 
-            Index method = new Index();
-            method.setName(methodTree.getName().toString());
-            method.setParameters(getParameters(methodTree));
-            method.setLineNumber(getLineNumber(methodTree));
-            method.setModifier(getModifier(methodTree));
-            method.setFilePath(getFilePath());
-            method.setClassName(getClassName());
-            method.setPackageName(getPackageName());
-            methods.add(method);
+            Index index = new Index();
+            index.setPackageName(getPackageName());
+            index.setClassName(getClassName());
+            index.setModifier(getModifier(methodTree));
+            index.setName(methodTree.getName().toString());
+            index.setParameters(getParameters(methodTree));
+            index.setCompletion(getCompletion(methodTree));
+            index.setReturnType(getReturnType(methodTree));
+            index.setFilePath(getFilePath());
+            index.setLineNumber(getLineNumber(methodTree));
+            methods.add(index);
             return super.visitMethod(methodTree, arg1);
         }
 
-        private String getParameters(MethodTree methodTree) {
+        private String getPackageName() {
 
-            StringBuilder result = new StringBuilder();
-
-            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-            while (iterator.hasNext()) {
-                VariableTree variableTree = iterator.next();
-                result.append(variableTree.getType().toString()).append(" ");
-                result.append(variableTree.getName().toString());
-                if (iterator.hasNext()) {
-                    result.append(", ");
-                }
-            }
-
-            return result.toString();
-        }
-
-        private String getLineNumber(MethodTree methodTree) {
-
-            long startPosition = sourcePositions.getStartPosition(compilationUnitTree, methodTree);
-            return String.valueOf(lineMap.getLineNumber(startPosition));
-        }
-
-        private String getFilePath() {
-            
-            FileObject sourceFile = compilationUnitTree.getSourceFile();
-            return sourceFile.toUri().getPath();
+            ExpressionTree expressionTree = compilationUnitTree.getPackageName();
+            return expressionTree.toString();
         }
 
         private String getClassName() {
@@ -143,12 +118,6 @@ public class SourceIndexer implements Indexer {
             FileObject sourceFile = compilationUnitTree.getSourceFile();
             String className = sourceFile.getName().toString();
             return className.substring(0, className.length()-5);
-        }
-
-        private String getPackageName() {
-
-            ExpressionTree expressionTree = compilationUnitTree.getPackageName();
-            return expressionTree.toString();
         }
 
         private String getModifier(MethodTree methodTree) {
@@ -159,7 +128,70 @@ public class SourceIndexer implements Indexer {
                 return modifier.toString();
             }
 
-            return "";
+            return "package";
+        }
+
+        private String getParameters(MethodTree methodTree) {
+
+            StringBuilder sb = new StringBuilder();
+            
+            sb.append("(");
+
+            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
+            while (iterator.hasNext()) {
+                VariableTree variableTree = iterator.next();
+                sb.append(variableTree.getType().toString()).append(" ");
+                sb.append(variableTree.getName().toString());
+                if (iterator.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+
+            sb.append(")");
+
+            return sb.toString();
+        }
+
+        private String getCompletion(MethodTree methodTree) {
+
+            StringBuilder sb = new StringBuilder();
+            
+            sb.append("(");
+
+            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
+            while (iterator.hasNext()) {
+                VariableTree variableTree = iterator.next();
+                sb.append(variableTree.getName().toString());
+                if (iterator.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+
+            sb.append(")");
+
+            return sb.toString();
+        }
+
+        private String getReturnType(MethodTree methodTree) {
+
+            Tree returnType = methodTree.getReturnType();
+            if (returnType == null) {
+                return "void";
+            }
+            
+            return returnType.toString();
+        }
+
+        private String getFilePath() {
+            
+            FileObject sourceFile = compilationUnitTree.getSourceFile();
+            return sourceFile.toUri().getPath();
+        }
+
+        private String getLineNumber(MethodTree methodTree) {
+
+            long startPosition = sourcePositions.getStartPosition(compilationUnitTree, methodTree);
+            return String.valueOf(lineMap.getLineNumber(startPosition));
         }
     }
 }
