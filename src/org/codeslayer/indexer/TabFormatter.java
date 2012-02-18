@@ -19,7 +19,29 @@ package org.codeslayer.indexer;
 
 import java.util.List;
 
-public interface Formatter {
-    
-    public String format(List<Index> indexes);
+public class TabFormatter implements Formatter {
+
+    public String format(List<Index> indexes) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        for (Index index : indexes) {
+            sb.append(index.getPackageName());
+            sb.append("\t");
+            sb.append(index.getClassName());
+            sb.append("\t");
+            sb.append(index.getModifier());
+            sb.append("\t");
+            sb.append(index.getName());
+            sb.append("\t");
+            sb.append(index.getParameters());
+            sb.append("\t");
+            sb.append(index.getReturnType());
+            sb.append("\n");
+        }
+        
+//        System.out.println(sb);
+        
+        return sb.toString();
+    }
 }

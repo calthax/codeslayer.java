@@ -19,52 +19,23 @@ package org.codeslayer.indexer;
 
 public class Index {
 
-    private String name;
-    private String parameters;
-    private String modifier;
-    private String lineNumber;
-    private String className;
-    private String filePath;
     private String packageName;
+    private String className;
+    private String name;
+    private String modifier;
+    private String parameters;
+    private String returnType;
+    private String filePath;
+    private String lineNumber;
 
-    public String getName() {
+    public String getPackageName() {
 
-        return name;
+        return packageName;
     }
 
-    public void setName(String name) {
+    public void setPackageName(String packageName) {
 
-        this.name = name;
-    }
-
-    public String getParameters() {
-
-        return parameters;
-    }
-
-    public void setParameters(String parameters) {
-
-        this.parameters = parameters;
-    }
-
-    public String getModifier() {
-
-        return modifier;
-    }
-
-    public void setModifier(String modifier) {
-
-        this.modifier = modifier;
-    }
-
-    public String getLineNumber() {
-
-        return lineNumber;
-    }
-
-    public void setLineNumber(String lineNumber) {
-
-        this.lineNumber = lineNumber;
+        this.packageName = packageName;
     }
 
     public String getClassName() {
@@ -77,14 +48,44 @@ public class Index {
         this.className = className;
     }
 
-    public String getPackageName() {
+    public String getName() {
 
-        return packageName;
+        return name;
     }
 
-    public void setPackageName(String packageName) {
+    public void setName(String name) {
 
-        this.packageName = packageName;
+        this.name = name;
+    }
+
+    public String getModifier() {
+
+        return modifier;
+    }
+
+    public void setModifier(String modifier) {
+
+        this.modifier = modifier;
+    }
+
+    public String getParameters() {
+
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+
+        this.parameters = parameters;
+    }
+
+    public String getReturnType() {
+        
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+     
+        this.returnType = returnType;
     }
 
     public String getFilePath() {
@@ -95,5 +96,15 @@ public class Index {
     public void setFilePath(String filePath) {
 
         this.filePath = filePath;
+    }
+    
+    public String getLineNumber() {
+
+        return lineNumber;
+    }
+
+    public void setLineNumber(String lineNumber) {
+
+        this.lineNumber = lineNumber;
     }
 }

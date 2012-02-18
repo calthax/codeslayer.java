@@ -27,22 +27,28 @@ public class Main {
 
     public static void main(String[] args) {
 
-        String sourcePath = "/home/jeff/workspace/jmesa/src";
-
         try {
-            Indexer indexer = new Indexer();
-            List<Index> indexes = indexer.indexSourceFiles(IndexerUtils.getSourceFiles(sourcePath));
-            Formatter formatter = new Formatter();
-            String results = formatter.format(indexes);
-            System.out.println(results);
+//            String sourcePath = "/home/jeff/workspace/jmesa/src";
+//            Indexer indexer = new SourceIndexer(IndexerUtils.getSourceFiles(sourcePath));
+//            File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/jmesa.xml");
+//            XmlFormatter formatter = new XmlFormatter();
+            
+            Indexer indexer = new JarIndexer("/home/jeff/workspace/jmesa/lib/joda-time-1.6.jar");
+            File file = new File("/home/jeff/indexes/dependencies.txt");
+            Formatter formatter = new TabFormatter();
+            
+            List<Index> indexes = indexer.createIndexes();
+            if (indexes != null && indexes.size() > 0) {
+                String results = formatter.format(indexes);
+//                System.out.println(results);
 
-            File file = new File("/home/jeff/.codeslayer-dev/groups/java/indexes/jmesa.xml");
-            Writer out = new OutputStreamWriter(new FileOutputStream(file));
-            try {
-                out.write(results);
-            }
-            finally {
-                out.close();
+                Writer out = new OutputStreamWriter(new FileOutputStream(file));
+                try {
+                    out.write(results);
+                }
+                finally {
+                    out.close();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
