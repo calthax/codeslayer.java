@@ -21,11 +21,11 @@ public class Index {
 
     private String packageName;
     private String className;
-    private String name;
-    private String modifier;
-    private String parameters;
-    private String completion;
-    private String returnType;
+    private String methodName;
+    private String methodModifier;
+    private String methodParameters;
+    private String methodCompletion;
+    private String methodReturnType;
     private String filePath;
     private String lineNumber;
 
@@ -49,54 +49,54 @@ public class Index {
         this.className = className;
     }
 
-    public String getName() {
+    public String getMethodName() {
 
-        return name;
+        return methodName;
     }
 
-    public void setName(String name) {
+    public void setMethodName(String methodName) {
 
-        this.name = name;
+        this.methodName = methodName;
     }
 
-    public String getModifier() {
+    public String getMethodModifier() {
 
-        return modifier;
+        return methodModifier;
     }
 
-    public void setModifier(String modifier) {
+    public void setMethodModifier(String methodModifier) {
 
-        this.modifier = modifier;
+        this.methodModifier = methodModifier;
     }
 
-    public String getParameters() {
+    public String getMethodParameters() {
 
-        return parameters;
+        return methodParameters;
     }
 
-    public void setParameters(String parameters) {
+    public void setMethodParameters(String methodParameters) {
 
-        this.parameters = parameters;
+        this.methodParameters = methodParameters;
     }
 
-    public String getCompletion() {
+    public String getMethodCompletion() {
         
-        return completion;
+        return methodCompletion;
     }
 
-    public void setCompletion(String completion) {
+    public void setMethodCompletion(String methodCompletion) {
      
-        this.completion = completion;
+        this.methodCompletion = methodCompletion;
     }
 
-    public String getReturnType() {
+    public String getMethodReturnType() {
         
-        return returnType;
+        return methodReturnType;
     }
 
-    public void setReturnType(String returnType) {
+    public void setMethodReturnType(String methodReturnType) {
      
-        this.returnType = returnType;
+        this.methodReturnType = methodReturnType;
     }
 
     public String getFilePath() {

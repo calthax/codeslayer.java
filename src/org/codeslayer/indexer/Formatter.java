@@ -30,15 +30,15 @@ public class Formatter {
             sb.append("\t");
             sb.append(index.getClassName());
             sb.append("\t");
-            sb.append(index.getModifier());
+            sb.append(index.getMethodModifier());
             sb.append("\t");
-            sb.append(index.getName());
+            sb.append(index.getMethodName());
             sb.append("\t");
-            sb.append(index.getParameters());
+            sb.append(index.getMethodParameters());
             sb.append("\t");
-            sb.append(index.getCompletion());
+            sb.append(index.getMethodCompletion());
             sb.append("\t");
-            sb.append(index.getReturnType());
+            sb.append(index.getMethodReturnType());
             
             String filePath = index.getFilePath();
             if (filePath != null) {

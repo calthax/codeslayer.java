@@ -94,13 +94,14 @@ public class SourceIndexer implements Indexer {
         public Void visitMethod(MethodTree methodTree, Void arg1) {
 
             Index index = new Index();
-            index.setPackageName(getPackageName());
-            index.setClassName(getClassName());
-            index.setModifier(getModifier(methodTree));
-            index.setName(methodTree.getName().toString());
-            index.setParameters(getParameters(methodTree));
-            index.setCompletion(getCompletion(methodTree));
-            index.setReturnType(getReturnType(methodTree));
+            String className = getClassName();
+            index.setPackageName(getPackageName() + "." + className);
+            index.setClassName(className);
+            index.setMethodModifier(getModifier(methodTree));
+            index.setMethodName(methodTree.getName().toString());
+            index.setMethodParameters(getParameters(methodTree));
+            index.setMethodCompletion(getCompletion(methodTree));
+            index.setMethodReturnType(getReturnType(methodTree));
             index.setFilePath(getFilePath());
             index.setLineNumber(getLineNumber(methodTree));
             methods.add(index);

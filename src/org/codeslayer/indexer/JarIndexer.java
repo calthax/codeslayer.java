@@ -79,17 +79,17 @@ public class JarIndexer implements Indexer {
 
             Index index = new Index();
 
-            index.setName(method.getName());
-            index.setModifier(getModifier(method));
+            index.setMethodName(method.getName());
+            index.setMethodModifier(getModifier(method));
             
             String parameters = getParameters(method);
-            index.setParameters(parameters);
-            index.setCompletion(parameters);
+            index.setMethodParameters(parameters);
+            index.setMethodCompletion(parameters);
             
-            index.setReturnType(method.getReturnType().getSimpleName());
+            index.setMethodReturnType(method.getReturnType().getSimpleName());
 
             Class<?> declaringClass = method.getDeclaringClass();
-            index.setPackageName(declaringClass.getPackage().getName());
+            index.setPackageName(declaringClass.getPackage().getName() + "." + declaringClass.getSimpleName());
             index.setClassName(declaringClass.getSimpleName());
 
             results.add(index);
