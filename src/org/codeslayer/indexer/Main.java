@@ -53,23 +53,14 @@ public class Main {
             
             List<String> zipFiles = modifiers.getZipFiles();
             for (String zipFile : zipFiles) {
-                String tmpFile = modifiers.getTmpFile();
+                String tmpFile = modifiers.getTmp();
                 Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile));
                 indexes.addAll(indexer.createIndexes());
             }
             
-            File file = new File(modifiers.getIndexFile());
-            Formatter formatter = new Formatter();
-            
-            if (indexes != null && !indexes.isEmpty()) {
-                String results = formatter.format(indexes);
-                Writer out = new OutputStreamWriter(new FileOutputStream(file));
-                try {
-                    out.write(results);
-                }
-                finally {
-                    out.close();
-                }
+            if (indexes != null && !indexes.isEmpty()) {                
+                new IndexesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
+                new ClassesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
             }
         } catch (Exception e) {
             e.printStackTrace();

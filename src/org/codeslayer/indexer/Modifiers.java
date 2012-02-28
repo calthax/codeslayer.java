@@ -90,14 +90,19 @@ public class Modifiers {
         return Collections.emptyList();
     }
 
-    public String getIndexFile() {
+    public String getIndexes() {
 
-        return modifiers.get(Modifier.INDEX);
+        return modifiers.get(Modifier.INDEXES);
     }
 
-    public String getTmpFile() {
+    public String getTmp() {
 
         return modifiers.get(Modifier.TMP);
+    }
+
+    public String getType() {
+
+        return modifiers.get(Modifier.TYPE);
     }
 
     @Override
@@ -112,7 +117,8 @@ public class Modifiers {
         LIBFOLDER("-libfolder"),
         ZIPFILE("-zipfile"),
         JARFILE("-jarfile"),
-        INDEX("-index"),
+        INDEXES("-indexes"),
+        TYPE("-type"),
         TMP("-tmp");
 
         private final String key;

@@ -17,11 +17,25 @@
  */
 package org.codeslayer.indexer;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 
-public class Formatter {
+public class IndexesFile {
+    
+    private final String folder;
+    private final String type;
 
-    public String format(List<Index> indexes) {
+    public IndexesFile(String folder, String type) {
+     
+        this.folder = folder;
+        this.type = type;
+    }
+
+    public void write(List<Index> indexes) 
+            throws Exception {
         
         StringBuilder sb = new StringBuilder();
         
@@ -55,6 +69,13 @@ public class Formatter {
             sb.append("\n");
         }
         
-        return sb.toString();
+        File file = new File(folder, type+".indexes");
+        Writer out = new OutputStreamWriter(new FileOutputStream(file));
+        try {
+            out.write(sb.toString());
+        }
+        finally {
+            out.close();
+        }
     }
 }
