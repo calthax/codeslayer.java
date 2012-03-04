@@ -47,7 +47,6 @@ public class ClassesFile {
             sb.append(index.getClassName());
             sb.append("\t");
             sb.append(index.getPackageName());
-            sb.append("\t");
             
             String filePath = index.getFilePath();
             if (filePath != null) {
