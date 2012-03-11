@@ -86,34 +86,32 @@ public class JarIndexer implements Indexer {
         
         List<Index> results = new ArrayList<Index>();
         
-        for (Method method : clazz.getDeclaredMethods()) {
+        String packageName = clazz.getPackage().getName();
+        String className = clazz.getSimpleName();
+        
+        for (Method method : clazz.getMethods()) {
 
-            Class<?> declaringClass = method.getDeclaringClass();
-            String packageName = declaringClass.getPackage().getName();
-            
             if (!IndexerUtils.includePackage(suppressions, packageName)) {
                 continue;
             }
             
-            String className = declaringClass.getSimpleName();
-            
             Index index = new Index();
-            
+
             index.setPackageName(packageName + "." + className);
             index.setClassName(className);
 
             index.setMethodName(method.getName());
             index.setMethodModifier(getModifier(method));
-            
+
             String parameters = getParameters(method);
             index.setMethodParameters(parameters);
             index.setMethodCompletion(parameters);
-            
+
             index.setMethodReturnType(method.getReturnType().getSimpleName());
-            
+
             results.add(index);
         }
-        
+
         return results;
     }
     

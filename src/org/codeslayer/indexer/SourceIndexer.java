@@ -101,8 +101,10 @@ public class SourceIndexer implements Indexer {
                 return super.visitMethod(methodTree, arg1);
             }
             
-            Index index = new Index();
             String className = getClassName();
+            
+            Index index = new Index();
+
             index.setPackageName(packageName + "." + className);
             index.setClassName(className);
             index.setMethodModifier(getModifier(methodTree));
@@ -112,7 +114,9 @@ public class SourceIndexer implements Indexer {
             index.setMethodReturnType(getReturnType(methodTree));
             index.setFilePath(getFilePath());
             index.setLineNumber(getLineNumber(methodTree));
+            
             methods.add(index);
+            
             return super.visitMethod(methodTree, arg1);
         }
 

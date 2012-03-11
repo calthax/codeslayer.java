@@ -12,7 +12,6 @@ java.security
 java.nio
 java.applet
 java.beans
-javax
 org.mozilla
 org.hibernate
 org.codehaus.groovy.runtime

@@ -19,6 +19,7 @@ package org.codeslayer.indexer;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -29,6 +30,10 @@ public class IndexerUtils {
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
     public static List<String> getSuppressions(String path) {
+
+        if (path == null || path.trim().length() == 0) {
+            return Collections.emptyList();
+        }
 
         List<String> results = new ArrayList<String>();
 
