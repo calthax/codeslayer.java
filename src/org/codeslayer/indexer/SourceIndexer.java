@@ -34,6 +34,8 @@ import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.List;
 import javax.tools.FileObject;
+import org.codeslayer.indexer.domain.IndexClass;
+import org.codeslayer.indexer.domain.IndexMethod;
 
 public class SourceIndexer implements Indexer {
     
@@ -49,7 +51,7 @@ public class SourceIndexer implements Indexer {
     public List<Index> createIndexes() 
             throws Exception {
 
-        List<Index> methods = new ArrayList<Index>();
+        List<IndexClass> indexClasses = new ArrayList<IndexClass>();
         
         try {
             JavacTask javacTask = getJavacTask(files);
@@ -57,15 +59,38 @@ public class SourceIndexer implements Indexer {
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                compilationUnitTree.accept(new MethodScanner(compilationUnitTree, sourcePositions, methods), null);
+                compilationUnitTree.accept(new ClassScanner(compilationUnitTree, sourcePositions, indexClasses), null);
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
         }
 
-        return methods;
+        return createIndexes(indexClasses);
     }
+    
+    private List<Index> createIndexes(List<IndexClass> indexClasses) {
+        
+        List<Index> indexes = new ArrayList<Index>();
+        
+        for (IndexClass indexClass : indexClasses) {            
+            for (IndexMethod indexMethod : indexClass.getMethods()) {
+                Index index = new Index();
+                index.setPackageName(indexClass.getPackageName());
+                index.setClassName(indexClass.getClassName());
+                index.setMethodModifier(indexMethod.getModifier());
+                index.setMethodName(indexMethod.getName());
+                index.setMethodParameters(indexMethod.getParameters());
+                index.setMethodCompletion(indexMethod.getCompletion());
+                index.setMethodReturnType(indexMethod.getReturnType());
+                index.setFilePath(indexClass.getFilePath());
+                index.setLineNumber(indexMethod.getLineNumber());                
+                indexes.add(index);
+            }
+        }
+        
+        return indexes;
+    } 
 
     private JavacTask getJavacTask(File[] files)
             throws Exception {
@@ -77,47 +102,58 @@ public class SourceIndexer implements Indexer {
         return (JavacTask) compiler.getTask(null, fileManager, diagnosticsCollector, null, null, fileObjects);
     }
 
-    private class MethodScanner extends TreeScanner<Void, Void> {
+    private class ClassScanner extends TreeScanner<Void, Void> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final LineMap lineMap;
-        private final List<Index> methods;
+        private final List<IndexClass> indexClasses;
 
-        private MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Index> methods) {
+        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<IndexClass> indexClasses) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
             this.lineMap = compilationUnitTree.getLineMap();
-            this.methods = methods;
+            this.indexClasses = indexClasses;
         }
 
         @Override
-        public Void visitMethod(MethodTree methodTree, Void arg1) {
-
-            String packageName = getPackageName();
+        public Void visitClass(ClassTree classTree, Void arg1) {
             
+            List<? extends Tree> members = classTree.getMembers();
+            
+            String packageName = getPackageName();
+
             if (!IndexerUtils.includePackage(suppressions, packageName)) {
-                return super.visitMethod(methodTree, arg1);
+                return super.visitClass(classTree, arg1);
             }
             
+            IndexClass indexClass = new IndexClass();
             String className = getClassName();
+            indexClass.setClassName(className);
+            indexClass.setPackageName(packageName + "." + className);
+            indexClass.setFilePath(getFilePath());
             
-            Index index = new Index();
+            for (Tree memberTree : members) {
+                if (memberTree instanceof MethodTree) {
+                    MethodTree methodTree = (MethodTree)memberTree;
+                    
+                    
+                    IndexMethod indexMethod = new IndexMethod();
+                    indexMethod.setName(methodTree.getName().toString());
+                    indexMethod.setModifier(getModifier(methodTree));
+                    indexMethod.setParameters(getParameters(methodTree));
+                    indexMethod.setCompletion(getCompletion(methodTree));
+                    indexMethod.setReturnType(getReturnType(methodTree));
+                    indexMethod.setLineNumber(getLineNumber(methodTree));
+                    
+                    indexClass.addMethod(indexMethod);
+                }
+            }
+            
+            indexClasses.add(indexClass);
 
-            index.setPackageName(packageName + "." + className);
-            index.setClassName(className);
-            index.setMethodModifier(getModifier(methodTree));
-            index.setMethodName(methodTree.getName().toString());
-            index.setMethodParameters(getParameters(methodTree));
-            index.setMethodCompletion(getCompletion(methodTree));
-            index.setMethodReturnType(getReturnType(methodTree));
-            index.setFilePath(getFilePath());
-            index.setLineNumber(getLineNumber(methodTree));
-            
-            methods.add(index);
-            
-            return super.visitMethod(methodTree, arg1);
+            return super.visitClass(classTree, arg1);
         }
 
         private String getPackageName() {

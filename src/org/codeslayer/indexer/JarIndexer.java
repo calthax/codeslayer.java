@@ -33,9 +33,9 @@ public class JarIndexer implements Indexer {
     private final File[] files;
     private final List<String> suppressions;
 
-    public JarIndexer(File[] jarFiles, List<String> suppressions) {
+    public JarIndexer(File[] files, List<String> suppressions) {
 
-        this.files = jarFiles;
+        this.files = files;
         this.suppressions = suppressions;
     }
 
