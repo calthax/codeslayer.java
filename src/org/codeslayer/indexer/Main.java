@@ -27,30 +27,33 @@ public class Main {
         try {
             Modifiers modifiers = new Modifiers(args);
             
+            List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
+            
             List<Index> indexes = new ArrayList<Index>();
             
             List<String> sourceFolders = modifiers.getSourceFolders();
             for (String sourceFolder : sourceFolders) {
-                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder));
+                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
+            JarFilter jarFilter = new JarFilter();
             List<String> libFolders = modifiers.getLibFolders();
             for (String libFolder : libFolders) {
-                Indexer indexer = new JarIndexer(IndexerUtils.getJarFiles(libFolder));
+                Indexer indexer = new JarIndexer(IndexerUtils.getJarFiles(libFolder, jarFilter), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
             List<String> jarFiles = modifiers.getJarFiles();
             for (String jarFile : jarFiles) {
-                Indexer indexer = new JarIndexer(IndexerUtils.getFiles(jarFile));
+                Indexer indexer = new JarIndexer(IndexerUtils.getFiles(jarFile), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
             List<String> zipFiles = modifiers.getZipFiles();
             for (String zipFile : zipFiles) {
                 String tmpFile = modifiers.getTmpFolder();
-                Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile));
+                Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             

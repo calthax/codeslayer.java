@@ -31,10 +31,12 @@ import java.util.jar.JarFile;
 public class JarIndexer implements Indexer {
 
     private final File[] files;
+    private final List<String> suppressions;
 
-    public JarIndexer(File[] jarFiles) {
+    public JarIndexer(File[] jarFiles, List<String> suppressions) {
 
         this.files = jarFiles;
+        this.suppressions = suppressions;
     }
 
     public List<Index> createIndexes()
@@ -86,7 +88,19 @@ public class JarIndexer implements Indexer {
         
         for (Method method : clazz.getDeclaredMethods()) {
 
+            Class<?> declaringClass = method.getDeclaringClass();
+            String packageName = declaringClass.getPackage().getName();
+            
+            if (!IndexerUtils.includePackage(suppressions, packageName)) {
+                continue;
+            }
+            
+            String className = declaringClass.getSimpleName();
+            
             Index index = new Index();
+            
+            index.setPackageName(packageName + "." + className);
+            index.setClassName(className);
 
             index.setMethodName(method.getName());
             index.setMethodModifier(getModifier(method));
@@ -96,11 +110,7 @@ public class JarIndexer implements Indexer {
             index.setMethodCompletion(parameters);
             
             index.setMethodReturnType(method.getReturnType().getSimpleName());
-
-            Class<?> declaringClass = method.getDeclaringClass();
-            index.setPackageName(declaringClass.getPackage().getName() + "." + declaringClass.getSimpleName());
-            index.setClassName(declaringClass.getSimpleName());
-
+            
             results.add(index);
         }
         

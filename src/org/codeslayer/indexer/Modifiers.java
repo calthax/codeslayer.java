@@ -100,6 +100,11 @@ public class Modifiers {
         return modifiers.get(Modifier.TMPFOLDER);
     }
 
+    public String getSuppressionsFile() {
+
+        return modifiers.get(Modifier.SUPPRESSIONSFILE);
+    }
+
     public String getType() {
 
         return modifiers.get(Modifier.TYPE);
@@ -119,7 +124,8 @@ public class Modifiers {
         JARFILE("-jarfile"),
         INDEXESFOLDER("-indexesfolder"),
         TYPE("-type"),
-        TMPFOLDER("-tmpfolder");
+        TMPFOLDER("-tmpfolder"),
+        SUPPRESSIONSFILE("-suppressionsfile");
 
         private final String key;
 

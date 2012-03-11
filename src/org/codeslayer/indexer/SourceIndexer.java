@@ -38,10 +38,12 @@ import javax.tools.FileObject;
 public class SourceIndexer implements Indexer {
     
     private final File[] files;
+    private final List<String> suppressions;
 
-    public SourceIndexer(File[] files) {
+    public SourceIndexer(File[] files, List<String> suppressions) {
      
         this.files = files;
+        this.suppressions = suppressions;
     }
 
     public List<Index> createIndexes() 
@@ -75,7 +77,7 @@ public class SourceIndexer implements Indexer {
         return (JavacTask) compiler.getTask(null, fileManager, diagnosticsCollector, null, null, fileObjects);
     }
 
-    private static class MethodScanner extends TreeScanner<Void, Void> {
+    private class MethodScanner extends TreeScanner<Void, Void> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
@@ -93,9 +95,15 @@ public class SourceIndexer implements Indexer {
         @Override
         public Void visitMethod(MethodTree methodTree, Void arg1) {
 
+            String packageName = getPackageName();
+            
+            if (!IndexerUtils.includePackage(suppressions, packageName)) {
+                return super.visitMethod(methodTree, arg1);
+            }
+            
             Index index = new Index();
             String className = getClassName();
-            index.setPackageName(getPackageName() + "." + className);
+            index.setPackageName(packageName + "." + className);
             index.setClassName(className);
             index.setMethodModifier(getModifier(methodTree));
             index.setMethodName(methodTree.getName().toString());

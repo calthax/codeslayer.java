@@ -28,6 +28,39 @@ public class IndexerUtils {
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
+    public static List<String> getSuppressions(String path) {
+
+        List<String> results = new ArrayList<String>();
+
+        try{
+            FileInputStream fstream = new FileInputStream(path);
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                if (strLine == null || strLine.trim().length() == 0) {
+                    continue;
+                }
+                results.add(strLine);
+            }
+            in.close();
+        } catch (Exception e) {
+            System.err.println("not able to load the suppressions file.");
+        }
+
+        return results;
+    }
+    
+    public static boolean includePackage(List<String> suppressions, String packageName) {
+        
+        for (String suppression : suppressions) {
+            if (packageName.startsWith(suppression)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static File[] getFiles(String path) {
 
         List<File> files = new ArrayList<File>();
@@ -66,10 +99,19 @@ public class IndexerUtils {
         }
     }
     
-    public static File[] getJarFiles(String path) {
+    public static File[] getJarFiles(String path, JarFilter jarFilter) {
+        
+        List<File> files = new ArrayList<File>();
 
         File file = new File(path);
-        return file.listFiles();
+        
+        for (File f : file.listFiles()) {
+            if (jarFilter.accept(f)) {
+                files.add(f);
+            }
+        }
+
+        return files.toArray(new File[files.size()]);
     }
 
     public static File[] getZipFiles(String path, String tmpPath) {
