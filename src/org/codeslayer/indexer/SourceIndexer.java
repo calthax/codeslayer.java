@@ -73,7 +73,7 @@ public class SourceIndexer implements Indexer {
         
         List<Index> indexes = new ArrayList<Index>();
         
-        for (IndexClass indexClass : indexClasses) {            
+        for (IndexClass indexClass : indexClasses) {
             for (IndexMethod indexMethod : indexClass.getMethods()) {
                 Index index = new Index();
                 index.setPackageName(indexClass.getPackageName());
