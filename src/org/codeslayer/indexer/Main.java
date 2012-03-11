@@ -49,14 +49,14 @@ public class Main {
             
             List<String> zipFiles = modifiers.getZipFiles();
             for (String zipFile : zipFiles) {
-                String tmpFile = modifiers.getTmp();
+                String tmpFile = modifiers.getTmpFolder();
                 Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile));
                 indexes.addAll(indexer.createIndexes());
             }
             
             if (indexes != null && !indexes.isEmpty()) {
-                new IndexesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
-                new ClassesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
+                new IndexesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
+                new ClassesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
             }
         } catch (Exception e) {
             e.printStackTrace();

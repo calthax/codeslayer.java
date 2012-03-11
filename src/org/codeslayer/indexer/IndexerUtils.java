@@ -78,7 +78,7 @@ public class IndexerUtils {
         
         File tmpFile = new File(tmpPath);
         if (tmpFile.exists()) {
-            deleteDir(tmpFile);
+            deleteTmpFolder(tmpFile);
         }
         tmpFile.mkdir();
 
@@ -121,16 +121,16 @@ public class IndexerUtils {
             e.printStackTrace();
             System.err.println(e);
         }
-
+        
         return files.toArray(new File[files.size()]);
     }
     
-    private static void deleteDir(File file) {
+    private static void deleteTmpFolder(File file) {
         
         File[] listFiles = file.listFiles();
         if (listFiles != null) {
             for (File child : listFiles) {
-                deleteDir(child);
+                deleteTmpFolder(child);
             }
         }
         file.delete();

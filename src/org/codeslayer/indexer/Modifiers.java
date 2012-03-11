@@ -90,14 +90,14 @@ public class Modifiers {
         return Collections.emptyList();
     }
 
-    public String getIndexes() {
+    public String getIndexesFolder() {
 
-        return modifiers.get(Modifier.INDEXES);
+        return modifiers.get(Modifier.INDEXESFOLDER);
     }
 
-    public String getTmp() {
+    public String getTmpFolder() {
 
-        return modifiers.get(Modifier.TMP);
+        return modifiers.get(Modifier.TMPFOLDER);
     }
 
     public String getType() {
@@ -117,9 +117,9 @@ public class Modifiers {
         LIBFOLDER("-libfolder"),
         ZIPFILE("-zipfile"),
         JARFILE("-jarfile"),
-        INDEXES("-indexes"),
+        INDEXESFOLDER("-indexesfolder"),
         TYPE("-type"),
-        TMP("-tmp");
+        TMPFOLDER("-tmpfolder");
 
         private final String key;
 
