@@ -43,8 +43,13 @@ public class ClassesFile {
         StringBuilder sb = new StringBuilder();
         
         for (Index index : filter(indexes)) {
+            
+            String className = index.getClassName();
+            if (className == null || className.length() == 0) {
+                continue;
+            }
 
-            sb.append(index.getClassName());
+            sb.append(className);
             sb.append("\t");
             sb.append(index.getPackageName());
             

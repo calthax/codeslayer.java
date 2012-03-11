@@ -17,17 +17,13 @@
  */
 package org.codeslayer.indexer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-
+        
         try {
             Modifiers modifiers = new Modifiers(args);
             
@@ -58,7 +54,7 @@ public class Main {
                 indexes.addAll(indexer.createIndexes());
             }
             
-            if (indexes != null && !indexes.isEmpty()) {                
+            if (indexes != null && !indexes.isEmpty()) {
                 new IndexesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
                 new ClassesFile(modifiers.getIndexes(), modifiers.getType()).write(indexes);
             }

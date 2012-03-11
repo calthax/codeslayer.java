@@ -42,33 +42,42 @@ public class JarIndexer implements Indexer {
         
         List<Index> results = new ArrayList<Index>();
         
+        URLClassLoader jarClassLoader = createClassLoader();
+        
         for (File file : files) {
             String jarPath = file.getAbsolutePath();
-            
-            System.out.println(jarPath);
-            
             JarFile jarFile = new JarFile(jarPath);
-
-            URLClassLoader jarClassLoader = new URLClassLoader(new URL[]{new URL("jar:file:"+jarPath+"!/")}, this.getClass().getClassLoader());
-
             Enumeration<JarEntry> enumeration = jarFile.entries();
             while (enumeration.hasMoreElements()) {
                 JarEntry jarEntry = (JarEntry) enumeration.nextElement();
                 String className = jarEntry.getName();
                 if (className.endsWith(".class")) {
-                    className = className.substring(0, className.length() - ".class".length());
+                    className = className.substring(0, className.length() - ".class".length());                    
                     try {
                         Class clazz = Class.forName(className.replace('/', '.'), true, jarClassLoader);
                         results.addAll(reflectOnClass(clazz));
                     } catch (Throwable t) {
-                        t.printStackTrace();
-                        System.err.println(t);
+                        // just eat the error as there will be a lot
                     }
                 }
             }
         }
 
         return results;
+    }
+    
+    private URLClassLoader createClassLoader() 
+            throws Exception {
+        
+        List<URL> results = new ArrayList<URL>();
+        
+        for (File file : files) {
+            String jarPath = file.getAbsolutePath();
+            results.add(new URL("jar:file:"+jarPath+"!/"));
+        }
+        
+        URL[] urls = (URL[])results.toArray(new URL[results.size()]);
+        return new URLClassLoader(urls, this.getClass().getClassLoader());        
     }
     
     private List<Index> reflectOnClass(Class clazz) {
