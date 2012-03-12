@@ -28,12 +28,13 @@ public class Main {
             Modifiers modifiers = new Modifiers(args);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
+            IndexFactory indexFactory = new IndexFactory(modifiers.getIndexesFolder());
             
             List<Index> indexes = new ArrayList<Index>();
             
             List<String> sourceFolders = modifiers.getSourceFolders();
             for (String sourceFolder : sourceFolders) {
-                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder), suppressions);
+                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder), indexFactory, suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
@@ -53,7 +54,7 @@ public class Main {
             List<String> zipFiles = modifiers.getZipFiles();
             for (String zipFile : zipFiles) {
                 String tmpFile = modifiers.getTmpFolder();
-                Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile), suppressions);
+                Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile), indexFactory, suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             

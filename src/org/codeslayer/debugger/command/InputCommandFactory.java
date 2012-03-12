@@ -25,8 +25,8 @@ import org.codeslayer.debugger.Modifiers;
 
 public class InputCommandFactory {
 
-    private static final String PRINT_REXEX = "p\\s+([a-zA-Z._\\d]+)(.*)";
-    private static final Pattern PRINT_PATTERN = Pattern.compile(PRINT_REXEX);
+    private static final String PRINT_REGEX = "p\\s+([a-zA-Z._\\d]+)(.*)";
+    private static final Pattern PRINT_PATTERN = Pattern.compile(PRINT_REGEX);
 
     public List<InputCommand> create(String commands) {
 

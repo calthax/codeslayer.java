@@ -32,7 +32,7 @@ import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
-import java.util.List;
+import java.util.*;
 import javax.tools.FileObject;
 import org.codeslayer.indexer.domain.IndexClass;
 import org.codeslayer.indexer.domain.IndexMethod;
@@ -40,11 +40,13 @@ import org.codeslayer.indexer.domain.IndexMethod;
 public class SourceIndexer implements Indexer {
     
     private final File[] files;
+    private final IndexFactory indexFactory;
     private final List<String> suppressions;
 
-    public SourceIndexer(File[] files, List<String> suppressions) {
+    public SourceIndexer(File[] files, IndexFactory indexFactory, List<String> suppressions) {
      
         this.files = files;
+        this.indexFactory = indexFactory;
         this.suppressions = suppressions;
     }
 
@@ -65,32 +67,9 @@ public class SourceIndexer implements Indexer {
             e.printStackTrace();
             System.err.println(e);
         }
-
-        return createIndexes(indexClasses);
+        
+        return indexFactory.createIndexes(indexClasses);
     }
-    
-    private List<Index> createIndexes(List<IndexClass> indexClasses) {
-        
-        List<Index> indexes = new ArrayList<Index>();
-        
-        for (IndexClass indexClass : indexClasses) {
-            for (IndexMethod indexMethod : indexClass.getMethods()) {
-                Index index = new Index();
-                index.setPackageName(indexClass.getPackageName());
-                index.setClassName(indexClass.getClassName());
-                index.setMethodModifier(indexMethod.getModifier());
-                index.setMethodName(indexMethod.getName());
-                index.setMethodParameters(indexMethod.getParameters());
-                index.setMethodCompletion(indexMethod.getCompletion());
-                index.setMethodReturnType(indexMethod.getReturnType());
-                index.setFilePath(indexClass.getFilePath());
-                index.setLineNumber(indexMethod.getLineNumber());                
-                indexes.add(index);
-            }
-        }
-        
-        return indexes;
-    } 
 
     private JavacTask getJavacTask(File[] files)
             throws Exception {
@@ -130,15 +109,18 @@ public class SourceIndexer implements Indexer {
             
             IndexClass indexClass = new IndexClass();
             String className = getClassName();
+            indexClass.setImports(getImports());
             indexClass.setClassName(className);
             indexClass.setPackageName(packageName + "." + className);
             indexClass.setFilePath(getFilePath());
             
+            indexClass.setInterfaces(getInterfaces(classTree));
+            indexClass.setSuperClass(getSuperClass(classTree));
+            
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
                     MethodTree methodTree = (MethodTree)memberTree;
-                    
-                    
+
                     IndexMethod indexMethod = new IndexMethod();
                     indexMethod.setName(methodTree.getName().toString());
                     indexMethod.setModifier(getModifier(methodTree));
@@ -146,7 +128,7 @@ public class SourceIndexer implements Indexer {
                     indexMethod.setCompletion(getCompletion(methodTree));
                     indexMethod.setReturnType(getReturnType(methodTree));
                     indexMethod.setLineNumber(getLineNumber(methodTree));
-                    
+
                     indexClass.addMethod(indexMethod);
                 }
             }
@@ -154,6 +136,17 @@ public class SourceIndexer implements Indexer {
             indexClasses.add(indexClass);
 
             return super.visitClass(classTree, arg1);
+        }
+
+        private List<String> getImports() {
+            
+            List<String> results = new ArrayList<String>();
+
+            for (ImportTree importTree : compilationUnitTree.getImports()) {
+                results.add(importTree.toString());
+            }
+                
+            return results;
         }
 
         private String getPackageName() {
@@ -167,6 +160,27 @@ public class SourceIndexer implements Indexer {
             FileObject sourceFile = compilationUnitTree.getSourceFile();
             String className = sourceFile.getName().toString();
             return className.substring(0, className.length()-5);
+        }
+        
+        private List<String> getInterfaces(ClassTree classTree) {
+            
+            List<String> results = new ArrayList<String>();
+            
+            for (Tree tree : classTree.getImplementsClause()) {
+                results.add(tree.toString());
+            }
+
+            return results;
+        }
+
+        private String getSuperClass(ClassTree classTree) {
+            
+            Tree tree = classTree.getExtendsClause();
+            if (tree == null) {
+                return null;
+            }
+            
+            return tree.toString();
         }
 
         private String getModifier(MethodTree methodTree) {

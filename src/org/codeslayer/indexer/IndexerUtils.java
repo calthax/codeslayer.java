@@ -55,7 +55,7 @@ public class IndexerUtils {
 
         return results;
     }
-    
+
     public static boolean includePackage(List<String> suppressions, String packageName) {
         
         for (String suppression : suppressions) {
@@ -63,6 +63,7 @@ public class IndexerUtils {
                 return false;
             }
         }
+        
         return true;
     }
 
@@ -179,7 +180,7 @@ public class IndexerUtils {
             for (File child : listFiles) {
                 deleteTmpFolder(child);
             }
-        }
+        }        
         file.delete();
     }
 }

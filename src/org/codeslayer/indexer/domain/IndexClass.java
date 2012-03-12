@@ -25,6 +25,9 @@ public class IndexClass {
     private String packageName;
     private String className;
     private String filePath;
+    private String superClass;
+    private List<String> interfaces;
+    private List<String> imports;
     private List<IndexMethod> methods = new ArrayList<IndexMethod>();
 
     public String getPackageName() {
@@ -65,5 +68,35 @@ public class IndexClass {
     public void addMethod(IndexMethod method) {
      
         this.methods.add(method);
+    }
+
+    public List<String> getInterfaces() {
+        
+        return interfaces;
+    }
+
+    public void setInterfaces(List<String> interfaces) {
+     
+        this.interfaces = interfaces;
+    }
+
+    public List<String> getImports() {
+        
+        return imports;
+    }
+
+    public void setImports(List<String> imports) {
+     
+        this.imports = imports;
+    }
+
+    public String getSuperClass() {
+        
+        return superClass;
+    }
+
+    public void setSuperClass(String superClass) {
+     
+        this.superClass = superClass;
     }
 }
