@@ -97,9 +97,19 @@ public class IndexerUtils {
             if (file.isDirectory()) {
                 return true;
             }
+            
             if (file.isHidden()) {
                 return false;
             }
+
+            try {
+                if (!(file.getAbsolutePath().equals(file.getCanonicalPath()))) {
+                    return false;
+                }
+            } catch (Exception e) {
+                // cannot do anything
+            }
+            
             String name = file.getName();
             return name.endsWith(".java");
         }

@@ -113,8 +113,6 @@ public class SourceIndexer implements Indexer {
             indexClass.setClassName(className);
             indexClass.setPackageName(packageName + "." + className);
             indexClass.setFilePath(getFilePath());
-            
-            indexClass.setInterfaces(getInterfaces(classTree));
             indexClass.setSuperClass(getSuperClass(classTree));
             
             for (Tree memberTree : members) {
@@ -162,17 +160,6 @@ public class SourceIndexer implements Indexer {
             return className.substring(0, className.length()-5);
         }
         
-        private List<String> getInterfaces(ClassTree classTree) {
-            
-            List<String> results = new ArrayList<String>();
-            
-            for (Tree tree : classTree.getImplementsClause()) {
-                results.add(tree.toString());
-            }
-
-            return results;
-        }
-
         private String getSuperClass(ClassTree classTree) {
             
             Tree tree = classTree.getExtendsClause();

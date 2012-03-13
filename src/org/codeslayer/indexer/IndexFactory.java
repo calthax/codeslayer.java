@@ -87,10 +87,6 @@ public class IndexFactory {
             return null;
         }
         
-//        if (!superClass.equals("Column")) {
-//            return null;
-//        }
-        
         for (String imp : indexClass.getImports()) {
             Matcher matcher = PATTERN.matcher(imp);
             
@@ -104,17 +100,13 @@ public class IndexFactory {
                 continue;
             }
             
-//            System.out.println(packageName);
-            
             IndexClass project = projectsLookup.get(packageName);
             if (project != null) {
-                System.out.println("found the project");
                 return project;
             }
             
             String lib = libsLookup.get(packageName);
             if (lib != null) {
-                System.out.println("found the lib");
                 return getLibIndexClass(packageName);
             }
         }
@@ -138,22 +130,21 @@ public class IndexFactory {
                 }
                 
                 if (strLine.startsWith(packageName)) {
-                    System.out.println("strLine " + strLine);
-                    
                     String[] split = strLine.split("\\t");
-                    
+
                     if (indexClass == null) {
                         indexClass = new IndexClass();
                         indexClass.setPackageName(split[0]);
                         indexClass.setClassName(split[1]);
-                        indexClass.setFilePath(split[6]);
                     }
                     
                     IndexMethod indexMethod = new IndexMethod();
                     indexMethod.setModifier(split[2]);
-                    indexMethod.setParameters(split[3]);
-                    indexMethod.setCompletion(split[4]);
-                    indexMethod.setReturnType(split[5]);
+                    indexMethod.setName(split[3]);
+                    indexMethod.setParameters(split[4]);
+                    indexMethod.setCompletion(split[5]);
+                    indexMethod.setReturnType(split[6]);
+                    
                     indexClass.addMethod(indexMethod);
                 } else if (indexClass != null) {
                     break;
@@ -161,7 +152,8 @@ public class IndexFactory {
             }
             in.close();
         } catch (Exception e) {
-            System.err.println("not able to load the suppressions file.");
+            e.printStackTrace();
+            System.err.println("not able to load the libs.indexes file.");
         }
 
         return indexClass;
@@ -200,7 +192,8 @@ public class IndexFactory {
             }
             in.close();
         } catch (Exception e) {
-            System.err.println("not able to load the suppressions file.");
+            e.printStackTrace();
+            System.err.println("not able to load the libs.classes file.");
         }
 
         return results;

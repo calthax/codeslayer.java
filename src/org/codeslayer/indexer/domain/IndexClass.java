@@ -26,7 +26,6 @@ public class IndexClass {
     private String className;
     private String filePath;
     private String superClass;
-    private List<String> interfaces;
     private List<String> imports;
     private List<IndexMethod> methods = new ArrayList<IndexMethod>();
 
@@ -68,16 +67,6 @@ public class IndexClass {
     public void addMethod(IndexMethod method) {
      
         this.methods.add(method);
-    }
-
-    public List<String> getInterfaces() {
-        
-        return interfaces;
-    }
-
-    public void setInterfaces(List<String> interfaces) {
-     
-        this.interfaces = interfaces;
     }
 
     public List<String> getImports() {

@@ -27,6 +27,14 @@ public class JarFilter {
     
     public boolean accept(File file) {
         
+        try {
+            if (!(file.getAbsolutePath().equals(file.getCanonicalPath()))) {
+                return false;
+            }
+        } catch (Exception e) {
+            // cannot do anything
+        }
+        
         String fileName = file.getName();
         
         if (filters.contains(fileName)) {
