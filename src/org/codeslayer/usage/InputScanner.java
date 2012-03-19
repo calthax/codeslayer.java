@@ -18,44 +18,54 @@
 package org.codeslayer.usage;
 
 import com.sun.source.tree.*;
+import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.SourcePositions;
+import com.sun.source.util.Trees;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InputScanner extends AbstractScanner {
     
     private final Input input;
-    private final MethodMatch methodMatch;
 
-    public InputScanner(Input input, MethodMatch methodMatch) {
+    public InputScanner(Input input) {
      
         this.input = input;
-        this.methodMatch = methodMatch;
     }
     
-    protected TreeScanner<Void, Void> getScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions) {
+    public MethodMatch scan() 
+            throws Exception {
         
-        return new ClassScanner(compilationUnitTree, sourcePositions);
-    }
-    
-    protected File[] getSourceFiles() {
-        
-        return new File[]{input.getUsageFile()};
-    }
+        MethodMatch methodMatch = new MethodMatch();
 
+        try {
+            JavacTask javacTask = getJavacTask(new File[]{input.getUsageFile()});
+            SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
+            Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
+            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
+                TreeScanner<Void, Void> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
+                compilationUnitTree.accept(scanner, null);
+            }            
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e);
+        }
+        
+        return methodMatch;
+    }
+        
     private class ClassScanner extends TreeScanner<Void, Void> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
+        private final MethodMatch methodMatch;
 
-        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions) {
+        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, MethodMatch methodMatch) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
+            this.methodMatch = methodMatch;
         }
 
         @Override

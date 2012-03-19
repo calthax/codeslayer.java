@@ -23,31 +23,12 @@ import com.sun.source.tree.LineMap;
 import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
-import com.sun.source.util.TreeScanner;
-import com.sun.source.util.Trees;
 import java.io.File;
 import javax.tools.*;
 
 public abstract class AbstractScanner {
     
-    public void scan() 
-            throws Exception {
-
-        try {
-            JavacTask javacTask = getJavacTask(getSourceFiles());
-            SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
-            Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
-            
-            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                compilationUnitTree.accept(getScanner(compilationUnitTree, sourcePositions), null);
-            }            
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
-        }
-    }
-
-    private JavacTask getJavacTask(File[] files)
+    protected JavacTask getJavacTask(File[] files)
             throws Exception {
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -76,7 +57,4 @@ public abstract class AbstractScanner {
         LineMap lineMap = compilationUnitTree.getLineMap();
         return Integer.parseInt(String.valueOf(lineMap.getLineNumber(startPosition)));
     }
-    
-    protected abstract TreeScanner<Void, Void> getScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions);
-    protected abstract File[] getSourceFiles();
 }

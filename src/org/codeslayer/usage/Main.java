@@ -19,6 +19,7 @@ package org.codeslayer.usage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Main {
@@ -34,17 +35,16 @@ public class Main {
             
             Input input = getInput(modifiers);
             
-            MethodMatch methodMatch = new MethodMatch();
-            InputScanner inputScanner = new InputScanner(input, methodMatch);
-            inputScanner.scan();
+            InputScanner inputScanner = new InputScanner(input);
+            MethodMatch methodMatch = inputScanner.scan();
             
-            List<Usage> usages = new ArrayList<Usage>();
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, usages);
-            methodUsageScanner.scan();
-            
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch);
+            List<Usage> usages = methodUsageScanner.scan();
+
             for (Usage usage : usages) {
-                System.out.println("usage: " + usage);
+                System.out.println(usage);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
