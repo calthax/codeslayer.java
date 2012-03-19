@@ -18,9 +18,11 @@
 package org.codeslayer.usage;
 
 import com.sun.source.tree.*;
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MethodUsageScanner extends AbstractScanner {
@@ -71,11 +73,12 @@ public class MethodUsageScanner extends AbstractScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
 
-                Result result = new Result();
+                Results results = new Results();
+                memberSelectTree.accept(new ExpressionScanner(), results);
                 
-                memberSelectTree.accept(new ExpressionScanner(), result);
-                
-                System.out.println("count " + result.count);
+                for (Results.Result result : results.get()) {
+                    System.out.println("result " + result.getType() + ":" + result.getValue());
+                }
 
                 String packageName = getPackageName(compilationUnitTree);
                 String className = getClassName(compilationUnitTree);
@@ -91,50 +94,87 @@ public class MethodUsageScanner extends AbstractScanner {
                 usages.add(usage);
             }
          
-            return super.visitMemberSelect(memberSelectTree, arg1);
+            return arg1;
         }
     }
     
-    private class ExpressionScanner extends SimpleTreeVisitor<Result, Result> {
+    private class ExpressionScanner extends SimpleTreeVisitor<Results, Results> {
 
         @Override
-        public Result visitMemberSelect(MemberSelectTree mst, Result result) {
+        public Results visitIdentifier(IdentifierTree identifierTree, Results results) {
             
-            System.out.println("member: " + mst.getIdentifier());
+            results.add(Results.Type.IDENTIFIER, identifierTree.toString());
             
-            result.count++;
-            
-            ExpressionTree expression = mst.getExpression();
-            return expression.accept(new ExpressionScanner(), result);
+            return results;
         }
 
         @Override
-        public Result visitMethodInvocation(MethodInvocationTree methodInvocationTree, Result result) {
+        public Results visitMemberSelect(MemberSelectTree memberSelectTree, Results results) {
+            
+            results.add(Results.Type.MEMBER, memberSelectTree.getIdentifier().toString());
+            
+            ExpressionTree expression = memberSelectTree.getExpression();
+            return expression.accept(new ExpressionScanner(), results);
+        }
+
+        @Override
+        public Results visitMethodInvocation(MethodInvocationTree methodInvocationTree, Results results) {
             
             List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
             
-            for (ExpressionTree expressionTree : arguments) {
-                System.out.println("arg: " + expressionTree.toString());
+            List<ExpressionTree> args = new ArrayList<ExpressionTree>(arguments);
+            
+            Collections.reverse(args);
+
+            for (ExpressionTree arg : args) {
+                results.add(Results.Type.ARG, arg.toString());
             }
             
-            result.count++;
-
             ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();
-            return methodSelect.accept(new ExpressionScanner(), result);
-        }
-
-        @Override
-        public Result visitIdentifier(IdentifierTree identifierTree, Result result) {
-            
-            System.out.println("identifier: " + identifierTree.toString());
-            result.count++;
-            
-            return result;
+            return methodSelect.accept(new ExpressionScanner(), results);
         }
     }
     
-    private class Result {
+    private static class Results {
         
-        public int count;
+        private List<Result> results = new ArrayList<Result>();
+
+        public List<Result> get() {
+            
+            Collections.reverse(results);
+            
+            return results;
+        }
+
+        public void add(Type type, String value) {
+            
+            results.add(new Result(type, value));
+        }
+        
+        private class Result {
+            
+            private final Type type;
+            private final String value;
+
+            public Result(Type type, String value) {
+             
+                this.type = type;
+                this.value = value;
+            }
+
+            public Type getType() {
+                
+                return type;
+            }
+
+            public String getValue() {
+                
+                return value;
+            }
+        }
+        
+        private enum Type {
+            ARG, MEMBER, IDENTIFIER
+        }
     }
 }
