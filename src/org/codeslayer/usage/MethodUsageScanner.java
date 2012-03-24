@@ -18,7 +18,6 @@
 package org.codeslayer.usage;
 
 import com.sun.source.tree.*;
-import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.*;
 import java.io.File;
 import java.util.ArrayList;
@@ -70,16 +69,18 @@ public class MethodUsageScanner extends AbstractScanner {
 
         @Override
         public Void visitMemberSelect(MemberSelectTree memberSelectTree, Void arg1) {
-
+            
+            super.visitMemberSelect(memberSelectTree, arg1);
+            
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
 
                 Results results = new Results();
                 memberSelectTree.accept(new ExpressionScanner(), results);
                 
-                for (Results.Result result : results.get()) {
-                    System.out.println("result " + result.getType() + ":" + result.getValue());
-                }
-
+//                for (Results.Result result : results.get()) {
+//                    System.out.println("result " + result.getType() + ":" + result.getValue());
+//                }
+                
                 String packageName = getPackageName(compilationUnitTree);
                 String className = getClassName(compilationUnitTree);
                 
@@ -87,23 +88,57 @@ public class MethodUsageScanner extends AbstractScanner {
                 usage.setPackageName(packageName + "." + className);
                 usage.setClassName(className);
                 usage.setMethodName(methodMatch.getName());
-                usage.setExpression(memberSelectTree.getExpression().toString());
-                usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));
+                usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
                 usage.setLineNumber(getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
+                usage.setStartPosition(getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree));
+                usage.setEndPosition(getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree));
                 
                 usages.add(usage);
             }
          
             return arg1;
         }
-    }
-    
-    private class ExpressionScanner extends SimpleTreeVisitor<Results, Results> {
+        
+        @Override
+        public Void visitMethodInvocation(MethodInvocationTree methodInvocationTree, Void arg1) {
+            
+            super.visitMethodInvocation(methodInvocationTree, arg1);
+            
+            int lineNumber = getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
+            int startPosition = getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
 
+            for (Usage usage : usages) {                
+                if (lineNumber != usage.getLineNumber() || startPosition != usage.getStartPosition()) {
+                    continue;
+                }
+                
+                File file = new File(compilationUnitTree.getSourceFile().toUri().toString());
+                if (!file.equals(usage.getFile())) {
+                    continue;
+                }
+
+                addMethodArguments(usage, methodInvocationTree);
+                break;
+            }
+
+            return arg1;
+        }
+        
+        private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree) {
+            
+            List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
+            for (ExpressionTree argument : arguments) {
+                usage.addMethodArgument(argument.toString());
+            }            
+        }
+    }
+            
+    private static class ExpressionScanner extends SimpleTreeVisitor<Results, Results> {
+    
         @Override
         public Results visitIdentifier(IdentifierTree identifierTree, Results results) {
             
-            results.add(Results.Type.IDENTIFIER, identifierTree.toString());
+            results.add(Results.Result.Type.IDENTIFIER, identifierTree.toString());
             
             return results;
         }
@@ -111,7 +146,7 @@ public class MethodUsageScanner extends AbstractScanner {
         @Override
         public Results visitMemberSelect(MemberSelectTree memberSelectTree, Results results) {
             
-            results.add(Results.Type.MEMBER, memberSelectTree.getIdentifier().toString());
+            results.add(Results.Result.Type.MEMBER, memberSelectTree.getIdentifier().toString());
             
             ExpressionTree expression = memberSelectTree.getExpression();
             return expression.accept(new ExpressionScanner(), results);
@@ -127,7 +162,7 @@ public class MethodUsageScanner extends AbstractScanner {
             Collections.reverse(args);
 
             for (ExpressionTree arg : args) {
-                results.add(Results.Type.ARG, arg.toString());
+                results.add(Results.Result.Type.ARG, arg.toString());
             }
             
             ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();
@@ -137,21 +172,21 @@ public class MethodUsageScanner extends AbstractScanner {
     
     private static class Results {
         
-        private List<Result> results = new ArrayList<Result>();
+        private List<Result> parts = new ArrayList<Result>();
 
         public List<Result> get() {
             
-            Collections.reverse(results);
+            Collections.reverse(parts);
             
-            return results;
-        }
-
-        public void add(Type type, String value) {
-            
-            results.add(new Result(type, value));
+            return parts;
         }
         
-        private class Result {
+        public void add(Result.Type type, String value) {
+            
+            parts.add(new Result(type, value));
+        }
+
+        private static class Result {
             
             private final Type type;
             private final String value;
@@ -171,10 +206,10 @@ public class MethodUsageScanner extends AbstractScanner {
                 
                 return value;
             }
-        }
-        
-        private enum Type {
-            ARG, MEMBER, IDENTIFIER
+            
+            static enum Type {
+                ARG, MEMBER, IDENTIFIER
+            }
         }
     }
 }

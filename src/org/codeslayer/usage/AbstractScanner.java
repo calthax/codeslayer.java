@@ -55,6 +55,16 @@ public abstract class AbstractScanner {
 
         long startPosition = sourcePositions.getStartPosition(compilationUnitTree, tree);
         LineMap lineMap = compilationUnitTree.getLineMap();
-        return Integer.parseInt(String.valueOf(lineMap.getLineNumber(startPosition)));
+        return (int)lineMap.getLineNumber(startPosition);
+    }
+
+    protected int getStartPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+
+        return (int)sourcePositions.getStartPosition(compilationUnitTree, tree);
+    }
+    
+    protected int getEndPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+
+        return (int)sourcePositions.getEndPosition(compilationUnitTree, tree);
     }
 }

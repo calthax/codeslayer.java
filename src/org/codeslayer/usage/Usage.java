@@ -18,15 +18,19 @@
 package org.codeslayer.usage;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Usage {
     
     private String packageName;
     private String className;
     private String methodName;
-    private String expression;
+    private List<String> methodArguments = new ArrayList<String>();
     private File file;
     private int lineNumber;
+    private int startPosition;
+    private int endPosition;
 
     public String getPackageName() {
         
@@ -58,14 +62,14 @@ public class Usage {
         this.methodName = methodName;
     }
 
-    public String getExpression() {
+    public List<String> getMethodArguments() {
         
-        return expression;
+        return methodArguments;
     }
 
-    public void setExpression(String expression) {
+    public void addMethodArgument(String methodArgument) {
      
-        this.expression = expression;
+        this.methodArguments.add(methodArgument);
     }
 
     public File getFile() {
@@ -88,16 +92,43 @@ public class Usage {
         this.lineNumber = lineNumber;
     }
 
+    public int getStartPosition() {
+        
+        return startPosition;
+    }
+
+    public void setStartPosition(int startPosition) {
+     
+        this.startPosition = startPosition;
+    }
+
+    public int getEndPosition() {
+        
+        return endPosition;
+    }
+
+    public void setEndPosition(int endPosition) {
+        
+        this.endPosition = endPosition;
+    }
+
     @Override
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" packageName: ").append(packageName);
-        sb.append(" className: ").append(className);
-        sb.append(" methodName: ").append(methodName);
-        sb.append(" expression: ").append(expression);
-        sb.append(" file: ").append(file.getAbsolutePath());
-        sb.append(" lineNumber: ").append(lineNumber);
+        sb.append(" packageName: [").append(packageName).append("]");
+        sb.append(" className: [").append(className).append("]");
+        sb.append(" methodName: [").append(methodName).append("]");
+        
+        sb.append(" methodArguments: [");
+        for (String methodArgument : methodArguments) {
+            sb.append(methodArgument);
+        }
+        sb.append("]");
+        sb.append(" file: [").append(file.getAbsolutePath()).append("]");
+        sb.append(" lineNumber: [").append(lineNumber).append("]");
+        sb.append(" startPosition: [").append(startPosition).append("]");
+        sb.append(" endPosition: [").append(endPosition).append("]");
         return sb.toString();
     }   
 }
