@@ -79,11 +79,11 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 //          }
 
             String packageName = ScannerUtils.getPackageName(compilationUnitTree);
-            String className = ScannerUtils.getClassName(compilationUnitTree);
+            String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
 
             Usage usage = new Usage();
-            usage.setClassName(packageName + "." + className);
-            usage.setSimpleClassName(className);
+            usage.setClassName(packageName + "." + simpleClassName);
+            usage.setSimpleClassName(simpleClassName);
             usage.setMethodName(methodMatch.getName());
             usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
             usage.setLineNumber(ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));

@@ -102,11 +102,10 @@ public class InputScanner {
             int lineNumber = ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree);
             if (matchesLineNumber(methodTree, lineNumber)) {
                 String packageName = ScannerUtils.getPackageName(compilationUnitTree);
-                String className = ScannerUtils.getClassName(compilationUnitTree);
+                String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
 
-                methodMatch.setPackageName(packageName + "." + className);
-                methodMatch.setClassName(className);
-
+                methodMatch.setClassName(packageName + "." + simpleClassName);
+                methodMatch.setSimpleClassName(simpleClassName);
                 methodMatch.setLineNumber(lineNumber);
                 methodMatch.setName(methodTree.getName().toString());
                 methodMatch.setParameters(getParameters(methodTree, scopeTree));

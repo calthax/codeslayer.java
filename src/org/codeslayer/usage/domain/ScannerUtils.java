@@ -46,7 +46,7 @@ public class ScannerUtils {
         return expressionTree.toString();
     }
 
-    public static String getClassName(CompilationUnitTree compilationUnitTree) {
+    public static String getSimpleClassName(CompilationUnitTree compilationUnitTree) {
 
         FileObject sourceFile = compilationUnitTree.getSourceFile();
         String className = sourceFile.getName().toString();
