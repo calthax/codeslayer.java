@@ -24,12 +24,9 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
-import org.codeslayer.usage.domain.Input;
-import org.codeslayer.usage.domain.MethodMatch;
-import org.codeslayer.usage.domain.Parameter;
-import org.codeslayer.usage.domain.ScopeTree;
+import org.codeslayer.usage.domain.*;
 
-public class InputScanner extends AbstractScanner {
+public class InputScanner {
     
     private final Input input;
 
@@ -44,13 +41,13 @@ public class InputScanner extends AbstractScanner {
         MethodMatch methodMatch = new MethodMatch();
 
         try {
-            JavacTask javacTask = getJavacTask(new File[]{input.getUsageFile()});
+            JavacTask javacTask = ScannerUtils.getJavacTask(new File[]{input.getUsageFile()});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
                 ScopeTree scopeTree = new ScopeTree();
-                scopeTree.setPackageName(getPackageName(compilationUnitTree));
+                scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
                 compilationUnitTree.accept(scanner, scopeTree);
             }            
         } catch (Exception e) {
@@ -102,10 +99,10 @@ public class InputScanner extends AbstractScanner {
             
             super.visitMethod(methodTree, scopeTree);
             
-            int lineNumber = getLineNumber(compilationUnitTree, sourcePositions, methodTree);
+            int lineNumber = ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree);
             if (matchesLineNumber(methodTree, lineNumber)) {
-                String packageName = getPackageName(compilationUnitTree);
-                String className = getClassName(compilationUnitTree);
+                String packageName = ScannerUtils.getPackageName(compilationUnitTree);
+                String className = ScannerUtils.getClassName(compilationUnitTree);
 
                 methodMatch.setPackageName(packageName + "." + className);
                 methodMatch.setClassName(className);

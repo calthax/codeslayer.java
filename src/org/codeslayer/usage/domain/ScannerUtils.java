@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.scanner;
+package org.codeslayer.usage.domain;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -26,9 +26,11 @@ import com.sun.source.util.SourcePositions;
 import java.io.File;
 import javax.tools.*;
 
-public abstract class AbstractScanner {
+public class ScannerUtils {
     
-    protected JavacTask getJavacTask(File[] files)
+    private ScannerUtils() {}
+    
+    public static JavacTask getJavacTask(File[] files)
             throws Exception {
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -37,34 +39,34 @@ public abstract class AbstractScanner {
         Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(files);
         return (JavacTask) compiler.getTask(null, fileManager, diagnosticsCollector, null, null, fileObjects);
     }
-    
-    protected String getPackageName(CompilationUnitTree compilationUnitTree) {
+
+    public static String getPackageName(CompilationUnitTree compilationUnitTree) {
 
         ExpressionTree expressionTree = compilationUnitTree.getPackageName();
         return expressionTree.toString();
     }
 
-    protected String getClassName(CompilationUnitTree compilationUnitTree) {
+    public static String getClassName(CompilationUnitTree compilationUnitTree) {
 
         FileObject sourceFile = compilationUnitTree.getSourceFile();
         String className = sourceFile.getName().toString();
         return className.substring(0, className.length()-5);
     }
 
-    protected int getLineNumber(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+    public static int getLineNumber(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
 
         long startPosition = sourcePositions.getStartPosition(compilationUnitTree, tree);
         LineMap lineMap = compilationUnitTree.getLineMap();
         return (int)lineMap.getLineNumber(startPosition);
     }
 
-    protected int getStartPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+    public static int getStartPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
 
         return (int)sourcePositions.getStartPosition(compilationUnitTree, tree);
     }
     
-    protected int getEndPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+    public static int getEndPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
 
         return (int)sourcePositions.getEndPosition(compilationUnitTree, tree);
-    }
+    }    
 }
