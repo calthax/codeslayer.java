@@ -17,12 +17,48 @@
  */
 package org.codeslayer.usage.domain;
 
-public class Match {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Method {
     
+    private String name;
+    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private String returnType;
     private String className;
     private String simpleClassName;
     private int lineNumber;
 
+    public String getName() {
+        
+        return name;
+    }
+
+    public void setName(String name) {
+     
+        this.name = name;
+    }
+    
+    public List<Parameter> getParameters() {
+        
+        return parameters;
+    }
+
+    public void setParameters(List<Parameter> parameters) {
+     
+        this.parameters = parameters;
+    }
+
+    public String getReturnType() {
+        
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+     
+        this.returnType = returnType;
+    }
+    
     public String getClassName() {
         
         return className;

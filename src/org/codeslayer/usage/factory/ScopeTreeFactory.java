@@ -15,33 +15,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.usage.factory;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.sun.source.tree.CompilationUnitTree;
+import org.codeslayer.usage.domain.ScannerUtils;
+import org.codeslayer.usage.domain.ScopeTree;
 
-public class MethodMatch extends Match {
+public class ScopeTreeFactory {
     
-    private String name;
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private final CompilationUnitTree compilationUnitTree;
 
-    public String getName() {
-        
-        return name;
-    }
-
-    public void setName(String name) {
+    public ScopeTreeFactory(CompilationUnitTree compilationUnitTree) {
      
-        this.name = name;
+        this.compilationUnitTree = compilationUnitTree;
     }
     
-    public List<Parameter> getParameters() {
+    public ScopeTree createScopeTree() {
         
-        return parameters;
-    }
-
-    public void setParameters(List<Parameter> parameters) {
-     
-        this.parameters = parameters;
-    }
+        ScopeTree scopeTree = new ScopeTree();
+        scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
+        return scopeTree;
+    }  
 }

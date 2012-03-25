@@ -26,7 +26,7 @@ import com.sun.source.util.TreeScanner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.codeslayer.usage.domain.MethodMatch;
+import org.codeslayer.usage.domain.Method;
 import org.codeslayer.usage.domain.Parameter;
 import org.codeslayer.usage.domain.ScannerUtils;
 import org.codeslayer.usage.domain.ScopeTree;
@@ -36,9 +36,9 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
     private final String methodName;
-    private final List<MethodMatch> methodMatches;
+    private final List<Method> methodMatches;
 
-    public MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, String methodName, List<MethodMatch> methodMatches) {
+    public MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, String methodName, List<Method> methodMatches) {
 
         this.compilationUnitTree = compilationUnitTree;
         this.sourcePositions = sourcePositions;
@@ -74,19 +74,19 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         super.visitMethod(methodTree, scopeTree);
 
-        int lineNumber = ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree);
         if (methodName.equals(methodTree.getName().toString())) {
             String packageName = ScannerUtils.getPackageName(compilationUnitTree);
             String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
 
-            MethodMatch methodMatch = new MethodMatch();
-            methodMatch.setClassName(packageName + "." + simpleClassName);
-            methodMatch.setSimpleClassName(simpleClassName);
-            methodMatch.setLineNumber(lineNumber);
-            methodMatch.setName(methodTree.getName().toString());
-            methodMatch.setParameters(getParameters(methodTree, scopeTree));
+            Method method = new Method();
+            method.setClassName(packageName + "." + simpleClassName);
+            method.setSimpleClassName(simpleClassName);
+            method.setLineNumber(ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
+            method.setName(methodTree.getName().toString());
+            method.setParameters(getParameters(methodTree, scopeTree));
+            method.setReturnType(methodTree.getReturnType().toString());
             
-            methodMatches.add(methodMatch);
+            methodMatches.add(method);
         }
 
         return scopeTree;

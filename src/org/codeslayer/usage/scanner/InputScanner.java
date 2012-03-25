@@ -24,6 +24,7 @@ import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
 import org.codeslayer.usage.domain.*;
+import org.codeslayer.usage.factory.ScopeTreeFactory;
 
 public class InputScanner {
     
@@ -34,7 +35,7 @@ public class InputScanner {
         this.input = input;
     }
     
-    public MethodMatch scan() 
+    public Method scan() 
             throws Exception {
         
         try {
@@ -42,16 +43,17 @@ public class InputScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                List<MethodMatch> methodMatches = new ArrayList<MethodMatch>();
-                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage(), methodMatches);
+                List<Method> methods = new ArrayList<Method>();
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage(), methods);
 
-                ScopeTree scopeTree = new ScopeTree();
-                scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
+                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
+                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+
                 compilationUnitTree.accept(methodScanner, scopeTree);
                 
-                for (MethodMatch methodMatch : methodMatches) {
-                    if (methodMatch.getLineNumber() == input.getLineNumber()) {
-                        return methodMatch;
+                for (Method method : methods) {
+                    if (method.getLineNumber() == input.getLineNumber()) {
+                        return method;
                     }
                 }
             }            

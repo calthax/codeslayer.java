@@ -23,13 +23,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.codeslayer.usage.domain.*;
+import org.codeslayer.usage.factory.ScopeTreeFactory;
 
 public class MethodUsageScanner {
     
-    private final MethodMatch methodMatch;
+    private final Method methodMatch;
     private final File[] sourceFolders;
 
-    public MethodUsageScanner(MethodMatch methodMatch, File[] sourceFolders) {
+    public MethodUsageScanner(Method methodMatch, File[] sourceFolders) {
     
         this.methodMatch = methodMatch;
         this.sourceFolders = sourceFolders;
@@ -46,8 +47,8 @@ public class MethodUsageScanner {
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usages);
-                ScopeTree scopeTree = new ScopeTree();
-                scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
+                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
+                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
                 compilationUnitTree.accept(scanner, scopeTree);
             }
         } catch (Exception e) {
@@ -205,11 +206,31 @@ public class MethodUsageScanner {
                             //throw new IllegalStateException("Not able to find the class name " + variable);
                         }
                     } else { // must be a method of this class
-                        
+                        Method methodToFind = new Method(); // would create this from the symbol
+                        methodToFind.setName(symbol.getValue());
+                        System.out.println("className " + getClassMethod(methodToFind).getReturnType());
                     }
                 }
             }
 
+            return null;
+        }
+        
+        private Method getClassMethod(Method methodToFind) {
+            
+            List<Method> methods = new ArrayList<Method>();
+
+            ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
+            ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+            
+            MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, methodToFind.getName(), methods);
+            
+            compilationUnitTree.accept(methodScanner, scopeTree);
+            
+            for (Method method : methods) {
+                return method;
+            }
+            
             return null;
         }
     }

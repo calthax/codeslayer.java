@@ -18,7 +18,7 @@
 package org.codeslayer.usage;
 
 import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.domain.MethodMatch;
+import org.codeslayer.usage.domain.Method;
 import org.codeslayer.usage.domain.Input;
 import org.codeslayer.usage.scanner.InputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;
@@ -40,7 +40,7 @@ public class Main {
             Input input = getInput(modifiers);
             
             InputScanner inputScanner = new InputScanner(input);
-            MethodMatch methodMatch = inputScanner.scan();
+            Method methodMatch = inputScanner.scan();
             
             MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input.getSourceFolders());
             List<Usage> usages = methodUsageScanner.scan();
