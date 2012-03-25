@@ -33,7 +33,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     @Override
     public SymbolManager visitIdentifier(IdentifierTree identifierTree, SymbolManager symbolManager) {
 
-        symbolManager.add(SymbolType.IDENTIFIER, identifierTree.toString());
+        symbolManager.addSymbol(SymbolType.IDENTIFIER, identifierTree.toString());
 
         return symbolManager;
     }
@@ -41,7 +41,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     @Override
     public SymbolManager visitMemberSelect(MemberSelectTree memberSelectTree, SymbolManager symbolManager) {
 
-        symbolManager.add(SymbolType.MEMBER, memberSelectTree.getIdentifier().toString());
+        symbolManager.addSymbol(SymbolType.MEMBER, memberSelectTree.getIdentifier().toString());
 
         ExpressionTree expression = memberSelectTree.getExpression();
         return expression.accept(new SymbolScanner(), symbolManager);
@@ -57,7 +57,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
         Collections.reverse(args);
 
         for (ExpressionTree arg : args) {
-            symbolManager.add(SymbolType.ARG, arg.toString());
+            symbolManager.addSymbol(SymbolType.ARG, arg.toString());
         }
 
         ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();

@@ -129,29 +129,17 @@ public class InputScanner extends AbstractScanner {
                 
                 String type = variableTree.getType().toString();
                 String name = variableTree.getName().toString();
-                String packageName = getPackageNameByType(type, scopeTree);
+                String className = scopeTree.getClassName(type);
                 
                 Parameter parameter = new Parameter();
                 parameter.setType(type);
                 parameter.setName(name);
-                parameter.setPackageName(packageName);
+                parameter.setClassName(className);
 
                 results.add(parameter);
             }
             
             return results;
-        }
-        
-        private String getPackageNameByType(String type, ScopeTree scopeTree) {
-            
-            List<String> importNames = scopeTree.getImportNames();
-            for (String importName : importNames) {
-                if (importName.endsWith("." + type)) {
-                    return importName;
-                }
-            }
-            
-            return scopeTree.getPackageName() + "." + type;
         }
         
         private boolean matchesLineNumber(MethodTree methodTree, int lineNumber) {

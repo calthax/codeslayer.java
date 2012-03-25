@@ -19,18 +19,18 @@ package org.codeslayer.usage.domain;
 
 public class Parameter {
     
-    private String packageName;
+    private String className;
     private String type;
     private String name;
 
-    public String getPackageName() {
+    public String getClassName() {
         
-        return packageName;
+        return className;
     }
 
-    public void setPackageName(String packageName) {
+    public void setClassName(String className) {
         
-        this.packageName = packageName;
+        this.className = className;
     }
 
     public String getType() {

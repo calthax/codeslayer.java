@@ -43,9 +43,9 @@ public class ScopeTree {
         return variables.get(name);
     }
     
-    public void addVariable(String name, String type) {
+    public void addVariable(String name, String variable) {
         
-        variables.put(name, type);
+        variables.put(name, variable);
     }
 
     public List<String> getImportNames() {
@@ -56,5 +56,16 @@ public class ScopeTree {
     public void addImportName(String importName) {
      
         importNames.add(importName);
+    }
+    
+    public String getClassName(String variable) {
+        
+        for (String importName : importNames) {
+            if (importName.endsWith("." + variable)) {
+                return importName;
+            }
+        }
+
+        return packageName + "." + variable;
     }
 }

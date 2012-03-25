@@ -23,11 +23,7 @@ import com.sun.source.util.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.codeslayer.usage.domain.MethodMatch;
-import org.codeslayer.usage.domain.ScopeTree;
-import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.domain.Symbol;
-import org.codeslayer.usage.domain.SymbolManager;
+import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner extends AbstractScanner {
     
@@ -48,8 +44,9 @@ public class MethodUsageScanner extends AbstractScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, usages);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new MethodScanner(compilationUnitTree, sourcePositions, usages);
                 ScopeTree scopeTree = new ScopeTree();
+                scopeTree.setPackageName(getPackageName(compilationUnitTree));
                 compilationUnitTree.accept(scanner, scopeTree);
             }
         } catch (Exception e) {
@@ -60,17 +57,28 @@ public class MethodUsageScanner extends AbstractScanner {
         return usages;
     }
     
-    private class ClassScanner extends TreeScanner<ScopeTree, ScopeTree> {
+    private class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final List<Usage> usages;
 
-        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
+        private MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
             this.usages = usages;
+        }
+        
+        @Override
+        public ScopeTree visitImport(ImportTree importTree, ScopeTree scopeTree) {
+        
+            super.visitImport(importTree, scopeTree);
+            
+            String importName = importTree.getQualifiedIdentifier().toString();
+            scopeTree.addImportName(importName);
+            
+            return scopeTree;
         }
 
         @Override
@@ -146,38 +154,66 @@ public class MethodUsageScanner extends AbstractScanner {
         
         private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
             
-            List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
-            for (ExpressionTree argument : arguments) {
+            List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
+            for (ExpressionTree expressionTree : expressionTrees) {
                 
-                System.out.println("argument " + argument.getKind() + " -- " + argument);
+                System.out.println("argument " + expressionTree.getKind() + " -- " + expressionTree);
                 
-                Kind kind = argument.getKind();
-                String name = argument.toString();
+                Kind kind = expressionTree.getKind();
+                String name = expressionTree.toString();
 
                 if (kind == Tree.Kind.IDENTIFIER) { // items
-                    String type = scopeTree.getVariable(name);
-                    if (type != null) {
-                        usage.addMethodArgument(type);
+                    String variable = scopeTree.getVariable(name);
+                    if (variable != null) {
+                        usage.addMethodArgument(variable);
                     }
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
-                    MethodInvocationTree methodInvokeTree = (MethodInvocationTree) argument;
-                    
-                    SymbolManager symbolManager = new SymbolManager();
-                    
-                    methodInvokeTree.accept(new SymbolScanner(), symbolManager);
-                    
-                    for (Symbol symbol : symbolManager.get()) {
-                        System.out.println("symbol " + symbol.getType() + ":" + symbol.getValue());
+                    String methodArgument = getMethodArgument(expressionTree, scopeTree);
+                    String variable = scopeTree.getVariable(methodArgument);
+                    if (variable != null) {
+                        usage.addMethodArgument(variable);
                     }
                 } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
-                    NewClassTree newClassTree = (NewClassTree) argument;
+                    NewClassTree newClassTree = (NewClassTree) expressionTree;
                     String identifier = newClassTree.getIdentifier().toString();
-                    String type = scopeTree.getVariable(identifier);
-                    if (type != null) {
-                        usage.addMethodArgument(type);
+                    String variable = scopeTree.getVariable(identifier);
+                    if (variable != null) {
+                        usage.addMethodArgument(variable);
                     }
                 }
             }
+        }
+        
+        private String getMethodArgument(ExpressionTree expressionTree, ScopeTree scopeTree) {
+            
+            MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
+
+            SymbolManager symbolManager = new SymbolManager();
+
+            methodInvocationTree.accept(new SymbolScanner(), symbolManager);
+
+            for (Symbol symbol : symbolManager.getSymbols()) {
+                SymbolType symbolType = symbol.getType();
+                if (symbolType == SymbolType.IDENTIFIER) {
+                    String variable = scopeTree.getVariable(symbol.getValue());
+                    
+                    if (variable == null) {
+                        continue;
+                        //throw new IllegalStateException("Not able to find the variable " + symbol.getValue());
+                    }
+                    
+                    String className = scopeTree.getClassName(variable);
+                    
+                    if (className == null) {
+                        continue;
+                        //throw new IllegalStateException("Not able to find the class name " + variable);
+                    }
+                    
+                    System.out.println("className " + className);
+                }
+            }
+            
+            return null;
         }
     }
 }

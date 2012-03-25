@@ -25,15 +25,15 @@ public class SymbolManager {
     
     private List<Symbol> symbols = new ArrayList<Symbol>();
 
-    public List<Symbol> get() {
+    public List<Symbol> getSymbols() {
 
         Collections.reverse(symbols);
 
         return symbols;
     }
 
-    public void add(SymbolType type, String value) {
+    public void addSymbol(SymbolType symbolType, String value) {
 
-        symbols.add(new Symbol(type, value));
+        symbols.add(new Symbol(symbolType, value));
     }
 }
