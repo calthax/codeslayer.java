@@ -44,8 +44,10 @@ public class InputScanner extends AbstractScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<Void, Void> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
-                compilationUnitTree.accept(scanner, null);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
+                ScopeTree scopeTree = new ScopeTree();
+                scopeTree.setPackageDeclaration(getPackageName(compilationUnitTree));
+                compilationUnitTree.accept(scanner, scopeTree);
             }            
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +57,7 @@ public class InputScanner extends AbstractScanner {
         return methodMatch;
     }
         
-    private class ClassScanner extends TreeScanner<Void, Void> {
+    private class ClassScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
@@ -69,50 +71,93 @@ public class InputScanner extends AbstractScanner {
         }
 
         @Override
-        public Void visitClass(ClassTree classTree, Void arg1) {
+        public ScopeTree visitImport(ImportTree importTree, ScopeTree scopeTree) {
+        
+            super.visitImport(importTree, scopeTree);
             
-            List<? extends Tree> members = classTree.getMembers();
+            String importName = importTree.getQualifiedIdentifier().toString();
+//            System.out.println("importName " + importName);
             
-            for (Tree memberTree : members) {
-                if (!(memberTree instanceof MethodTree)) {
-                    continue;
-                }
+            scopeTree.addImportName(importName);
+            
+            return scopeTree;
+        }
 
-                MethodTree methodTree = (MethodTree)memberTree;                    
-                int lineNumber = getLineNumber(compilationUnitTree, sourcePositions, methodTree);
-                
-                if (!matchesLineNumber(methodTree, lineNumber)) {
-                    continue;
-                }
-                
+        @Override
+        public ScopeTree visitVariable(VariableTree variableTree, ScopeTree scopeTree) {
+            
+            super.visitVariable(variableTree, scopeTree);
+            
+            String variable = variableTree.getType().toString();
+            String name = variableTree.getName().toString();
+//            System.out.println("variable " + variable);
+//            System.out.println("name " + name);
+            scopeTree.addVariable(variable, name);
+            
+            return scopeTree;                    
+        }
+
+        @Override
+        public ScopeTree visitMethod(MethodTree methodTree, ScopeTree scopeTree) {
+            
+            super.visitMethod(methodTree, scopeTree);
+            
+            int lineNumber = getLineNumber(compilationUnitTree, sourcePositions, methodTree);
+            if (matchesLineNumber(methodTree, lineNumber)) {
                 String packageName = getPackageName(compilationUnitTree);
                 String className = getClassName(compilationUnitTree);
-                
+
                 methodMatch.setPackageName(packageName + "." + className);
                 methodMatch.setClassName(className);
-                
+
                 methodMatch.setLineNumber(lineNumber);
                 methodMatch.setName(methodTree.getName().toString());
-                methodMatch.setParameters(getParameters(methodTree));
+                methodMatch.setParameters(getParameters(methodTree, scopeTree));
                 methodMatch.setSourceFolders(input.getSourceFolders());
             }
-
-            return super.visitClass(classTree, arg1);
+            
+            return scopeTree;
         }
         
-        private Map<String, String> getParameters(MethodTree methodTree) {
+        private List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
             
-            Map<String, String> results = new HashMap<String, String>(); 
+            List<Parameter> results = new ArrayList<Parameter>(); 
 
             Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
             while (iterator.hasNext()) {
                 VariableTree variableTree = iterator.next();
-                results.put(variableTree.getType().toString(), variableTree.getName().toString());
+                
+                String type = variableTree.getType().toString();
+                String name = variableTree.getName().toString();
+                String packageName = getPackageNameByType(type, scopeTree);
+                
+                Parameter parameter = new Parameter();
+                parameter.setType(type);
+                parameter.setName(name);
+                parameter.setPackageName(packageName);
+                
+                if (packageName != null) {
+                    System.out.printf("packageName %s\n", packageName);
+                }
+                
+                results.add(parameter);
             }
             
             return results;
         }
-
+        
+        private String getPackageNameByType(String type, ScopeTree scopeTree) {
+            
+            List<String> importNames = scopeTree.getImportNames();
+            for (String importName : importNames) {
+                if (importName.endsWith("." + type)) {
+                    return importName;
+                }
+            }
+            
+            return scopeTree.getPackageDeclaration() + "." + type;
+        }
+        
         private boolean matchesLineNumber(MethodTree methodTree, int lineNumber) {
             
             if (input.getLineNumber() == lineNumber && 

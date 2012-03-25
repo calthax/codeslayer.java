@@ -18,30 +18,43 @@
 package org.codeslayer.usage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MethodMatch extends Match {
+public class ScopeTree {
     
-    private String name;
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private String packageDeclaration;
+    private final Map<String, String> variables = new HashMap<String, String>();
+    private final List<String> importNames = new ArrayList<String>();
 
-    public String getName() {
+    public String getPackageDeclaration() {
         
-        return name;
+        return packageDeclaration;
     }
 
-    public void setName(String name) {
+    public void setPackageDeclaration(String packageDeclaration) {
      
-        this.name = name;
+        this.packageDeclaration = packageDeclaration;
+    }
+
+    public String getVariable(String name) {
+        
+        return variables.get(name);
     }
     
-    public List<Parameter> getParameters() {
+    public void addVariable(String type, String name) {
         
-        return parameters;
+        variables.put(type, name);
     }
 
-    public void setParameters(List<Parameter> parameters) {
+    public List<String> getImportNames() {
      
-        this.parameters = parameters;
+        return importNames;
+    }
+
+    public void addImportName(String importName) {
+     
+        importNames.add(importName);
     }
 }

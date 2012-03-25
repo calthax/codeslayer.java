@@ -118,8 +118,7 @@ public class Usage {
         StringBuilder sb = new StringBuilder();
         sb.append(" packageName: [").append(packageName).append("]");
         sb.append(" className: [").append(className).append("]");
-        sb.append(" methodName: [").append(methodName).append("]");
-        
+        sb.append(" methodName: [").append(methodName).append("]");        
         sb.append(" methodArguments: [");
         for (String methodArgument : methodArguments) {
             sb.append(methodArgument);

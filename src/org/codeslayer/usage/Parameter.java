@@ -17,13 +17,31 @@
  */
 package org.codeslayer.usage;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MethodMatch extends Match {
+public class Parameter {
     
+    private String packageName;
+    private String type;
     private String name;
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+
+    public String getPackageName() {
+        
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        
+        this.packageName = packageName;
+    }
+
+    public String getType() {
+        
+        return type;
+    }
+
+    public void setType(String type) {
+     
+        this.type = type;
+    }
 
     public String getName() {
         
@@ -31,17 +49,7 @@ public class MethodMatch extends Match {
     }
 
     public void setName(String name) {
-     
-        this.name = name;
-    }
-    
-    public List<Parameter> getParameters() {
         
-        return parameters;
-    }
-
-    public void setParameters(List<Parameter> parameters) {
-     
-        this.parameters = parameters;
+        this.name = name;
     }
 }

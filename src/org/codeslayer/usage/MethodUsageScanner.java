@@ -42,9 +42,10 @@ public class MethodUsageScanner extends AbstractScanner {
             JavacTask javacTask = getJavacTask(methodMatch.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
-            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<Void, Void> scanner = new ClassScanner(compilationUnitTree, sourcePositions, usages);
-                compilationUnitTree.accept(scanner, null);
+            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {                
+                TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, usages);
+                ScopeTree scopeTree = new ScopeTree();             
+                compilationUnitTree.accept(scanner, scopeTree);
             }            
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +55,7 @@ public class MethodUsageScanner extends AbstractScanner {
         return usages;
     }
     
-    private class ClassScanner extends TreeScanner<Void, Void> {
+    private class ClassScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
@@ -68,9 +69,23 @@ public class MethodUsageScanner extends AbstractScanner {
         }
 
         @Override
-        public Void visitMemberSelect(MemberSelectTree memberSelectTree, Void arg1) {
+        public ScopeTree visitVariable(VariableTree variableTree, ScopeTree scopeTree) {
             
-            super.visitMemberSelect(memberSelectTree, arg1);
+            super.visitVariable(variableTree, scopeTree);
+            
+            String variable = variableTree.getType().toString();
+            String name = variableTree.getName().toString();
+//            System.out.println("variable " + variable);
+//            System.out.println("name " + name);
+            scopeTree.addVariable(variable, name);
+            
+            return scopeTree;                    
+        }
+        
+        @Override
+        public ScopeTree visitMemberSelect(MemberSelectTree memberSelectTree, ScopeTree scopeTree) {
+            
+            super.visitMemberSelect(memberSelectTree, scopeTree);
             
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
 
@@ -96,13 +111,13 @@ public class MethodUsageScanner extends AbstractScanner {
                 usages.add(usage);
             }
          
-            return arg1;
+            return scopeTree;
         }
         
         @Override
-        public Void visitMethodInvocation(MethodInvocationTree methodInvocationTree, Void arg1) {
+        public ScopeTree visitMethodInvocation(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
             
-            super.visitMethodInvocation(methodInvocationTree, arg1);
+            super.visitMethodInvocation(methodInvocationTree, scopeTree);
             
             int lineNumber = getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
             int startPosition = getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
@@ -121,7 +136,7 @@ public class MethodUsageScanner extends AbstractScanner {
                 break;
             }
 
-            return arg1;
+            return scopeTree;
         }
         
         private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree) {
