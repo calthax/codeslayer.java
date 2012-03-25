@@ -42,7 +42,7 @@ public class Main {
             InputScanner inputScanner = new InputScanner(input);
             MethodMatch methodMatch = inputScanner.scan();
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch);
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input.getSourceFolders());
             List<Usage> usages = methodUsageScanner.scan();
 
             for (Usage usage : usages) {

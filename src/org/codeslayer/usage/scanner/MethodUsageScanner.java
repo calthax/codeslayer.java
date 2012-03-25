@@ -27,10 +27,12 @@ import org.codeslayer.usage.domain.*;
 public class MethodUsageScanner {
     
     private final MethodMatch methodMatch;
+    private final File[] sourceFolders;
 
-    public MethodUsageScanner(MethodMatch methodMatch) {
+    public MethodUsageScanner(MethodMatch methodMatch, File[] sourceFolders) {
     
         this.methodMatch = methodMatch;
+        this.sourceFolders = sourceFolders;
     }
     
     public List<Usage> scan() 
@@ -39,7 +41,7 @@ public class MethodUsageScanner {
         List<Usage> usages = new ArrayList<Usage>();
 
         try {
-            JavacTask javacTask = ScannerUtils.getJavacTask(methodMatch.getSourceFolders());
+            JavacTask javacTask = ScannerUtils.getJavacTask(sourceFolders);
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
@@ -203,8 +205,7 @@ public class MethodUsageScanner {
                             //throw new IllegalStateException("Not able to find the class name " + variable);
                         }
                     } else { // must be a method of this class
-
-
+                        
                     }
                 }
             }

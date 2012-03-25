@@ -17,11 +17,8 @@
  */
 package org.codeslayer.usage.domain;
 
-import java.io.File;
-
 public class Match {
     
-    private File[] sourceFolders;
     private String className;
     private String simpleClassName;
     private int lineNumber;
@@ -54,15 +51,5 @@ public class Match {
     public void setLineNumber(int lineNumber) {
      
         this.lineNumber = lineNumber;
-    }
-
-    public File[] getSourceFolders() {
-        
-        return sourceFolders;
-    }
-
-    public void setSourceFolders(File[] sourceFolders) {
-     
-        this.sourceFolders = sourceFolders;
     }
 }

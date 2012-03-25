@@ -19,7 +19,6 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
-import com.sun.source.util.TreeScanner;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
@@ -38,114 +37,29 @@ public class InputScanner {
     public MethodMatch scan() 
             throws Exception {
         
-        MethodMatch methodMatch = new MethodMatch();
-
         try {
             JavacTask javacTask = ScannerUtils.getJavacTask(new File[]{input.getUsageFile()});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, methodMatch);
+                List<MethodMatch> methodMatches = new ArrayList<MethodMatch>();
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage(), methodMatches);
+
                 ScopeTree scopeTree = new ScopeTree();
                 scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
-                compilationUnitTree.accept(scanner, scopeTree);
+                compilationUnitTree.accept(methodScanner, scopeTree);
+                
+                for (MethodMatch methodMatch : methodMatches) {
+                    if (methodMatch.getLineNumber() == input.getLineNumber()) {
+                        return methodMatch;
+                    }
+                }
             }            
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
         }
         
-        return methodMatch;
-    }
-        
-    private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
-
-        private final CompilationUnitTree compilationUnitTree;
-        private final SourcePositions sourcePositions;
-        private final MethodMatch methodMatch;
-
-        private InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, MethodMatch methodMatch) {
-
-            this.compilationUnitTree = compilationUnitTree;
-            this.sourcePositions = sourcePositions;
-            this.methodMatch = methodMatch;
-        }
-
-        @Override
-        public ScopeTree visitImport(ImportTree importTree, ScopeTree scopeTree) {
-        
-            super.visitImport(importTree, scopeTree);
-            
-            String importName = importTree.getQualifiedIdentifier().toString();
-            scopeTree.addImportName(importName);
-            
-            return scopeTree;
-        }
-
-        @Override
-        public ScopeTree visitVariable(VariableTree variableTree, ScopeTree scopeTree) {
-            
-            super.visitVariable(variableTree, scopeTree);            
-            
-            String variable = variableTree.getType().toString();
-            String name = variableTree.getName().toString();
-            scopeTree.addVariable(variable, name);
-            
-            return scopeTree;                    
-        }
-
-        @Override
-        public ScopeTree visitMethod(MethodTree methodTree, ScopeTree scopeTree) {
-            
-            super.visitMethod(methodTree, scopeTree);
-            
-            int lineNumber = ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree);
-            if (matchesLineNumber(methodTree, lineNumber)) {
-                String packageName = ScannerUtils.getPackageName(compilationUnitTree);
-                String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
-
-                methodMatch.setClassName(packageName + "." + simpleClassName);
-                methodMatch.setSimpleClassName(simpleClassName);
-                methodMatch.setLineNumber(lineNumber);
-                methodMatch.setName(methodTree.getName().toString());
-                methodMatch.setParameters(getParameters(methodTree, scopeTree));
-                methodMatch.setSourceFolders(input.getSourceFolders());
-            }
-            
-            return scopeTree;
-        }
-        
-        private List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
-            
-            List<Parameter> results = new ArrayList<Parameter>(); 
-
-            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-            while (iterator.hasNext()) {
-                VariableTree variableTree = iterator.next();
-                
-                String type = variableTree.getType().toString();
-                String name = variableTree.getName().toString();
-                String className = scopeTree.getClassName(type);
-                
-                Parameter parameter = new Parameter();
-                parameter.setType(type);
-                parameter.setName(name);
-                parameter.setClassName(className);
-
-                results.add(parameter);
-            }
-            
-            return results;
-        }
-        
-        private boolean matchesLineNumber(MethodTree methodTree, int lineNumber) {
-            
-            if (input.getLineNumber() == lineNumber && 
-                    input.getMethodUsage().equals(methodTree.getName().toString())) {
-                return true;
-            }
-            
-            return false;
-        }
+        return null;
     }
 }

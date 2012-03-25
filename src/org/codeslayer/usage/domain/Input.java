@@ -70,7 +70,7 @@ public class Input {
     public File[] getSourceFolders() {
         
         return sourceFolders;
-    }
+}
 
     public void setSourceFolders(File[] sourceFolders) {
 
