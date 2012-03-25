@@ -45,7 +45,7 @@ public class InputScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, methodMatch);
                 ScopeTree scopeTree = new ScopeTree();
                 scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -58,13 +58,13 @@ public class InputScanner {
         return methodMatch;
     }
         
-    private class ClassScanner extends TreeScanner<ScopeTree, ScopeTree> {
+    private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final MethodMatch methodMatch;
 
-        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, MethodMatch methodMatch) {
+        private InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, MethodMatch methodMatch) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;

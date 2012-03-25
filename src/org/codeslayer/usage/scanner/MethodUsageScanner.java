@@ -43,7 +43,7 @@ public class MethodUsageScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalMethodScanner(compilationUnitTree, sourcePositions, usages);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usages);
                 ScopeTree scopeTree = new ScopeTree();
                 scopeTree.setPackageName(ScannerUtils.getPackageName(compilationUnitTree));
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -56,13 +56,13 @@ public class MethodUsageScanner {
         return usages;
     }
     
-    private class InternalMethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
+    private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final List<Usage> usages;
 
-        public InternalMethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
