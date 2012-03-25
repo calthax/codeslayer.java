@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
@@ -24,6 +24,10 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
+import org.codeslayer.usage.domain.Input;
+import org.codeslayer.usage.domain.MethodMatch;
+import org.codeslayer.usage.domain.Parameter;
+import org.codeslayer.usage.domain.ScopeTree;
 
 public class InputScanner extends AbstractScanner {
     
@@ -46,7 +50,7 @@ public class InputScanner extends AbstractScanner {
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, methodMatch);
                 ScopeTree scopeTree = new ScopeTree();
-                scopeTree.setPackageDeclaration(getPackageName(compilationUnitTree));
+                scopeTree.setPackageName(getPackageName(compilationUnitTree));
                 compilationUnitTree.accept(scanner, scopeTree);
             }            
         } catch (Exception e) {
@@ -76,8 +80,6 @@ public class InputScanner extends AbstractScanner {
             super.visitImport(importTree, scopeTree);
             
             String importName = importTree.getQualifiedIdentifier().toString();
-//            System.out.println("importName " + importName);
-            
             scopeTree.addImportName(importName);
             
             return scopeTree;
@@ -86,12 +88,10 @@ public class InputScanner extends AbstractScanner {
         @Override
         public ScopeTree visitVariable(VariableTree variableTree, ScopeTree scopeTree) {
             
-            super.visitVariable(variableTree, scopeTree);
+            super.visitVariable(variableTree, scopeTree);            
             
             String variable = variableTree.getType().toString();
             String name = variableTree.getName().toString();
-//            System.out.println("variable " + variable);
-//            System.out.println("name " + name);
             scopeTree.addVariable(variable, name);
             
             return scopeTree;                    
@@ -135,11 +135,7 @@ public class InputScanner extends AbstractScanner {
                 parameter.setType(type);
                 parameter.setName(name);
                 parameter.setPackageName(packageName);
-                
-                if (packageName != null) {
-                    System.out.printf("packageName %s\n", packageName);
-                }
-                
+
                 results.add(parameter);
             }
             
@@ -155,7 +151,7 @@ public class InputScanner extends AbstractScanner {
                 }
             }
             
-            return scopeTree.getPackageDeclaration() + "." + type;
+            return scopeTree.getPackageName() + "." + type;
         }
         
         private boolean matchesLineNumber(MethodTree methodTree, int lineNumber) {

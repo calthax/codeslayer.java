@@ -15,16 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.domain;
 
-import java.io.File;
-
-public class Match {
+public class Parameter {
     
-    private File[] sourceFolders;
     private String packageName;
-    private String className;
-    private int lineNumber;
+    private String type;
+    private String name;
 
     public String getPackageName() {
         
@@ -32,37 +29,27 @@ public class Match {
     }
 
     public void setPackageName(String packageName) {
-     
+        
         this.packageName = packageName;
     }
 
-    public String getClassName() {
+    public String getType() {
         
-        return className;
+        return type;
     }
 
-    public void setClassName(String className) {
+    public void setType(String type) {
      
-        this.className = className;
+        this.type = type;
     }
 
-    public int getLineNumber() {
+    public String getName() {
         
-        return lineNumber;
+        return name;
     }
 
-    public void setLineNumber(int lineNumber) {
-     
-        this.lineNumber = lineNumber;
-    }
-
-    public File[] getSourceFolders() {
+    public void setName(String name) {
         
-        return sourceFolders;
-    }
-
-    public void setSourceFolders(File[] sourceFolders) {
-     
-        this.sourceFolders = sourceFolders;
+        this.name = name;
     }
 }

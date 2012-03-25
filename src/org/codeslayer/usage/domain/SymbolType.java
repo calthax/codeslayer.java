@@ -15,41 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.domain;
 
-public class Parameter {
+public enum SymbolType {
     
-    private String packageName;
-    private String type;
-    private String name;
-
-    public String getPackageName() {
-        
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-        
-        this.packageName = packageName;
-    }
-
-    public String getType() {
-        
-        return type;
-    }
-
-    public void setType(String type) {
-     
-        this.type = type;
-    }
-
-    public String getName() {
-        
-        return name;
-    }
-
-    public void setName(String name) {
-        
-        this.name = name;
-    }
+    ARG, MEMBER, IDENTIFIER
 }

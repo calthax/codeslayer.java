@@ -15,33 +15,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class MethodMatch extends Match {
+public class SymbolManager {
     
-    private String name;
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Symbol> symbols = new ArrayList<Symbol>();
 
-    public String getName() {
-        
-        return name;
+    public List<Symbol> get() {
+
+        Collections.reverse(symbols);
+
+        return symbols;
     }
 
-    public void setName(String name) {
-     
-        this.name = name;
-    }
-    
-    public List<Parameter> getParameters() {
-        
-        return parameters;
-    }
+    public void add(SymbolType type, String value) {
 
-    public void setParameters(List<Parameter> parameters) {
-     
-        this.parameters = parameters;
+        symbols.add(new Symbol(type, value));
     }
 }

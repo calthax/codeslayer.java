@@ -15,14 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
+import com.sun.source.tree.Tree.Kind;
 import com.sun.source.util.*;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import org.codeslayer.usage.domain.MethodMatch;
+import org.codeslayer.usage.domain.ScopeTree;
+import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.domain.Symbol;
+import org.codeslayer.usage.domain.SymbolManager;
 
 public class MethodUsageScanner extends AbstractScanner {
     
@@ -42,11 +47,11 @@ public class MethodUsageScanner extends AbstractScanner {
             JavacTask javacTask = getJavacTask(methodMatch.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
-            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {                
+            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 TreeScanner<ScopeTree, ScopeTree> scanner = new ClassScanner(compilationUnitTree, sourcePositions, usages);
-                ScopeTree scopeTree = new ScopeTree();             
+                ScopeTree scopeTree = new ScopeTree();
                 compilationUnitTree.accept(scanner, scopeTree);
-            }            
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
@@ -73,11 +78,11 @@ public class MethodUsageScanner extends AbstractScanner {
             
             super.visitVariable(variableTree, scopeTree);
             
-            String variable = variableTree.getType().toString();
+            String type = variableTree.getType().toString();
             String name = variableTree.getName().toString();
-//            System.out.println("variable " + variable);
+//            System.out.println("type " + type);
 //            System.out.println("name " + name);
-            scopeTree.addVariable(variable, name);
+            scopeTree.addVariable(name, type);
             
             return scopeTree;                    
         }
@@ -89,8 +94,8 @@ public class MethodUsageScanner extends AbstractScanner {
             
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
 
-                Results results = new Results();
-                memberSelectTree.accept(new ExpressionScanner(), results);
+                SymbolManager symbolManager = new SymbolManager();
+                memberSelectTree.accept(new SymbolScanner(), symbolManager);
                 
 //                for (Results.Result result : results.get()) {
 //                    System.out.println("result " + result.getType() + ":" + result.getValue());
@@ -100,8 +105,8 @@ public class MethodUsageScanner extends AbstractScanner {
                 String className = getClassName(compilationUnitTree);
                 
                 Usage usage = new Usage();
-                usage.setPackageName(packageName + "." + className);
-                usage.setClassName(className);
+                usage.setClassName(packageName + "." + className);
+                usage.setSimpleClassName(className);
                 usage.setMethodName(methodMatch.getName());
                 usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
                 usage.setLineNumber(getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
@@ -132,98 +137,46 @@ public class MethodUsageScanner extends AbstractScanner {
                     continue;
                 }
 
-                addMethodArguments(usage, methodInvocationTree);
+                addMethodArguments(usage, methodInvocationTree, scopeTree);
                 break;
             }
 
             return scopeTree;
         }
         
-        private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree) {
+        private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
             
             List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
             for (ExpressionTree argument : arguments) {
-                usage.addMethodArgument(argument.toString());
-            }            
-        }
-    }
-            
-    private static class ExpressionScanner extends SimpleTreeVisitor<Results, Results> {
-    
-        @Override
-        public Results visitIdentifier(IdentifierTree identifierTree, Results results) {
-            
-            results.add(Results.Result.Type.IDENTIFIER, identifierTree.toString());
-            
-            return results;
-        }
-
-        @Override
-        public Results visitMemberSelect(MemberSelectTree memberSelectTree, Results results) {
-            
-            results.add(Results.Result.Type.MEMBER, memberSelectTree.getIdentifier().toString());
-            
-            ExpressionTree expression = memberSelectTree.getExpression();
-            return expression.accept(new ExpressionScanner(), results);
-        }
-
-        @Override
-        public Results visitMethodInvocation(MethodInvocationTree methodInvocationTree, Results results) {
-            
-            List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
-            
-            List<ExpressionTree> args = new ArrayList<ExpressionTree>(arguments);
-            
-            Collections.reverse(args);
-
-            for (ExpressionTree arg : args) {
-                results.add(Results.Result.Type.ARG, arg.toString());
-            }
-            
-            ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();
-            return methodSelect.accept(new ExpressionScanner(), results);
-        }
-    }
-    
-    private static class Results {
-        
-        private List<Result> parts = new ArrayList<Result>();
-
-        public List<Result> get() {
-            
-            Collections.reverse(parts);
-            
-            return parts;
-        }
-        
-        public void add(Result.Type type, String value) {
-            
-            parts.add(new Result(type, value));
-        }
-
-        private static class Result {
-            
-            private final Type type;
-            private final String value;
-
-            public Result(Type type, String value) {
-             
-                this.type = type;
-                this.value = value;
-            }
-
-            public Type getType() {
                 
-                return type;
-            }
-
-            public String getValue() {
+                System.out.println("argument " + argument.getKind() + " -- " + argument);
                 
-                return value;
-            }
-            
-            static enum Type {
-                ARG, MEMBER, IDENTIFIER
+                Kind kind = argument.getKind();
+                String name = argument.toString();
+
+                if (kind == Tree.Kind.IDENTIFIER) { // items
+                    String type = scopeTree.getVariable(name);
+                    if (type != null) {
+                        usage.addMethodArgument(type);
+                    }
+                } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
+                    MethodInvocationTree methodInvokeTree = (MethodInvocationTree) argument;
+                    
+                    SymbolManager symbolManager = new SymbolManager();
+                    
+                    methodInvokeTree.accept(new SymbolScanner(), symbolManager);
+                    
+                    for (Symbol symbol : symbolManager.get()) {
+                        System.out.println("symbol " + symbol.getType() + ":" + symbol.getValue());
+                    }
+                } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
+                    NewClassTree newClassTree = (NewClassTree) argument;
+                    String identifier = newClassTree.getIdentifier().toString();
+                    String type = scopeTree.getVariable(identifier);
+                    if (type != null) {
+                        usage.addMethodArgument(type);
+                    }
+                }
             }
         }
     }

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.domain;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,24 +23,14 @@ import java.util.List;
 
 public class Usage {
     
-    private String packageName;
     private String className;
+    private String simpleClassName;
     private String methodName;
     private List<String> methodArguments = new ArrayList<String>();
     private File file;
     private int lineNumber;
     private int startPosition;
     private int endPosition;
-
-    public String getPackageName() {
-        
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-     
-        this.packageName = packageName;
-    }
 
     public String getClassName() {
         
@@ -50,6 +40,16 @@ public class Usage {
     public void setClassName(String className) {
      
         this.className = className;
+    }
+
+    public String getSimpleClassName() {
+        
+        return simpleClassName;
+    }
+
+    public void setSimpleClassName(String simpleClassName) {
+     
+        this.simpleClassName = simpleClassName;
     }
 
     public String getMethodName() {
@@ -116,8 +116,8 @@ public class Usage {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" packageName: [").append(packageName).append("]");
-        sb.append(" className: [").append(className).append("]");
+        sb.append(" packageName: [").append(className).append("]");
+        sb.append(" className: [").append(simpleClassName).append("]");
         sb.append(" methodName: [").append(methodName).append("]");        
         sb.append(" methodArguments: [");
         for (String methodArgument : methodArguments) {

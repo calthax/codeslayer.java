@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.usage.domain;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,18 +24,18 @@ import java.util.Map;
 
 public class ScopeTree {
     
-    private String packageDeclaration;
+    private String packageName;
     private final Map<String, String> variables = new HashMap<String, String>();
     private final List<String> importNames = new ArrayList<String>();
 
-    public String getPackageDeclaration() {
+    public String getPackageName() {
         
-        return packageDeclaration;
+        return packageName;
     }
 
-    public void setPackageDeclaration(String packageDeclaration) {
+    public void setPackageName(String packageName) {
      
-        this.packageDeclaration = packageDeclaration;
+        this.packageName = packageName;
     }
 
     public String getVariable(String name) {
@@ -43,9 +43,9 @@ public class ScopeTree {
         return variables.get(name);
     }
     
-    public void addVariable(String type, String name) {
+    public void addVariable(String name, String type) {
         
-        variables.put(type, name);
+        variables.put(name, type);
     }
 
     public List<String> getImportNames() {

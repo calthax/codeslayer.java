@@ -17,6 +17,11 @@
  */
 package org.codeslayer.usage;
 
+import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.domain.MethodMatch;
+import org.codeslayer.usage.domain.Input;
+import org.codeslayer.usage.scanner.InputScanner;
+import org.codeslayer.usage.scanner.MethodUsageScanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
