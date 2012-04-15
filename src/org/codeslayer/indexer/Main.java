@@ -25,7 +25,8 @@ public class Main {
     public static void main(String[] args) {
         
         try {
-            Modifiers modifiers = new Modifiers(args);
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-type", "projects"};
+            Modifiers modifiers = new Modifiers(dummy);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
             IndexFactory indexFactory = new IndexFactory(modifiers.getIndexesFolder());

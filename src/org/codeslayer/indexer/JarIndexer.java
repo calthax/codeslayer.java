@@ -97,8 +97,8 @@ public class JarIndexer implements Indexer {
             
             Index index = new Index();
 
-            index.setPackageName(packageName + "." + className);
-            index.setClassName(className);
+            index.setClassName(packageName + "." + className);
+            index.setSimpleClassName(className);
 
             index.setMethodName(method.getName());
             index.setMethodModifier(getModifier(method));

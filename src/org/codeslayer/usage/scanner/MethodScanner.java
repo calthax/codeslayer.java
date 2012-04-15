@@ -26,10 +26,10 @@ import com.sun.source.util.TreeScanner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.codeslayer.usage.domain.Method;
-import org.codeslayer.usage.domain.Parameter;
-import org.codeslayer.usage.domain.ScannerUtils;
-import org.codeslayer.usage.domain.ScopeTree;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.Parameter;
+import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.ScopeTree;
 
 public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     
@@ -62,9 +62,9 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         super.visitVariable(variableTree, scopeTree);            
 
-        String variable = variableTree.getType().toString();
-        String name = variableTree.getName().toString();
-        scopeTree.addVariable(variable, name);
+        String type = variableTree.getType().toString();
+        String variable = variableTree.getName().toString();
+        scopeTree.addSimpleType(variable, type);
 
         return scopeTree;                    
     }
@@ -75,13 +75,10 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
         super.visitMethod(methodTree, scopeTree);
 
         if (methodName.equals(methodTree.getName().toString())) {
-            String packageName = ScannerUtils.getPackageName(compilationUnitTree);
-            String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
-
             Method method = new Method();
-            method.setClassName(packageName + "." + simpleClassName);
-            method.setSimpleClassName(simpleClassName);
-            method.setLineNumber(ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
+            method.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            method.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+            method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
             method.setName(methodTree.getName().toString());
             method.setParameters(getParameters(methodTree, scopeTree));
             method.setReturnType(methodTree.getReturnType().toString());
@@ -100,14 +97,18 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
         while (iterator.hasNext()) {
             VariableTree variableTree = iterator.next();
 
-            String type = variableTree.getType().toString();
-            String name = variableTree.getName().toString();
-            String className = scopeTree.getClassName(type);
+            String simpleType = variableTree.getType().toString();
+            String variable = variableTree.getName().toString();
 
             Parameter parameter = new Parameter();
-            parameter.setType(type);
-            parameter.setName(name);
-            parameter.setClassName(className);
+            parameter.setVariable(variable);
+            
+            if (SourceUtils.isPrimative(simpleType)) {
+                parameter.setPrimative(simpleType);
+            } else {
+                parameter.setSimpleClassName(simpleType);
+                parameter.setClassName(SourceUtils.getClassName(scopeTree, simpleType));
+            }
 
             results.add(parameter);
         }

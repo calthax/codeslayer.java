@@ -15,29 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.indexer.domain;
+package org.codeslayer.source;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class IndexClass {
+public class Parameter {
     
-    private String className;
     private String simpleClassName;
-    private String filePath;
-    private String superClass;
-    private List<String> imports;
-    private List<IndexMethod> methods = new ArrayList<IndexMethod>();
-
-    public String getClassName() {
-        
-        return className;
-    }
-
-    public void setClassName(String className) {
-     
-        this.className = className;
-    }
+    private String className;
+    private String primative;
+    private String variable;
 
     public String getSimpleClassName() {
         
@@ -49,43 +34,51 @@ public class IndexClass {
         this.simpleClassName = simpleClassName;
     }
 
-    public String getFilePath() {
+    public String getClassName() {
         
-        return filePath;
+        return className;
     }
 
-    public void setFilePath(String filePath) {
+    public void setClassName(String className) {
      
-        this.filePath = filePath;
+        this.className = className;
     }
 
-    public List<IndexMethod> getMethods() {
+    public String getPrimative() {
         
-        return methods;
+        return primative;
     }
 
-    public void addMethod(IndexMethod method) {
+    public void setPrimative(String primative) {
      
-        this.methods.add(method);
+        this.primative = primative;
     }
 
-    public List<String> getImports() {
+    public String getVariable() {
         
-        return imports;
+        return variable;
     }
 
-    public void setImports(List<String> imports) {
-     
-        this.imports = imports;
-    }
-
-    public String getSuperClass() {
+    public void setVariable(String variable) {
         
-        return superClass;
+        this.variable = variable;
     }
-
-    public void setSuperClass(String superClass) {
-     
-        this.superClass = superClass;
+    
+    public String getSimpleType() {
+        
+        if (primative != null) {
+            return primative;
+        }
+        
+        return simpleClassName;
+    }
+    
+    public String getType() {
+        
+        if (primative != null) {
+            return primative;
+        }
+        
+        return className;
     }
 }

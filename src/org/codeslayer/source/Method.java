@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.source;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import java.util.List;
 public class Method {
     
     private String name;
+    private String modifier;
     private List<Parameter> parameters = new ArrayList<Parameter>();
     private String returnType;
     private String className;
@@ -37,6 +38,16 @@ public class Method {
     public void setName(String name) {
      
         this.name = name;
+    }
+
+    public String getModifier() {
+        
+        return modifier;
+    }
+
+    public void setModifier(String modifier) {
+     
+        this.modifier = modifier;
     }
     
     public List<Parameter> getParameters() {

@@ -17,8 +17,6 @@
  */
 package org.codeslayer.indexer;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,34 +56,6 @@ public class IndexerUtils {
         return results;
     }
     
-    public static String getImportClassName(List<String> importNames, String packageName, String simpleClassName) {
-        
-        // check to see if this is a primative
-        if (Character.isLowerCase(simpleClassName.toCharArray()[0])) {
-            return simpleClassName;
-        }
-        
-        if (simpleClassName.equals("String")) {
-            return "java.lang.String";
-        } else if (simpleClassName.equals("Object")) {
-            return "java.lang.Object";
-        }
-        
-        for (String importName : importNames) {
-            if (importName.endsWith("." + simpleClassName)) {
-                return importName;
-            }
-        }
-
-        return packageName + "." + simpleClassName;
-    }
-    
-    public static String getPackageName(CompilationUnitTree compilationUnitTree) {
-
-        ExpressionTree expressionTree = compilationUnitTree.getPackageName();
-        return expressionTree.toString();
-    }
-
     public static boolean includePackage(List<String> suppressions, String packageName) {
         
         for (String suppression : suppressions) {

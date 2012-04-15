@@ -15,41 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.source;
 
-public class Parameter {
+import com.sun.source.tree.CompilationUnitTree;
+
+public class ScopeTreeFactory {
     
-    private String className;
-    private String type;
-    private String name;
+    private final CompilationUnitTree compilationUnitTree;
 
-    public String getClassName() {
-        
-        return className;
-    }
-
-    public void setClassName(String className) {
-        
-        this.className = className;
-    }
-
-    public String getType() {
-        
-        return type;
-    }
-
-    public void setType(String type) {
+    public ScopeTreeFactory(CompilationUnitTree compilationUnitTree) {
      
-        this.type = type;
+        this.compilationUnitTree = compilationUnitTree;
     }
-
-    public String getName() {
+    
+    public ScopeTree createScopeTree() {
         
-        return name;
-    }
-
-    public void setName(String name) {
-        
-        this.name = name;
-    }
+        ScopeTree scopeTree = new ScopeTree();
+        scopeTree.setPackageName(SourceUtils.getPackageName(compilationUnitTree));
+        return scopeTree;
+    }  
 }

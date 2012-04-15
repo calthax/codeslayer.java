@@ -44,14 +44,14 @@ public class ClassesFile {
         
         for (Index index : filter(indexes)) {
             
-            String className = index.getClassName();
-            if (className == null || className.length() == 0) {
+            String simpleClassName = index.getSimpleClassName();
+            if (simpleClassName == null || simpleClassName.length() == 0) {
                 continue;
             }
 
-            sb.append(className);
+            sb.append(simpleClassName);
             sb.append("\t");
-            sb.append(index.getPackageName());
+            sb.append(index.getClassName());
             
             String filePath = index.getFilePath();
             if (filePath != null) {
@@ -76,20 +76,20 @@ public class ClassesFile {
         
         List<Index> results = new ArrayList<Index>();
         
-        String lastPackageName = "";
+        String lastClassName = "";
         
         for (Index index : indexes) {
-            String packageName = index.getPackageName();
-            if (packageName.equals(lastPackageName)) {
+            String className = index.getClassName();
+            if (className.equals(lastClassName)) {
                 continue;
             }
-            lastPackageName = packageName;
+            lastClassName = className;
             results.add(index);
         }
         
         Collections.sort(results, new Comparator<Index>() {
             public int compare(Index index1, Index index2) {
-                return index1.getClassName().compareTo(index2.getClassName());
+                return index1.getSimpleClassName().compareTo(index2.getSimpleClassName());
             }
         });
         

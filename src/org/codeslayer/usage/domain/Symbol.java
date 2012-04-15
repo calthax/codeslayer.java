@@ -19,18 +19,18 @@ package org.codeslayer.usage.domain;
 
 public class Symbol {
 
-    private final SymbolType type;
+    private final SymbolType symbolType;
     private final String value;
 
-    public Symbol(SymbolType type, String value) {
+    public Symbol(SymbolType symbolType, String value) {
 
-        this.type = type;
+        this.symbolType = symbolType;
         this.value = value;
     }
 
-    public SymbolType getType() {
+    public SymbolType getSymbolType() {
 
-        return type;
+        return symbolType;
     }
 
     public String getValue() {
@@ -42,7 +42,7 @@ public class Symbol {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" type: [").append(type).append("]");
+        sb.append(" symbolType: [").append(symbolType).append("]");
         sb.append(" value: [").append(value).append("]");
         return sb.toString();
     }   

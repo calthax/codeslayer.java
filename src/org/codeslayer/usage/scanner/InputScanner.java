@@ -17,6 +17,9 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.source.ScopeTree;
+import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.Method;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
@@ -24,7 +27,7 @@ import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
 import org.codeslayer.usage.domain.*;
-import org.codeslayer.usage.factory.ScopeTreeFactory;
+import org.codeslayer.source.ScopeTreeFactory;
 
 public class InputScanner {
     
@@ -39,7 +42,7 @@ public class InputScanner {
             throws Exception {
         
         try {
-            JavacTask javacTask = ScannerUtils.getJavacTask(new File[]{input.getUsageFile()});
+            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{input.getUsageFile()});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {

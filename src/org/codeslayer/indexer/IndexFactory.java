@@ -18,14 +18,12 @@
 package org.codeslayer.indexer;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.codeslayer.indexer.domain.IndexClass;
-import org.codeslayer.indexer.domain.IndexMethod;
+import org.codeslayer.source.Klass;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.Parameter;
 
 public class IndexFactory {
     
@@ -39,48 +37,98 @@ public class IndexFactory {
         this.indexesFolder = indexesFolder;
     }
     
-    public List<Index> createIndexes(List<IndexClass> indexClasses) {
+    public List<Index> createIndexes(List<Klass> indexClasses) {
         
         List<Index> indexes = new ArrayList<Index>();
         
-        Map<String, IndexClass> projectsLookup = getProjectsLookup(indexClasses);
+        Map<String, Klass> projectsLookup = getProjectsLookup(indexClasses);
         Map<String, String> libsLookup = getLibsLookup();
         
-        for (IndexClass indexClass : projectsLookup.values()) {
-            String packageName = indexClass.getClassName();
-            String className = indexClass.getSimpleClassName();
+        for (Klass indexClass : projectsLookup.values()) {
+            String className = indexClass.getClassName();
+            String simpleClassName = indexClass.getSimpleClassName();
             
-            createIndexesForClass(projectsLookup, libsLookup, indexes, indexClass, packageName, className);
+            createIndexesForClass(projectsLookup, libsLookup, indexes, indexClass, className, simpleClassName);
         }
         
         return indexes;
     } 
 
-    private void createIndexesForClass(Map<String, IndexClass> projectsLookup, Map<String, String> libsLookup, 
-                                       List<Index> indexes, IndexClass indexClass, String packageName, String className) {
+    private void createIndexesForClass(Map<String, Klass> projectsLookup, Map<String, String> libsLookup, 
+                                       List<Index> indexes, Klass klass, String className, String simpleClassName) {
         
-        IndexClass superClass = getSuperClassIndex(projectsLookup, libsLookup, indexClass);
+        Klass superClass = getSuperClassIndex(projectsLookup, libsLookup, klass);
         if (superClass != null) {
-            createIndexesForClass(projectsLookup, libsLookup, indexes, superClass, packageName, className);
+            createIndexesForClass(projectsLookup, libsLookup, indexes, superClass, className, simpleClassName);
         }
         
-        for (IndexMethod indexMethod : indexClass.getMethods()) {
+        for (Method method : klass.getMethods()) {
             Index index = new Index();
-            index.setPackageName(packageName);
             index.setClassName(className);
-            index.setMethodModifier(indexMethod.getModifier());
-            index.setMethodName(indexMethod.getName());
-            index.setMethodParameters(indexMethod.getParameters());
-            index.setMethodParametersVariables(indexMethod.getParametersVariables());
-            index.setMethodParametersTypes(indexMethod.getParametersTypes());
-            index.setMethodReturnType(indexMethod.getReturnType());
-            index.setFilePath(indexClass.getFilePath());
-            index.setLineNumber(indexMethod.getLineNumber());                
+            index.setSimpleClassName(simpleClassName);
+            index.setMethodModifier(method.getModifier());
+            index.setMethodName(method.getName());
+            index.setMethodParameters( getMethodParameters(method));
+            index.setMethodParametersVariables(getMethodParametersVariables(method));
+            index.setMethodParametersTypes(getMethodParametersTypes(method));
+            index.setMethodReturnType(method.getReturnType());
+            index.setFilePath(klass.getFilePath());
+            index.setLineNumber(String.valueOf(method.getLineNumber()));
             indexes.add(index);
         }
     }
     
-    private IndexClass getSuperClassIndex(Map<String, IndexClass> projectsLookup, Map<String, String> libsLookup, IndexClass indexClass) {
+    private String getMethodParameters(Method method) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        Iterator<Parameter> iterator = method.getParameters().iterator();
+        while (iterator.hasNext()) {
+            Parameter parameter = iterator.next();
+            String simpleType = parameter.getSimpleType();
+            sb.append(simpleType).append(" ").append(parameter.getVariable());
+            if (iterator.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    private String getMethodParametersVariables(Method method) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        Iterator<Parameter> iterator = method.getParameters().iterator();
+        while (iterator.hasNext()) {
+            Parameter parameter = iterator.next();
+            sb.append(parameter.getVariable());
+            if (iterator.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    
+    private String getMethodParametersTypes(Method method) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        Iterator<Parameter> iterator = method.getParameters().iterator();
+        while (iterator.hasNext()) {
+            Parameter parameter = iterator.next();
+            sb.append(parameter.getType());
+            if (iterator.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    private Klass getSuperClassIndex(Map<String, Klass> projectsLookup, Map<String, String> libsLookup, Klass indexClass) {
         
         String superClass = indexClass.getSuperClass();
         
@@ -95,29 +143,29 @@ public class IndexFactory {
                 continue;
             }
             
-            String packageName = matcher.group(1);
+            String className = matcher.group(1);
             
-            if (!packageName.endsWith("." + superClass)) {
+            if (!className.endsWith("." + superClass)) {
                 continue;
             }
             
-            IndexClass project = projectsLookup.get(packageName);
+            Klass project = projectsLookup.get(className);
             if (project != null) {
                 return project;
             }
             
-            String lib = libsLookup.get(packageName);
+            String lib = libsLookup.get(className);
             if (lib != null) {
-                return getLibIndexClass(packageName);
+                return getLibIndexClass(className);
             }
         }
         
         return null;
     }
     
-    private IndexClass getLibIndexClass(String packageName) {
+    private Klass getLibIndexClass(String packageName) {
 
-        IndexClass indexClass = null;
+        Klass klass = null;
 
         try{
             File file = new File(indexesFolder, "libs.indexes");
@@ -133,22 +181,24 @@ public class IndexFactory {
                 if (strLine.startsWith(packageName)) {
                     String[] split = strLine.split("\\t");
 
-                    if (indexClass == null) {
-                        indexClass = new IndexClass();
-                        indexClass.setClassName(split[0]);
-                        indexClass.setSimpleClassName(split[1]);
+                    if (klass == null) {
+                        klass = new Klass();
+                        klass.setClassName(split[0]);
+                        klass.setSimpleClassName(split[1]);
                     }
                     
-                    IndexMethod indexMethod = new IndexMethod();
-                    indexMethod.setModifier(split[2]);
-                    indexMethod.setName(split[3]);
-                    indexMethod.setParameters(split[4]);
-                    indexMethod.setParametersVariables(split[5]);
-                    indexMethod.setParametersTypes(split[6]);
-                    indexMethod.setReturnType(split[7]);
+                    Method method = new Method();
+                    method.setModifier(split[2]);
+                    method.setName(split[3]);
                     
-                    indexClass.addMethod(indexMethod);
-                } else if (indexClass != null) {
+//                    method.setParameters(split[4]);
+//                    method.setParametersVariables(split[5]);
+//                    method.setParametersTypes(split[6]);
+                    
+                    method.setReturnType(split[7]);
+                    
+                    klass.addMethod(method);
+                } else if (klass != null) {
                     break;
                 }
             }
@@ -158,14 +208,14 @@ public class IndexFactory {
             System.err.println("not able to load the libs.indexes file.");
         }
 
-        return indexClass;
+        return klass;
     }
     
-    private Map<String, IndexClass> getProjectsLookup(List<IndexClass> indexClasses) {
+    private Map<String, Klass> getProjectsLookup(List<Klass> indexClasses) {
         
-        Map<String, IndexClass> results = new HashMap<String, IndexClass>();
+        Map<String, Klass> results = new HashMap<String, Klass>();
 
-        for (IndexClass indexClass : indexClasses) {
+        for (Klass indexClass : indexClasses) {
             results.put(indexClass.getClassName(), indexClass);
         }        
         

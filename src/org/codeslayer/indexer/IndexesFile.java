@@ -40,9 +40,9 @@ public class IndexesFile {
         StringBuilder sb = new StringBuilder();
         
         for (Index index : indexes) {
-            sb.append(index.getPackageName());
-            sb.append("\t");
             sb.append(index.getClassName());
+            sb.append("\t");
+            sb.append(index.getSimpleClassName());
             sb.append("\t");
             sb.append(index.getMethodModifier());
             sb.append("\t");

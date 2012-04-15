@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.source;
 
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
@@ -26,9 +26,9 @@ import com.sun.source.util.SourcePositions;
 import java.io.File;
 import javax.tools.*;
 
-public class ScannerUtils {
+public class SourceUtils {
     
-    private ScannerUtils() {}
+    private SourceUtils() {}
     
     public static JavacTask getJavacTask(File[] files)
             throws Exception {
@@ -44,6 +44,11 @@ public class ScannerUtils {
 
         ExpressionTree expressionTree = compilationUnitTree.getPackageName();
         return expressionTree.toString();
+    }
+
+    public static String getClassName(CompilationUnitTree compilationUnitTree) {
+
+        return getPackageName(compilationUnitTree) + "." + getSimpleClassName(compilationUnitTree);
     }
 
     public static String getSimpleClassName(CompilationUnitTree compilationUnitTree) {
@@ -68,5 +73,34 @@ public class ScannerUtils {
     public static int getEndPosition(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
 
         return (int)sourcePositions.getEndPosition(compilationUnitTree, tree);
-    }    
+    }
+    
+    public static boolean isPrimative(String simpleType) {
+        
+        if (simpleType == null || simpleType.length() == 0) {
+            return false;
+        }
+        
+        return Character.isLowerCase(simpleType.toCharArray()[0]);
+    }
+    
+    /*
+     * This is flawed in that it will only find a class if it is in the imports.
+     */
+    public static String getClassName(ScopeTree scopeTree, String simpleType) {
+        
+        if (simpleType.equals("String")) {
+            return "java.lang.String";
+        } else if (simpleType.equals("Object")) {
+            return "java.lang.Object";
+        }
+        
+        for (String importName : scopeTree.getImportNames()) {
+            if (importName.endsWith("." + simpleType)) {
+                return importName;
+            }
+        }
+
+        return scopeTree.getPackageName() + "." + simpleType;
+    }
 }

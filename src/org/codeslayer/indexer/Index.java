@@ -19,8 +19,8 @@ package org.codeslayer.indexer;
 
 public class Index {
 
-    private String packageName;
     private String className;
+    private String simpleClassName;
     private String methodName;
     private String methodModifier;
     private String methodParameters;
@@ -30,16 +30,6 @@ public class Index {
     private String filePath;
     private String lineNumber;
 
-    public String getPackageName() {
-
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-
-        this.packageName = packageName;
-    }
-
     public String getClassName() {
 
         return className;
@@ -48,6 +38,16 @@ public class Index {
     public void setClassName(String className) {
 
         this.className = className;
+    }
+
+    public String getSimpleClassName() {
+
+        return simpleClassName;
+    }
+
+    public void setSimpleClassName(String simpleClassName) {
+
+        this.simpleClassName = simpleClassName;
     }
 
     public String getMethodName() {

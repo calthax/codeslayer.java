@@ -19,23 +19,17 @@ package org.codeslayer.indexer;
 
 import com.sun.source.tree.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import com.sun.source.util.TreeScanner;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
 import javax.tools.FileObject;
-import org.codeslayer.indexer.domain.IndexClass;
-import org.codeslayer.indexer.domain.IndexMethod;
+import org.codeslayer.source.*;
+import org.codeslayer.source.ScopeTreeFactory;
 
 public class SourceIndexer implements Indexer {
     
@@ -53,15 +47,17 @@ public class SourceIndexer implements Indexer {
     public List<Index> createIndexes() 
             throws Exception {
 
-        List<IndexClass> indexClasses = new ArrayList<IndexClass>();
+        List<Klass> indexClasses = new ArrayList<Klass>();
         
         try {
-            JavacTask javacTask = getJavacTask(files);
+            JavacTask javacTask = SourceUtils.getJavacTask(files);
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                compilationUnitTree.accept(new ClassScanner(compilationUnitTree, sourcePositions, indexClasses), null);
+                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
+                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+                compilationUnitTree.accept(new ClassScanner(compilationUnitTree, sourcePositions, indexClasses), scopeTree);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,82 +67,67 @@ public class SourceIndexer implements Indexer {
         return indexFactory.createIndexes(indexClasses);
     }
 
-    private JavacTask getJavacTask(File[] files)
-            throws Exception {
-
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnosticsCollector = new DiagnosticCollector<JavaFileObject>();
-        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnosticsCollector, null, null);
-        Iterable<? extends JavaFileObject> fileObjects = fileManager.getJavaFileObjects(files);
-        return (JavacTask) compiler.getTask(null, fileManager, diagnosticsCollector, null, null, fileObjects);
-    }
-
-    private class ClassScanner extends TreeScanner<Void, Void> {
+    private class ClassScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
-        private final LineMap lineMap;
-        private final List<IndexClass> indexClasses;
-        private final String packageName;
-        private final List<String> importNames = new ArrayList<String>();
+        private final List<Klass> indexClasses;
+        private final String className;
+        private final String simpleClassName;
 
-        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<IndexClass> indexClasses) {
+        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Klass> indexClasses) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
-            this.lineMap = compilationUnitTree.getLineMap();
-            this.packageName = IndexerUtils.getPackageName(compilationUnitTree);
             this.indexClasses = indexClasses;
+            className = SourceUtils.getClassName(compilationUnitTree);
+            simpleClassName = SourceUtils.getSimpleClassName(compilationUnitTree);
         }
 
         @Override
-        public Void visitImport(ImportTree importTree, Void arg1) {
+        public ScopeTree visitImport(ImportTree importTree, ScopeTree scopeTree) {
 
             String importName = importTree.getQualifiedIdentifier().toString();
-            importNames.add(importName);
-            
-            return super.visitImport(importTree, arg1);
+            scopeTree.addImportName(importName);
+            return super.visitImport(importTree, scopeTree);
         }
         
         @Override
-        public Void visitClass(ClassTree classTree, Void arg1) {
+        public ScopeTree visitClass(ClassTree classTree, ScopeTree scopeTree) {
             
             List<? extends Tree> members = classTree.getMembers();
             
-            String packageName = getPackageName();
+            String packageName = SourceUtils.getPackageName(compilationUnitTree);
 
             if (!IndexerUtils.includePackage(suppressions, packageName)) {
-                return super.visitClass(classTree, arg1);
+                return super.visitClass(classTree, scopeTree);
             }
             
-            IndexClass indexClass = new IndexClass();
-            String className = getClassName();
-            indexClass.setImports(getImports());
-            indexClass.setSimpleClassName(className);
-            indexClass.setClassName(packageName + "." + className);
-            indexClass.setFilePath(getFilePath());
-            indexClass.setSuperClass(getSuperClass(classTree));
+            Klass klass = new Klass();
+            klass.setImports(getImports());
+            klass.setSimpleClassName(simpleClassName);
+            klass.setClassName(className);
+            klass.setFilePath(getFilePath());
+            klass.setSuperClass(getSuperClass(classTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
                     MethodTree methodTree = (MethodTree)memberTree;
 
-                    IndexMethod indexMethod = new IndexMethod();
-                    indexMethod.setName(methodTree.getName().toString());
-                    indexMethod.setModifier(getModifier(methodTree));
-                    indexMethod.setParameters(getParameters(methodTree));
-                    indexMethod.setParametersVariables(getParametersVariables(methodTree));
-                    indexMethod.setParametersTypes(getParametersTypes(methodTree));
-                    indexMethod.setReturnType(getReturnType(methodTree));
-                    indexMethod.setLineNumber(getLineNumber(methodTree));
+                    Method method = new Method();
+                    method.setName(methodTree.getName().toString());
+                    method.setModifier(getModifier(methodTree));
+                    method.setParameters(getParameters(methodTree, scopeTree));
+                    method.setReturnType(getReturnType(methodTree));
+                    method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
 
-                    indexClass.addMethod(indexMethod);
+                    klass.addMethod(method);
                 }
             }
             
-            indexClasses.add(indexClass);
+            indexClasses.add(klass);
 
-            return super.visitClass(classTree, arg1);
+            return super.visitClass(classTree, scopeTree);
         }
 
         private List<String> getImports() {
@@ -160,19 +141,6 @@ public class SourceIndexer implements Indexer {
             return results;
         }
 
-        private String getPackageName() {
-
-            ExpressionTree expressionTree = compilationUnitTree.getPackageName();
-            return expressionTree.toString();
-        }
-
-        private String getClassName() {
-
-            FileObject sourceFile = compilationUnitTree.getSourceFile();
-            String className = sourceFile.getName().toString();
-            return className.substring(0, className.length()-5);
-        }
-        
         private String getSuperClass(ClassTree classTree) {
             
             Tree tree = classTree.getExtendsClause();
@@ -194,67 +162,24 @@ public class SourceIndexer implements Indexer {
             return "package";
         }
 
-        private String getParameters(MethodTree methodTree) {
+        private List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
 
-            StringBuilder sb = new StringBuilder();
+            List<Parameter> parameters = new ArrayList<Parameter>();
             
-            sb.append("(");
-
-            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-            while (iterator.hasNext()) {
-                VariableTree variableTree = iterator.next();
-                sb.append(variableTree.getType().toString()).append(" ");
-                sb.append(variableTree.getName().toString());
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
+            for (VariableTree variableTree : methodTree.getParameters()) {
+                Parameter parameter = new Parameter();
+                String simpleType = variableTree.getType().toString();
+                if (SourceUtils.isPrimative(simpleType)) {
+                    parameter.setPrimative(simpleType);
+                } else {
+                    parameter.setSimpleClassName(simpleType);
+                    parameter.setClassName(SourceUtils.getClassName(scopeTree, simpleType));
+                }                
+                parameter.setVariable(variableTree.getName().toString());
+                parameters.add(parameter);
             }
 
-            sb.append(")");
-
-            return sb.toString();
-        }
-
-        private String getParametersVariables(MethodTree methodTree) {
-
-            StringBuilder sb = new StringBuilder();
-            
-            sb.append("(");
-
-            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-            while (iterator.hasNext()) {
-                VariableTree variableTree = iterator.next();
-                sb.append(variableTree.getName().toString());
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
-            }
-
-            sb.append(")");
-
-            return sb.toString();
-        }
-
-        private String getParametersTypes(MethodTree methodTree) {
-
-            StringBuilder sb = new StringBuilder();
-            
-            sb.append("(");
-
-            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-            while (iterator.hasNext()) {
-                VariableTree variableTree = iterator.next();
-                String variable = variableTree.getType().toString();
-                String className = IndexerUtils.getImportClassName(importNames, packageName, variable);
-                sb.append(className);
-                if (iterator.hasNext()) {
-                    sb.append(", ");
-                }
-            }
-
-            sb.append(")");
-
-            return sb.toString();
+            return parameters;
         }
 
         private String getReturnType(MethodTree methodTree) {
@@ -271,12 +196,6 @@ public class SourceIndexer implements Indexer {
             
             FileObject sourceFile = compilationUnitTree.getSourceFile();
             return sourceFile.toUri().getPath();
-        }
-
-        private String getLineNumber(MethodTree methodTree) {
-
-            long startPosition = sourcePositions.getStartPosition(compilationUnitTree, methodTree);
-            return String.valueOf(lineMap.getLineNumber(startPosition));
         }
     }
 }

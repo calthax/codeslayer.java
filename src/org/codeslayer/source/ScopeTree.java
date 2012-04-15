@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class ScopeTree {
     
     private String packageName;
-    private final Map<String, String> variables = new HashMap<String, String>();
+    private final Map<String, String> simpleTypes = new HashMap<String, String>();
     private final List<String> importNames = new ArrayList<String>();
 
     public String getPackageName() {
@@ -38,14 +38,14 @@ public class ScopeTree {
         this.packageName = packageName;
     }
 
-    public String getVariable(String name) {
+    public String getSimpleType(String variable) {
         
-        return variables.get(name);
+        return simpleTypes.get(variable);
     }
     
-    public void addVariable(String name, String variable) {
+    public void addSimpleType(String variable, String simpleType) {
         
-        variables.put(name, variable);
+        simpleTypes.put(variable, simpleType);
     }
 
     public List<String> getImportNames() {
@@ -56,27 +56,5 @@ public class ScopeTree {
     public void addImportName(String importName) {
      
         importNames.add(importName);
-    }
-    
-    public String getClassName(String variable) {
-        
-        // check to see if this is a primative
-        if (Character.isLowerCase(variable.toCharArray()[0])) {
-            return variable;
-        }
-        
-        if (variable.equals("String")) {
-            return "java.lang.String";
-        } else if (variable.equals("Object")) {
-            return "java.lang.Object";
-        }
-        
-        for (String importName : importNames) {
-            if (importName.endsWith("." + variable)) {
-                return importName;
-            }
-        }
-
-        return packageName + "." + variable;
     }
 }

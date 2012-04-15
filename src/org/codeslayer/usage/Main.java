@@ -18,7 +18,7 @@
 package org.codeslayer.usage;
 
 import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.domain.Method;
+import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.Input;
 import org.codeslayer.usage.scanner.InputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;

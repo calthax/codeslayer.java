@@ -17,16 +17,18 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.source.ScopeTree;
+import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.Parameter;
 import com.sun.source.tree.*;
 import com.sun.source.util.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.codeslayer.indexer.domain.IndexClass;
-import org.codeslayer.indexer.domain.IndexMethod;
+import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.*;
-import org.codeslayer.usage.factory.ScopeTreeFactory;
+import org.codeslayer.source.ScopeTreeFactory;
 
 public class MethodUsageScanner {
     
@@ -45,7 +47,7 @@ public class MethodUsageScanner {
         List<Usage> usages = new ArrayList<Usage>();
 
         try {
-            JavacTask javacTask = ScannerUtils.getJavacTask(input.getSourceFolders());
+            JavacTask javacTask = SourceUtils.getJavacTask(input.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
@@ -95,7 +97,7 @@ public class MethodUsageScanner {
             String name = variableTree.getName().toString();
     //      System.out.println("type " + type);
     //      System.out.println("name " + name);
-            scopeTree.addVariable(name, type);
+            scopeTree.addSimpleType(name, type);
 
             return scopeTree;                    
         }
@@ -119,17 +121,17 @@ public class MethodUsageScanner {
     //              System.out.println("result " + result.getType() + ":" + result.getValue());
     //          }
 
-                String packageName = ScannerUtils.getPackageName(compilationUnitTree);
-                String simpleClassName = ScannerUtils.getSimpleClassName(compilationUnitTree);
+                String packageName = SourceUtils.getPackageName(compilationUnitTree);
+                String simpleClassName = SourceUtils.getSimpleClassName(compilationUnitTree);
 
                 Usage usage = new Usage();
                 usage.setClassName(packageName + "." + simpleClassName);
                 usage.setSimpleClassName(simpleClassName);
                 usage.setMethodName(methodMatch.getName());
                 usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
-                usage.setLineNumber(ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
-                usage.setStartPosition(ScannerUtils.getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree));
-                usage.setEndPosition(ScannerUtils.getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree));
+                usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
+                usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree));
+                usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree));
 
                 usages.add(usage);
             }
@@ -145,8 +147,8 @@ public class MethodUsageScanner {
 
             super.visitMethodInvocation(methodInvocationTree, scopeTree);
 
-            int lineNumber = ScannerUtils.getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
-            int startPosition = ScannerUtils.getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
+            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
+            int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
 
             for (Usage usage : usages) {                
                 if (lineNumber != usage.getLineNumber() || startPosition != usage.getStartPosition()) {
@@ -176,14 +178,14 @@ public class MethodUsageScanner {
                 String name = expressionTree.toString();
 
                 if (kind == Tree.Kind.IDENTIFIER) { // items
-                    String variable = scopeTree.getVariable(name);
-                    if (variable != null) {
-                        usage.addMethodArgument(variable);
+                    String simpleType = scopeTree.getSimpleType(name);
+                    if (simpleType != null) {
+                        usage.addMethodType(simpleType);
                     }
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                     String methodArgument = getMethodArgument(expressionTree, scopeTree);
                     System.out.println("methodArgument " + methodArgument);
-                    usage.addMethodArgument(methodArgument);
+                    usage.addMethodType(methodArgument);
                     
 //                    String variable = scopeTree.getVariable(methodArgument);
 //                    if (variable != null) {
@@ -191,12 +193,12 @@ public class MethodUsageScanner {
 //                    }
                 } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
                     NewClassTree newClassTree = (NewClassTree) expressionTree;
-                    String identifier = newClassTree.getIdentifier().toString();
-                    System.out.println("class identifier " + identifier);
-                    String variable = scopeTree.getClassName(identifier);
-                    if (variable != null) {
-                        System.out.println("class variable " + variable);
-                        usage.addMethodArgument(variable);
+                    String simpleType = newClassTree.getIdentifier().toString();
+                    System.out.println("class identifier " + simpleType);
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
+                    if (className != null) {
+                        System.out.println("class variable " + className);
+                        usage.addMethodType(className);
                     }
                 }
             }
@@ -216,19 +218,19 @@ public class MethodUsageScanner {
             }
 
             for (Symbol symbol : symbolManager.getSymbols()) {
-                SymbolType symbolType = symbol.getType();
+                SymbolType symbolType = symbol.getSymbolType();
                 if (symbolType == SymbolType.IDENTIFIER) {
-                    String variable = scopeTree.getVariable(symbol.getValue());
+                    String variable = scopeTree.getSimpleType(symbol.getValue());
                     if (variable != null) {
                         Iterator<Symbol> iterator = symbolManager.getSymbols().iterator();
                         Method method = getMethod(iterator, scopeTree);
-                        IndexClass indexClass = getIndexClass(method.getClassName());
-                        for (IndexMethod indexMethod : indexClass.getMethods()) {
-                            System.out.println(">> " + indexMethod.getName() + " : " + indexMethod.getParametersVariables());
-                            if (indexMethod.getName().equals(method.getName())) { // still need to compare the method parameters
-                                return indexMethod.getReturnType();
-                            }
-                        }
+//                        Klass indexClass = getIndexClass(method.getClassName());
+//                        for (IndexMethod indexMethod : indexClass.getMethods()) {
+//                            System.out.println(">> " + indexMethod.getName() + " : " + indexMethod.getParametersVariables());
+//                            if (indexMethod.getName().equals(method.getName())) { // still need to compare the method parameters
+//                                return indexMethod.getReturnType();
+//                            }
+//                        }
                     } else { // must be a method of this class
                         Method methodToFind = new Method(); // would create this from the symbol
                         methodToFind.setName(symbol.getValue());
@@ -248,10 +250,10 @@ public class MethodUsageScanner {
             
             while(iterator.hasNext()) {
                 Symbol symbol = iterator.next();
-                switch (symbol.getType()) {
+                switch (symbol.getSymbolType()) {
                     case IDENTIFIER:
-                        String variable = scopeTree.getVariable(symbol.getValue());
-                        String className = scopeTree.getClassName(variable);
+                        String simpleType = scopeTree.getSimpleType(symbol.getValue());
+                        String className = SourceUtils.getClassName(scopeTree, simpleType);
                         method.setClassName(className);
                         break;
                     case MEMBER:
@@ -259,7 +261,7 @@ public class MethodUsageScanner {
                         break;
                     case ARG:
                         Parameter parameter = new Parameter();
-                        parameter.setName(symbol.getValue());
+                        parameter.setVariable(symbol.getValue());
                         method.addParameter(parameter);
                         break;
                     default:
@@ -286,51 +288,6 @@ public class MethodUsageScanner {
             }
             
             return null;
-        }
-        
-        private IndexClass getIndexClass(String className) {
-
-            IndexClass indexClass = null;
-
-            try{
-                FileInputStream fstream = new FileInputStream(input.getIndexesFile());
-                DataInputStream in = new DataInputStream(fstream);
-                BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                String strLine;
-                while ((strLine = br.readLine()) != null) {
-                    if (strLine == null || strLine.trim().length() == 0) {
-                        continue;
-                    }
-
-                    if (strLine.startsWith(className)) {
-                        String[] split = strLine.split("\\t");
-
-                        if (indexClass == null) {
-                            indexClass = new IndexClass();
-                            indexClass.setClassName(split[0]);
-                            indexClass.setSimpleClassName(split[1]);
-                        }
-
-                        IndexMethod indexMethod = new IndexMethod();
-                        indexMethod.setModifier(split[2]);
-                        indexMethod.setName(split[3]);
-                        indexMethod.setParameters(split[4]);
-                        indexMethod.setParametersVariables(split[5]);
-                        indexMethod.setParametersTypes(split[6]);
-                        indexMethod.setReturnType(split[7]);
-
-                        indexClass.addMethod(indexMethod);
-                    } else if (indexClass != null) {
-                        break;
-                    }
-                }
-                in.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("not able to load the libs.indexes file.");
-            }
-
-            return indexClass;
         }
     }
 }
