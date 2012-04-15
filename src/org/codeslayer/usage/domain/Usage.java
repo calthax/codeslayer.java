@@ -26,7 +26,7 @@ public class Usage {
     private String className;
     private String simpleClassName;
     private String methodName;
-    private List<String> methodTypes = new ArrayList<String>();
+    private List<String> methodParameterTypes = new ArrayList<String>();
     private File file;
     private int lineNumber;
     private int startPosition;
@@ -62,14 +62,14 @@ public class Usage {
         this.methodName = methodName;
     }
 
-    public List<String> getMethodTypes() {
+    public List<String> getMethodParameterTypes() {
         
-        return methodTypes;
+        return methodParameterTypes;
     }
 
-    public void addMethodType(String methodType) {
+    public void addMethodParameterType(String methodParameterType) {
      
-        this.methodTypes.add(methodType);
+        this.methodParameterTypes.add(methodParameterType);
     }
 
     public File getFile() {
@@ -119,8 +119,8 @@ public class Usage {
         sb.append(" packageName: [").append(className).append("]");
         sb.append(" className: [").append(simpleClassName).append("]");
         sb.append(" methodName: [").append(methodName).append("]");        
-        sb.append(" methodArguments: [");
-        for (String methodArgument : methodTypes) {
+        sb.append(" methodParameterTypes: [");
+        for (String methodArgument : methodParameterTypes) {
             sb.append(methodArgument);
         }
         sb.append("]");

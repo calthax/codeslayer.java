@@ -156,67 +156,20 @@ public class IndexFactory {
             
             String lib = libsLookup.get(className);
             if (lib != null) {
-                return getLibIndexClass(className);
+                File file = new File(indexesFolder, "libs.indexes");
+                return IndexerUtils.getIndexKlass(file, className);
             }
         }
         
         return null;
     }
     
-    private Klass getLibIndexClass(String packageName) {
-
-        Klass klass = null;
-
-        try{
-            File file = new File(indexesFolder, "libs.indexes");
-            FileInputStream fstream = new FileInputStream(file);
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                if (strLine == null || strLine.trim().length() == 0) {
-                    continue;
-                }
-                
-                if (strLine.startsWith(packageName)) {
-                    String[] split = strLine.split("\\t");
-
-                    if (klass == null) {
-                        klass = new Klass();
-                        klass.setClassName(split[0]);
-                        klass.setSimpleClassName(split[1]);
-                    }
-                    
-                    Method method = new Method();
-                    method.setModifier(split[2]);
-                    method.setName(split[3]);
-                    
-//                    method.setParameters(split[4]);
-//                    method.setParametersVariables(split[5]);
-//                    method.setParametersTypes(split[6]);
-                    
-                    method.setReturnType(split[7]);
-                    
-                    klass.addMethod(method);
-                } else if (klass != null) {
-                    break;
-                }
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("not able to load the libs.indexes file.");
-        }
-
-        return klass;
-    }
-    
-    private Map<String, Klass> getProjectsLookup(List<Klass> indexClasses) {
+    private Map<String, Klass> getProjectsLookup(List<Klass> klasses) {
         
         Map<String, Klass> results = new HashMap<String, Klass>();
 
-        for (Klass indexClass : indexClasses) {
-            results.put(indexClass.getClassName(), indexClass);
+        for (Klass klass : klasses) {
+            results.put(klass.getClassName(), klass);
         }        
         
         return results;
@@ -238,9 +191,9 @@ public class IndexFactory {
                 }
                 
                 String[] split = strLine.split("\\t");
-                String className = split[0];
-                String packageName = split[1];
-                results.put(packageName, className);
+                String simpleClassName = split[0];
+                String className = split[1];
+                results.put(className, simpleClassName);
             }
             in.close();
         } catch (Exception e) {

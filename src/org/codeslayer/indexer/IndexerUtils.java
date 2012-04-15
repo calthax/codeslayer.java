@@ -24,6 +24,10 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.codeslayer.source.Klass;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.Parameter;
+import org.codeslayer.source.SourceUtils;
 
 public class IndexerUtils {
 
@@ -192,5 +196,85 @@ public class IndexerUtils {
             }
         }        
         file.delete();
+    }
+    
+    public static Klass getIndexKlass(File file, String className) {
+
+        Klass klass = null;
+
+        try{
+            FileInputStream fstream = new FileInputStream(file);
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                if (strLine == null || strLine.trim().length() == 0) {
+                    continue;
+                }
+                
+                if (strLine.startsWith(className)) {
+                    String[] split = strLine.split("\\t");
+
+                    if (klass == null) {
+                        klass = new Klass();
+                        klass.setClassName(split[0]);
+                        klass.setSimpleClassName(split[1]);
+                    }
+                    
+                    Method method = new Method();
+                    method.setModifier(split[2]);
+                    method.setName(split[3]);
+                    method.setParameters(getParameters(split));
+                    
+//                    method.setParameters(split[4]);
+//                    method.setParametersVariables(split[5]);
+//                    method.setParametersTypes(split[6]);
+                    
+                    method.setReturnType(split[7]);
+                    
+                    klass.addMethod(method);
+                } else if (klass != null) {
+                    break;
+                }
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("not able to load the libs.indexes file.");
+        }
+
+        return klass;
+    }
+    
+    private static List<Parameter> getParameters(String[] split) {
+        
+        List<Parameter> results = new ArrayList<Parameter>();
+        
+        if (split[4] == null || split[4].length() == 0) {
+            return results;
+        }
+        
+        String[] parameters = split[4].split(",");
+        String[] parametersTypes = split[6].split(",");
+        
+        for (int i = 0; i < parameters.length; i++) {
+            Parameter result = new Parameter();
+            
+            String parameter = parameters[i];
+            String[] args = parameter.split("\\s");
+            String simpleType = args[0];
+            String variable = args[1];
+            
+            result.setVariable(variable);
+            
+            if (SourceUtils.isPrimative(simpleType)) {
+                result.setPrimative(simpleType);
+            } else {
+                result.setSimpleClassName(simpleType);
+                result.setClassName(parametersTypes[i]);
+            }
+        }
+        
+        return results;
     }
 }

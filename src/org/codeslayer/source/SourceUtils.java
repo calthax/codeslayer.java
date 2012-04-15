@@ -58,6 +58,11 @@ public class SourceUtils {
         return className.substring(0, className.length()-5);
     }
 
+    public static File getSourceFile(CompilationUnitTree compilationUnitTree) {
+
+        return new File(compilationUnitTree.getSourceFile().toUri().toString());
+    }
+
     public static int getLineNumber(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
 
         long startPosition = sourcePositions.getStartPosition(compilationUnitTree, tree);

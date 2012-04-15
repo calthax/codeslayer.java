@@ -120,8 +120,6 @@ public class JarIndexer implements Indexer {
         
         StringBuilder sb = new StringBuilder();
         
-        sb.append("(");
-        
         Class<?>[] parameters = method.getParameterTypes();
         int length = parameters.length;
         
@@ -134,16 +132,12 @@ public class JarIndexer implements Indexer {
             }
         }
 
-        sb.append(")");
-
         return sb.toString();
     }
     
     private String getParametersTypes(Method method) {
         
         StringBuilder sb = new StringBuilder();
-        
-        sb.append("(");
         
         Class<?>[] parameters = method.getParameterTypes();
         int length = parameters.length;
@@ -156,8 +150,6 @@ public class JarIndexer implements Indexer {
                 sb.append(", ");
             }
         }
-
-        sb.append(")");
 
         return sb.toString();
     }

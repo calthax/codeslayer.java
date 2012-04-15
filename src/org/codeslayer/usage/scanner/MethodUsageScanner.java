@@ -26,6 +26,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.codeslayer.indexer.IndexerUtils;
+import org.codeslayer.source.Klass;
 import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.*;
 import org.codeslayer.source.ScopeTreeFactory;
@@ -68,6 +70,7 @@ public class MethodUsageScanner {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
+        private final File sourceFile;
         private final List<Usage> usages;
 
         public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
@@ -75,6 +78,7 @@ public class MethodUsageScanner {
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
             this.usages = usages;
+            this.sourceFile = SourceUtils.getSourceFile(compilationUnitTree);
         }
 
         @Override
@@ -93,19 +97,17 @@ public class MethodUsageScanner {
 
             super.visitVariable(variableTree, scopeTree);
 
-            String type = variableTree.getType().toString();
-            String name = variableTree.getName().toString();
-    //      System.out.println("type " + type);
-    //      System.out.println("name " + name);
-            scopeTree.addSimpleType(name, type);
+            String simpleType = variableTree.getType().toString();
+            String variable = variableTree.getName().toString();
+            scopeTree.addSimpleType(variable, simpleType);
 
             return scopeTree;                    
         }
 
         /**
-         * Find all occurrences of method that we are trying to find. This will most of the method information
-         * that we are interested in. However we will still need to go through the visitMethodInvocation() method
-         * to find the method parameters.
+         * Find all occurrences of the method that we are trying to find. This will get most of the information
+         * that we are interested in. However we will still need to go through the visitMethodInvocation() to 
+         * find the method parameters.
          */
         @Override
         public ScopeTree visitMemberSelect(MemberSelectTree memberSelectTree, ScopeTree scopeTree) {
@@ -117,16 +119,9 @@ public class MethodUsageScanner {
                 SymbolManager symbolManager = new SymbolManager();
                 memberSelectTree.accept(new SymbolScanner(), symbolManager);
 
-    //          for (Results.Result result : results.get()) {
-    //              System.out.println("result " + result.getType() + ":" + result.getValue());
-    //          }
-
-                String packageName = SourceUtils.getPackageName(compilationUnitTree);
-                String simpleClassName = SourceUtils.getSimpleClassName(compilationUnitTree);
-
                 Usage usage = new Usage();
-                usage.setClassName(packageName + "." + simpleClassName);
-                usage.setSimpleClassName(simpleClassName);
+                usage.setClassName( SourceUtils.getClassName(compilationUnitTree));
+                usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
                 usage.setMethodName(methodMatch.getName());
                 usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
                 usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
@@ -140,7 +135,7 @@ public class MethodUsageScanner {
         }
 
         /**
-         * At this point we have the method usages figured out, but we still need the method parameters.
+         * At this point we have the method usages figured out, but now we need the method parameters.
          */
         @Override
         public ScopeTree visitMethodInvocation(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
@@ -150,29 +145,28 @@ public class MethodUsageScanner {
             int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
             int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
 
-            for (Usage usage : usages) {                
+            for (Usage usage : usages) {
                 if (lineNumber != usage.getLineNumber() || startPosition != usage.getStartPosition()) {
                     continue;
                 }
 
-                File file = new File(compilationUnitTree.getSourceFile().toUri().toString());
-                if (!file.equals(usage.getFile())) {
+                if (!sourceFile.equals(usage.getFile())) {
                     continue;
                 }
                 
-                addMethodArguments(usage, methodInvocationTree, scopeTree);
+                addMethodParameters(usage, methodInvocationTree, scopeTree);
                 break;
             }
 
             return scopeTree;
         }
 
-        private void addMethodArguments(Usage usage, MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
+        private void addMethodParameters(Usage usage, MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
 
             List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
             for (ExpressionTree expressionTree : expressionTrees) {
 
-                System.out.println("argument " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
+                System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
 
                 Tree.Kind kind = expressionTree.getKind();
                 String name = expressionTree.toString();
@@ -180,12 +174,16 @@ public class MethodUsageScanner {
                 if (kind == Tree.Kind.IDENTIFIER) { // items
                     String simpleType = scopeTree.getSimpleType(name);
                     if (simpleType != null) {
-                        usage.addMethodType(simpleType);
+                        usage.addMethodParameterType(simpleType);
                     }
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
-                    String methodArgument = getMethodArgument(expressionTree, scopeTree);
-                    System.out.println("methodArgument " + methodArgument);
-                    usage.addMethodType(methodArgument);
+                    String simpleType = getParameterType(expressionTree, scopeTree);
+                    if (simpleType != null) {
+                        usage.addMethodParameterType(simpleType);
+                    }
+                    
+                    System.out.println("methodArgument " + simpleType);
+                    usage.addMethodParameterType(simpleType);
                     
 //                    String variable = scopeTree.getVariable(methodArgument);
 //                    if (variable != null) {
@@ -198,13 +196,13 @@ public class MethodUsageScanner {
                     String className = SourceUtils.getClassName(scopeTree, simpleType);
                     if (className != null) {
                         System.out.println("class variable " + className);
-                        usage.addMethodType(className);
+                        usage.addMethodParameterType(className);
                     }
                 }
             }
         }
 
-        private String getMethodArgument(ExpressionTree expressionTree, ScopeTree scopeTree) {
+        private String getParameterType(ExpressionTree expressionTree, ScopeTree scopeTree) {
 
             MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
             SymbolManager symbolManager = new SymbolManager();
@@ -220,17 +218,17 @@ public class MethodUsageScanner {
             for (Symbol symbol : symbolManager.getSymbols()) {
                 SymbolType symbolType = symbol.getSymbolType();
                 if (symbolType == SymbolType.IDENTIFIER) {
-                    String variable = scopeTree.getSimpleType(symbol.getValue());
-                    if (variable != null) {
+                    String simpleType = scopeTree.getSimpleType(symbol.getValue());
+                    if (simpleType != null) {
                         Iterator<Symbol> iterator = symbolManager.getSymbols().iterator();
                         Method method = getMethod(iterator, scopeTree);
-//                        Klass indexClass = getIndexClass(method.getClassName());
-//                        for (IndexMethod indexMethod : indexClass.getMethods()) {
-//                            System.out.println(">> " + indexMethod.getName() + " : " + indexMethod.getParametersVariables());
-//                            if (indexMethod.getName().equals(method.getName())) { // still need to compare the method parameters
-//                                return indexMethod.getReturnType();
-//                            }
-//                        }
+                        
+                        Klass klass  = IndexerUtils.getIndexKlass(input.getIndexesFile(), method.getClassName());
+                        for (Method klassMethod : klass.getMethods()) {
+                            if (klassMethod.getName().equals(klassMethod.getName())) { // still need to compare the method parameters
+                                return klassMethod.getReturnType();
+                            }                        
+                        }
                     } else { // must be a method of this class
                         Method methodToFind = new Method(); // would create this from the symbol
                         methodToFind.setName(symbol.getValue());
