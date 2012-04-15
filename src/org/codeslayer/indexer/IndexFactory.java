@@ -47,8 +47,8 @@ public class IndexFactory {
         Map<String, String> libsLookup = getLibsLookup();
         
         for (IndexClass indexClass : projectsLookup.values()) {
-            String packageName = indexClass.getPackageName();
-            String className = indexClass.getClassName();
+            String packageName = indexClass.getClassName();
+            String className = indexClass.getSimpleClassName();
             
             createIndexesForClass(projectsLookup, libsLookup, indexes, indexClass, packageName, className);
         }
@@ -71,7 +71,8 @@ public class IndexFactory {
             index.setMethodModifier(indexMethod.getModifier());
             index.setMethodName(indexMethod.getName());
             index.setMethodParameters(indexMethod.getParameters());
-            index.setMethodCompletion(indexMethod.getCompletion());
+            index.setMethodParametersVariables(indexMethod.getParametersVariables());
+            index.setMethodParametersTypes(indexMethod.getParametersTypes());
             index.setMethodReturnType(indexMethod.getReturnType());
             index.setFilePath(indexClass.getFilePath());
             index.setLineNumber(indexMethod.getLineNumber());                
@@ -134,16 +135,17 @@ public class IndexFactory {
 
                     if (indexClass == null) {
                         indexClass = new IndexClass();
-                        indexClass.setPackageName(split[0]);
-                        indexClass.setClassName(split[1]);
+                        indexClass.setClassName(split[0]);
+                        indexClass.setSimpleClassName(split[1]);
                     }
                     
                     IndexMethod indexMethod = new IndexMethod();
                     indexMethod.setModifier(split[2]);
                     indexMethod.setName(split[3]);
                     indexMethod.setParameters(split[4]);
-                    indexMethod.setCompletion(split[5]);
-                    indexMethod.setReturnType(split[6]);
+                    indexMethod.setParametersVariables(split[5]);
+                    indexMethod.setParametersTypes(split[6]);
+                    indexMethod.setReturnType(split[7]);
                     
                     indexClass.addMethod(indexMethod);
                 } else if (indexClass != null) {
@@ -164,7 +166,7 @@ public class IndexFactory {
         Map<String, IndexClass> results = new HashMap<String, IndexClass>();
 
         for (IndexClass indexClass : indexClasses) {
-            results.put(indexClass.getPackageName(), indexClass);
+            results.put(indexClass.getClassName(), indexClass);
         }        
         
         return results;

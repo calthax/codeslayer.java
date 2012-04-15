@@ -19,21 +19,24 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.*;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import org.codeslayer.indexer.domain.IndexClass;
+import org.codeslayer.indexer.domain.IndexMethod;
 import org.codeslayer.usage.domain.*;
 import org.codeslayer.usage.factory.ScopeTreeFactory;
 
 public class MethodUsageScanner {
     
     private final Method methodMatch;
-    private final File[] sourceFolders;
+    private final Input input;
 
-    public MethodUsageScanner(Method methodMatch, File[] sourceFolders) {
+    public MethodUsageScanner(Method methodMatch, Input input) {
     
         this.methodMatch = methodMatch;
-        this.sourceFolders = sourceFolders;
+        this.input = input;
     }
     
     public List<Usage> scan() 
@@ -42,7 +45,7 @@ public class MethodUsageScanner {
         List<Usage> usages = new ArrayList<Usage>();
 
         try {
-            JavacTask javacTask = ScannerUtils.getJavacTask(sourceFolders);
+            JavacTask javacTask = ScannerUtils.getJavacTask(input.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
@@ -97,6 +100,11 @@ public class MethodUsageScanner {
             return scopeTree;                    
         }
 
+        /**
+         * Find all occurrences of method that we are trying to find. This will most of the method information
+         * that we are interested in. However we will still need to go through the visitMethodInvocation() method
+         * to find the method parameters.
+         */
         @Override
         public ScopeTree visitMemberSelect(MemberSelectTree memberSelectTree, ScopeTree scopeTree) {
 
@@ -129,6 +137,9 @@ public class MethodUsageScanner {
             return scopeTree;
         }
 
+        /**
+         * At this point we have the method usages figured out, but we still need the method parameters.
+         */
         @Override
         public ScopeTree visitMethodInvocation(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
 
@@ -146,7 +157,7 @@ public class MethodUsageScanner {
                 if (!file.equals(usage.getFile())) {
                     continue;
                 }
-
+                
                 addMethodArguments(usage, methodInvocationTree, scopeTree);
                 break;
             }
@@ -159,7 +170,7 @@ public class MethodUsageScanner {
             List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
             for (ExpressionTree expressionTree : expressionTrees) {
 
-                System.out.println("argument " + expressionTree.getKind() + " -- " + expressionTree);
+                System.out.println("argument " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
 
                 Tree.Kind kind = expressionTree.getKind();
                 String name = expressionTree.toString();
@@ -171,15 +182,20 @@ public class MethodUsageScanner {
                     }
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                     String methodArgument = getMethodArgument(expressionTree, scopeTree);
-                    String variable = scopeTree.getVariable(methodArgument);
-                    if (variable != null) {
-                        usage.addMethodArgument(variable);
-                    }
+                    System.out.println("methodArgument " + methodArgument);
+                    usage.addMethodArgument(methodArgument);
+                    
+//                    String variable = scopeTree.getVariable(methodArgument);
+//                    if (variable != null) {
+//                        usage.addMethodArgument(variable);
+//                    }
                 } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
                     NewClassTree newClassTree = (NewClassTree) expressionTree;
                     String identifier = newClassTree.getIdentifier().toString();
-                    String variable = scopeTree.getVariable(identifier);
+                    System.out.println("class identifier " + identifier);
+                    String variable = scopeTree.getClassName(identifier);
                     if (variable != null) {
+                        System.out.println("class variable " + variable);
                         usage.addMethodArgument(variable);
                     }
                 }
@@ -189,31 +205,69 @@ public class MethodUsageScanner {
         private String getMethodArgument(ExpressionTree expressionTree, ScopeTree scopeTree) {
 
             MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
-
             SymbolManager symbolManager = new SymbolManager();
-
             methodInvocationTree.accept(new SymbolScanner(), symbolManager);
+            
+            //symbol  type: [IDENTIFIER] value: [presidentService]
+            //symbol  type: [MEMBER] value: [getPresidents]
+            
+            for (Symbol symbol : symbolManager.getSymbols()) {
+                System.out.println("symbol " + symbol);
+            }
 
             for (Symbol symbol : symbolManager.getSymbols()) {
                 SymbolType symbolType = symbol.getType();
                 if (symbolType == SymbolType.IDENTIFIER) {
                     String variable = scopeTree.getVariable(symbol.getValue());
                     if (variable != null) {
-                        String className = scopeTree.getClassName(variable);
-                        if (className != null) {
-                            System.out.println("className " + className);
-
-                            //throw new IllegalStateException("Not able to find the class name " + variable);
+                        Iterator<Symbol> iterator = symbolManager.getSymbols().iterator();
+                        Method method = getMethod(iterator, scopeTree);
+                        IndexClass indexClass = getIndexClass(method.getClassName());
+                        for (IndexMethod indexMethod : indexClass.getMethods()) {
+                            System.out.println(">> " + indexMethod.getName() + " : " + indexMethod.getParametersVariables());
+                            if (indexMethod.getName().equals(method.getName())) { // still need to compare the method parameters
+                                return indexMethod.getReturnType();
+                            }
                         }
                     } else { // must be a method of this class
                         Method methodToFind = new Method(); // would create this from the symbol
                         methodToFind.setName(symbol.getValue());
-                        System.out.println("className " + getClassMethod(methodToFind).getReturnType());
+                        String className = getClassMethod(methodToFind).getReturnType();
+                        return className;
+//                        System.out.println("className " + className);
                     }
                 }
             }
 
             return null;
+        }
+        
+        private Method getMethod(Iterator<Symbol> iterator, ScopeTree scopeTree) {
+            
+            Method method = new Method();
+            
+            while(iterator.hasNext()) {
+                Symbol symbol = iterator.next();
+                switch (symbol.getType()) {
+                    case IDENTIFIER:
+                        String variable = scopeTree.getVariable(symbol.getValue());
+                        String className = scopeTree.getClassName(variable);
+                        method.setClassName(className);
+                        break;
+                    case MEMBER:
+                        method.setName(symbol.getValue());
+                        break;
+                    case ARG:
+                        Parameter parameter = new Parameter();
+                        parameter.setName(symbol.getValue());
+                        method.addParameter(parameter);
+                        break;
+                    default:
+                        return method;
+                }
+            }
+            
+            return method;
         }
         
         private Method getClassMethod(Method methodToFind) {
@@ -232,6 +286,51 @@ public class MethodUsageScanner {
             }
             
             return null;
+        }
+        
+        private IndexClass getIndexClass(String className) {
+
+            IndexClass indexClass = null;
+
+            try{
+                FileInputStream fstream = new FileInputStream(input.getIndexesFile());
+                DataInputStream in = new DataInputStream(fstream);
+                BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                String strLine;
+                while ((strLine = br.readLine()) != null) {
+                    if (strLine == null || strLine.trim().length() == 0) {
+                        continue;
+                    }
+
+                    if (strLine.startsWith(className)) {
+                        String[] split = strLine.split("\\t");
+
+                        if (indexClass == null) {
+                            indexClass = new IndexClass();
+                            indexClass.setClassName(split[0]);
+                            indexClass.setSimpleClassName(split[1]);
+                        }
+
+                        IndexMethod indexMethod = new IndexMethod();
+                        indexMethod.setModifier(split[2]);
+                        indexMethod.setName(split[3]);
+                        indexMethod.setParameters(split[4]);
+                        indexMethod.setParametersVariables(split[5]);
+                        indexMethod.setParametersTypes(split[6]);
+                        indexMethod.setReturnType(split[7]);
+
+                        indexClass.addMethod(indexMethod);
+                    } else if (indexClass != null) {
+                        break;
+                    }
+                }
+                in.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("not able to load the libs.indexes file.");
+            }
+
+            return indexClass;
         }
     }
 }

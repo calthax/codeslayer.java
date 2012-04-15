@@ -60,6 +60,17 @@ public class ScopeTree {
     
     public String getClassName(String variable) {
         
+        // check to see if this is a primative
+        if (Character.isLowerCase(variable.toCharArray()[0])) {
+            return variable;
+        }
+        
+        if (variable.equals("String")) {
+            return "java.lang.String";
+        } else if (variable.equals("Object")) {
+            return "java.lang.Object";
+        }
+        
         for (String importName : importNames) {
             if (importName.endsWith("." + variable)) {
                 return importName;

@@ -28,6 +28,10 @@ import java.util.List;
 import org.codeslayer.usage.domain.SymbolType;
 import org.codeslayer.usage.domain.SymbolManager;
 
+/**
+ * Walk a code path and identify what each part of the path contains. For instance given the path 
+ * dao.getPresidents() it would identify that this has the IDENTIFIER dao and the MEMBER getPresidents.
+ */
 public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManager> {
     
     @Override

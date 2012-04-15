@@ -33,7 +33,7 @@ public class Main {
         System.out.println("usage file");
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/model/TableModel.java", "-methodusage", "setItems", "-linenumber", "144"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/model/TableModel.java", "-methodusage", "setItems", "-linenumber", "144"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
@@ -42,7 +42,7 @@ public class Main {
             InputScanner inputScanner = new InputScanner(input);
             Method methodMatch = inputScanner.scan();
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input.getSourceFolders());
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input);
             List<Usage> usages = methodUsageScanner.scan();
 
             for (Usage usage : usages) {
@@ -63,6 +63,11 @@ public class Main {
         
         File[] sourceFiles = getSourceFiles(modifiers);
         result.setSourceFolders(sourceFiles);
+        
+        String indexesFolder = modifiers.getIndexesFolder();
+        if (indexesFolder != null) {
+            result.setIndexesFile(new File(indexesFolder, "projects.indexes"));
+        }
         
         String usageFile = modifiers.getUsageFile();
         System.out.println("usageFile " + usageFile);

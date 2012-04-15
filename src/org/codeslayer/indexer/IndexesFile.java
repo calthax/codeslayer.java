@@ -50,7 +50,9 @@ public class IndexesFile {
             sb.append("\t");
             sb.append(index.getMethodParameters());
             sb.append("\t");
-            sb.append(index.getMethodCompletion());
+            sb.append(index.getMethodParametersVariables());
+            sb.append("\t");
+            sb.append(index.getMethodParametersTypes());
             sb.append("\t");
             sb.append(index.getMethodReturnType());
             

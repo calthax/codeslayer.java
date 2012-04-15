@@ -22,6 +22,7 @@ import java.io.File;
 public class Input {
     
     private File[] sourceFolders;
+    private File indexesFile;
     private File usageFile;
     private String methodUsage;
     private String classUsage;
@@ -70,10 +71,20 @@ public class Input {
     public File[] getSourceFolders() {
         
         return sourceFolders;
-}
+    }
 
     public void setSourceFolders(File[] sourceFolders) {
 
         this.sourceFolders = sourceFolders;
+    }
+
+    public File getIndexesFile() {
+        
+        return indexesFile;
+    }
+
+    public void setIndexesFile(File indexesFile) {
+     
+        this.indexesFile = indexesFile;
     }
 }

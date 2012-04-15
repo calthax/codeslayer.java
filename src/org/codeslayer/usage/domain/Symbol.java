@@ -37,4 +37,13 @@ public class Symbol {
 
         return value;
     }
+    
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(" type: [").append(type).append("]");
+        sb.append(" value: [").append(value).append("]");
+        return sb.toString();
+    }   
 }

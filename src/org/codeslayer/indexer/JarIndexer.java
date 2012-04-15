@@ -105,7 +105,8 @@ public class JarIndexer implements Indexer {
 
             String parameters = getParameters(method);
             index.setMethodParameters(parameters);
-            index.setMethodCompletion(parameters);
+            index.setMethodParametersVariables(parameters);
+            index.setMethodParametersTypes(getParametersTypes(method));
 
             index.setMethodReturnType(method.getReturnType().getSimpleName());
 
@@ -127,6 +128,29 @@ public class JarIndexer implements Indexer {
         for (int i = 0; i < length; i++) {
             Class parameter = parameters[i];
             sb.append(parameter.getSimpleName());
+            
+            if (i+1 < length) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append(")");
+
+        return sb.toString();
+    }
+    
+    private String getParametersTypes(Method method) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("(");
+        
+        Class<?>[] parameters = method.getParameterTypes();
+        int length = parameters.length;
+        
+        for (int i = 0; i < length; i++) {
+            Class parameter = parameters[i];
+            sb.append(parameter.getName());
             
             if (i+1 < length) {
                 sb.append(", ");

@@ -22,7 +22,8 @@ public class IndexMethod {
     private String name;
     private String modifier;
     private String parameters;
-    private String completion;
+    private String parametersVariables;
+    private String parametersTypes;
     private String returnType;
     private String lineNumber;
 
@@ -56,14 +57,24 @@ public class IndexMethod {
         this.parameters = parameters;
     }
 
-    public String getCompletion() {
+    public String getParametersVariables() {
         
-        return completion;
+        return parametersVariables;
     }
 
-    public void setCompletion(String completion) {
+    public void setParametersVariables(String parametersVariables) {
         
-        this.completion = completion;
+        this.parametersVariables = parametersVariables;
+    }
+
+    public String getParametersTypes() {
+        
+        return parametersTypes;
+    }
+
+    public void setParametersTypes(String parametersTypes) {
+     
+        this.parametersTypes = parametersTypes;
     }
 
     public String getLineNumber() {

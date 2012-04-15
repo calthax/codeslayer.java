@@ -49,6 +49,11 @@ public class Method {
         this.parameters = parameters;
     }
 
+    public void addParameter(Parameter parameter) {
+     
+        this.parameters.add(parameter);
+    }
+
     public String getReturnType() {
         
         return returnType;

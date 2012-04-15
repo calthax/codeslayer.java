@@ -22,22 +22,12 @@ import java.util.List;
 
 public class IndexClass {
     
-    private String packageName;
     private String className;
+    private String simpleClassName;
     private String filePath;
     private String superClass;
     private List<String> imports;
     private List<IndexMethod> methods = new ArrayList<IndexMethod>();
-
-    public String getPackageName() {
-        
-        return packageName;
-    }
-
-    public void setPackageName(String packageName) {
-     
-        this.packageName = packageName;
-    }
 
     public String getClassName() {
         
@@ -45,8 +35,18 @@ public class IndexClass {
     }
 
     public void setClassName(String className) {
-        
+     
         this.className = className;
+    }
+
+    public String getSimpleClassName() {
+        
+        return simpleClassName;
+    }
+
+    public void setSimpleClassName(String simpleClassName) {
+        
+        this.simpleClassName = simpleClassName;
     }
 
     public String getFilePath() {

@@ -87,15 +87,27 @@ public class SourceIndexer implements Indexer {
         private final SourcePositions sourcePositions;
         private final LineMap lineMap;
         private final List<IndexClass> indexClasses;
+        private final String packageName;
+        private final List<String> importNames = new ArrayList<String>();
 
         private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<IndexClass> indexClasses) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
             this.lineMap = compilationUnitTree.getLineMap();
+            this.packageName = IndexerUtils.getPackageName(compilationUnitTree);
             this.indexClasses = indexClasses;
         }
 
+        @Override
+        public Void visitImport(ImportTree importTree, Void arg1) {
+
+            String importName = importTree.getQualifiedIdentifier().toString();
+            importNames.add(importName);
+            
+            return super.visitImport(importTree, arg1);
+        }
+        
         @Override
         public Void visitClass(ClassTree classTree, Void arg1) {
             
@@ -110,8 +122,8 @@ public class SourceIndexer implements Indexer {
             IndexClass indexClass = new IndexClass();
             String className = getClassName();
             indexClass.setImports(getImports());
-            indexClass.setClassName(className);
-            indexClass.setPackageName(packageName + "." + className);
+            indexClass.setSimpleClassName(className);
+            indexClass.setClassName(packageName + "." + className);
             indexClass.setFilePath(getFilePath());
             indexClass.setSuperClass(getSuperClass(classTree));
             
@@ -123,7 +135,8 @@ public class SourceIndexer implements Indexer {
                     indexMethod.setName(methodTree.getName().toString());
                     indexMethod.setModifier(getModifier(methodTree));
                     indexMethod.setParameters(getParameters(methodTree));
-                    indexMethod.setCompletion(getCompletion(methodTree));
+                    indexMethod.setParametersVariables(getParametersVariables(methodTree));
+                    indexMethod.setParametersTypes(getParametersTypes(methodTree));
                     indexMethod.setReturnType(getReturnType(methodTree));
                     indexMethod.setLineNumber(getLineNumber(methodTree));
 
@@ -202,7 +215,7 @@ public class SourceIndexer implements Indexer {
             return sb.toString();
         }
 
-        private String getCompletion(MethodTree methodTree) {
+        private String getParametersVariables(MethodTree methodTree) {
 
             StringBuilder sb = new StringBuilder();
             
@@ -212,6 +225,28 @@ public class SourceIndexer implements Indexer {
             while (iterator.hasNext()) {
                 VariableTree variableTree = iterator.next();
                 sb.append(variableTree.getName().toString());
+                if (iterator.hasNext()) {
+                    sb.append(", ");
+                }
+            }
+
+            sb.append(")");
+
+            return sb.toString();
+        }
+
+        private String getParametersTypes(MethodTree methodTree) {
+
+            StringBuilder sb = new StringBuilder();
+            
+            sb.append("(");
+
+            Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
+            while (iterator.hasNext()) {
+                VariableTree variableTree = iterator.next();
+                String variable = variableTree.getType().toString();
+                String className = IndexerUtils.getImportClassName(importNames, packageName, variable);
+                sb.append(className);
                 if (iterator.hasNext()) {
                     sb.append(", ");
                 }

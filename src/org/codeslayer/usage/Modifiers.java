@@ -57,6 +57,11 @@ public class Modifiers {
         return Collections.emptyList();
     }
 
+    public String getIndexesFolder() {
+
+        return modifiers.get(Modifier.INDEXESFOLDER);
+    }
+
     public String getUsageFile() {
 
         return modifiers.get(Modifier.USAGEFILE);
@@ -86,6 +91,7 @@ public class Modifiers {
     private enum Modifier {
 
         SOURCEFOLDER("-sourcefolder"),
+        INDEXESFOLDER("-indexesfolder"),
         USAGEFILE("-usagefile"),
         METHODUSAGE("-methodusage"),
         CLASSUSAGE("-classusage"),

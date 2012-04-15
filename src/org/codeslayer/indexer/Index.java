@@ -24,7 +24,8 @@ public class Index {
     private String methodName;
     private String methodModifier;
     private String methodParameters;
-    private String methodCompletion;
+    private String methodParametersVariables;
+    private String methodParametersTypes;
     private String methodReturnType;
     private String filePath;
     private String lineNumber;
@@ -79,14 +80,24 @@ public class Index {
         this.methodParameters = methodParameters;
     }
 
-    public String getMethodCompletion() {
+    public String getMethodParametersVariables() {
         
-        return methodCompletion;
+        return methodParametersVariables;
     }
 
-    public void setMethodCompletion(String methodCompletion) {
+    public void setMethodParametersVariables(String methodParametersVariables) {
      
-        this.methodCompletion = methodCompletion;
+        this.methodParametersVariables = methodParametersVariables;
+    }
+
+    public String getMethodParametersTypes() {
+        
+        return methodParametersTypes;
+    }
+
+    public void setMethodParametersTypes(String methodParametersTypes) {
+     
+        this.methodParametersTypes = methodParametersTypes;
     }
 
     public String getMethodReturnType() {
