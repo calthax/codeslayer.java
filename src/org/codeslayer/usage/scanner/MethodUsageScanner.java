@@ -172,23 +172,33 @@ public class MethodUsageScanner {
                 String name = expressionTree.toString();
 
                 if (kind == Tree.Kind.IDENTIFIER) { // items
+                    Parameter parameter = new Parameter();
+                    
                     String simpleType = scopeTree.getSimpleType(name);
                     String className = SourceUtils.getClassName(scopeTree, simpleType);
-                    if (className != null) {
-                        usage.addMethodParameterType(className);
-                    }
+                    
+                    parameter.setSimpleType(simpleType);
+                    parameter.setType(className);
+                    
+                    usage.addMethodParameter(parameter);
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
+                    Parameter parameter = new Parameter();
+                    
                     String type = getParameterType(expressionTree, scopeTree);
-                    if (type != null) {
-                        usage.addMethodParameterType(type);
-                    }
+                    parameter.setType(type);
+                    
+                    usage.addMethodParameter(parameter);
                 } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
+                    Parameter parameter = new Parameter();
+                    
                     NewClassTree newClassTree = (NewClassTree) expressionTree;
                     String simpleType = newClassTree.getIdentifier().toString();
                     String className = SourceUtils.getClassName(scopeTree, simpleType);
-                    if (className != null) {
-                        usage.addMethodParameterType(className);
-                    }
+
+                    parameter.setSimpleType(simpleType);
+                    parameter.setType(className);
+                    
+                    usage.addMethodParameter(parameter);
                 }
             }
         }

@@ -105,12 +105,12 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
             Parameter parameter = new Parameter();
             parameter.setVariable(variable);
+            parameter.setSimpleType(simpleType);
             
             if (SourceUtils.isPrimative(simpleType)) {
-                parameter.setPrimative(simpleType);
+                parameter.setType(simpleType);
             } else {
-                parameter.setSimpleClassName(simpleType);
-                parameter.setClassName(SourceUtils.getClassName(scopeTree, simpleType));
+                parameter.setType(SourceUtils.getClassName(scopeTree, simpleType));
             }
 
             results.add(parameter);

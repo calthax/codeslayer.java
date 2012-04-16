@@ -20,13 +20,14 @@ package org.codeslayer.usage.domain;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.codeslayer.source.Parameter;
 
 public class Usage {
     
     private String className;
     private String simpleClassName;
     private String methodName;
-    private List<String> methodParameterTypes = new ArrayList<String>();
+    private List<Parameter> methodParameters = new ArrayList<Parameter>();
     private File file;
     private int lineNumber;
     private int startPosition;
@@ -62,14 +63,14 @@ public class Usage {
         this.methodName = methodName;
     }
 
-    public List<String> getMethodParameterTypes() {
+    public List<Parameter> getMethodParameters() {
         
-        return methodParameterTypes;
+        return methodParameters;
     }
 
-    public void addMethodParameterType(String methodParameterType) {
+    public void addMethodParameter(Parameter methodParameter) {
      
-        this.methodParameterTypes.add(methodParameterType);
+        this.methodParameters.add(methodParameter);
     }
 
     public File getFile() {
@@ -120,8 +121,8 @@ public class Usage {
         sb.append(" className: [").append(simpleClassName).append("]");
         sb.append(" methodName: [").append(methodName).append("]");        
         sb.append(" methodParameterTypes: [");
-        for (String methodArgument : methodParameterTypes) {
-            sb.append(methodArgument);
+        for (Parameter methodParameter : methodParameters) {
+            sb.append(methodParameter.getType());
         }
         sb.append("]");
         sb.append(" file: [").append(file.getAbsolutePath()).append("]");

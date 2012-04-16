@@ -40,10 +40,11 @@ public class Main {
             Input input = getInput(modifiers);
             
             InputScanner inputScanner = new InputScanner(input);
-            Method methodMatch = inputScanner.scan();
+            Method method = inputScanner.scan();
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input);
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(method, input);
             List<Usage> usages = methodUsageScanner.scan();
+            usages = UsageUtils.filterUsages(usages, method);
 
             for (Usage usage : usages) {
                 System.out.println(usage);

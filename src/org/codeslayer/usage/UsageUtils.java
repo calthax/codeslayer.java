@@ -19,7 +19,11 @@ package org.codeslayer.usage;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.Parameter;
+import org.codeslayer.usage.domain.Usage;
 
 public class UsageUtils {
 
@@ -72,4 +76,46 @@ public class UsageUtils {
             return name.endsWith(".java");
         }
     }
+    
+    public static List<Usage> filterUsages(List<Usage> usages, Method method) {
+        
+        List<Usage> results = new ArrayList<Usage>();
+        
+        List<Parameter> methodParameters = method.getParameters();
+        
+        if (methodParameters == null || methodParameters.isEmpty()) {
+            return usages;
+        }
+
+        for (Usage usage : usages) {
+            List<Parameter> usageParameters = usage.getMethodParameters();
+            
+            if (usageParameters.size() != methodParameters.size()) {
+                continue;
+            }
+            
+            if (usageParametersEqual(usageParameters, methodParameters)) {
+                results.add(usage);
+            }            
+        }            
+        
+        return results;
+    }
+    
+    private static boolean usageParametersEqual(List<Parameter> usageParameters, List<Parameter> methodParameters) {
+        
+        Iterator<Parameter> usageIterator = usageParameters.iterator();
+        Iterator<Parameter> methodIterator = methodParameters.iterator();
+
+        while (usageIterator.hasNext() && methodIterator.hasNext()) {
+            Parameter usageParameter = usageIterator.next();
+            Parameter methodParameter = methodIterator.next();
+            if (!usageParameter.getType().equals(methodParameter.getType())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
 }

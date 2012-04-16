@@ -19,39 +19,28 @@ package org.codeslayer.source;
 
 public class Parameter {
     
-    private String simpleClassName;
-    private String className;
-    private String primative;
+    private String simpleType;
+    private String type;
     private String variable;
 
-    public String getSimpleClassName() {
+    public String getSimpleType() {
         
-        return simpleClassName;
+        return simpleType;
     }
 
-    public void setSimpleClassName(String simpleClassName) {
+    public void setSimpleType(String simpleType) {
         
-        this.simpleClassName = simpleClassName;
+        this.simpleType = simpleType;
     }
 
-    public String getClassName() {
+    public String getType() {
         
-        return className;
+        return type;
     }
 
-    public void setClassName(String className) {
+    public void setType(String type) {
      
-        this.className = className;
-    }
-
-    public String getPrimative() {
-        
-        return primative;
-    }
-
-    public void setPrimative(String primative) {
-     
-        this.primative = primative;
+        this.type = type;
     }
 
     public String getVariable() {
@@ -62,23 +51,5 @@ public class Parameter {
     public void setVariable(String variable) {
         
         this.variable = variable;
-    }
-    
-    public String getSimpleType() {
-        
-        if (primative != null) {
-            return primative;
-        }
-        
-        return simpleClassName;
-    }
-    
-    public String getType() {
-        
-        if (primative != null) {
-            return primative;
-        }
-        
-        return className;
     }
 }

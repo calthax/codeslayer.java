@@ -271,12 +271,12 @@ public class IndexerUtils {
             }            
             
             result.setVariable(variable);
+            result.setSimpleType(simpleType);
             
             if (SourceUtils.isPrimative(simpleType)) {
-                result.setPrimative(simpleType);
+                result.setType(simpleType);
             } else {
-                result.setSimpleClassName(simpleType);
-                result.setClassName(parametersTypes[i]);
+                result.setType(parametersTypes[i]);
             }
         }
         

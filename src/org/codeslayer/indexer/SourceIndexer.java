@@ -171,14 +171,16 @@ public class SourceIndexer implements Indexer {
             
             for (VariableTree variableTree : methodTree.getParameters()) {
                 Parameter parameter = new Parameter();
-                String simpleType = variableTree.getType().toString();
-                if (SourceUtils.isPrimative(simpleType)) {
-                    parameter.setPrimative(simpleType);
-                } else {
-                    parameter.setSimpleClassName(simpleType);
-                    parameter.setClassName(SourceUtils.getClassName(scopeTree, simpleType));
-                }                
                 parameter.setVariable(variableTree.getName().toString());
+
+                String simpleType = variableTree.getType().toString();
+                parameter.setSimpleType(simpleType);
+                if (SourceUtils.isPrimative(simpleType)) {
+                    parameter.setType(simpleType);
+                } else {
+                    parameter.setType(SourceUtils.getClassName(scopeTree, simpleType));
+                }                
+                
                 parameters.add(parameter);
             }
 
