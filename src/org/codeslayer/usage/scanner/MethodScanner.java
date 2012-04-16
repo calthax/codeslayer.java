@@ -81,7 +81,10 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
             method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
             method.setName(methodTree.getName().toString());
             method.setParameters(getParameters(methodTree, scopeTree));
-            method.setReturnType(methodTree.getReturnType().toString());
+            
+            String simpleReturnType = methodTree.getReturnType().toString();
+            method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
+            method.setSimpleReturnType(simpleReturnType);
             
             methodMatches.add(method);
         }

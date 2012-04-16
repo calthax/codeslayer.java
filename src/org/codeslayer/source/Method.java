@@ -25,6 +25,7 @@ public class Method {
     private String name;
     private String modifier;
     private List<Parameter> parameters = new ArrayList<Parameter>();
+    private String simpleReturnType;
     private String returnType;
     private String className;
     private String simpleClassName;
@@ -63,6 +64,16 @@ public class Method {
     public void addParameter(Parameter parameter) {
      
         this.parameters.add(parameter);
+    }
+
+    public String getSimpleReturnType() {
+        
+        return simpleReturnType;
+    }
+
+    public void setSimpleReturnType(String simpleReturnType) {
+     
+        this.simpleReturnType = simpleReturnType;
     }
 
     public String getReturnType() {

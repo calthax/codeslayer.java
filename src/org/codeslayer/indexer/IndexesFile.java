@@ -55,6 +55,8 @@ public class IndexesFile {
             sb.append(index.getMethodParametersTypes());
             sb.append("\t");
             sb.append(index.getMethodReturnType());
+            sb.append("\t");
+            sb.append(index.getMethodSimpleReturnType());
             
             String filePath = index.getFilePath();
             if (filePath != null) {

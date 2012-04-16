@@ -120,7 +120,7 @@ public class MethodUsageScanner {
                 memberSelectTree.accept(new SymbolScanner(), symbolManager);
 
                 Usage usage = new Usage();
-                usage.setClassName( SourceUtils.getClassName(compilationUnitTree));
+                usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
                 usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
                 usage.setMethodName(methodMatch.getName());
                 usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
@@ -166,36 +166,27 @@ public class MethodUsageScanner {
             List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
             for (ExpressionTree expressionTree : expressionTrees) {
 
-                System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
+//                System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
 
                 Tree.Kind kind = expressionTree.getKind();
                 String name = expressionTree.toString();
 
                 if (kind == Tree.Kind.IDENTIFIER) { // items
                     String simpleType = scopeTree.getSimpleType(name);
-                    if (simpleType != null) {
-                        usage.addMethodParameterType(simpleType);
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
+                    if (className != null) {
+                        usage.addMethodParameterType(className);
                     }
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
-                    String simpleType = getParameterType(expressionTree, scopeTree);
-                    if (simpleType != null) {
-                        usage.addMethodParameterType(simpleType);
+                    String type = getParameterType(expressionTree, scopeTree);
+                    if (type != null) {
+                        usage.addMethodParameterType(type);
                     }
-                    
-                    System.out.println("methodArgument " + simpleType);
-                    usage.addMethodParameterType(simpleType);
-                    
-//                    String variable = scopeTree.getVariable(methodArgument);
-//                    if (variable != null) {
-//                        usage.addMethodArgument(variable);
-//                    }
                 } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
                     NewClassTree newClassTree = (NewClassTree) expressionTree;
                     String simpleType = newClassTree.getIdentifier().toString();
-                    System.out.println("class identifier " + simpleType);
                     String className = SourceUtils.getClassName(scopeTree, simpleType);
                     if (className != null) {
-                        System.out.println("class variable " + className);
                         usage.addMethodParameterType(className);
                     }
                 }
@@ -211,9 +202,9 @@ public class MethodUsageScanner {
             //symbol  type: [IDENTIFIER] value: [presidentService]
             //symbol  type: [MEMBER] value: [getPresidents]
             
-            for (Symbol symbol : symbolManager.getSymbols()) {
-                System.out.println("symbol " + symbol);
-            }
+//            for (Symbol symbol : symbolManager.getSymbols()) {
+//                System.out.println("symbol " + symbol);
+//            }
 
             for (Symbol symbol : symbolManager.getSymbols()) {
                 SymbolType symbolType = symbol.getSymbolType();
@@ -234,7 +225,6 @@ public class MethodUsageScanner {
                         methodToFind.setName(symbol.getValue());
                         String className = getClassMethod(methodToFind).getReturnType();
                         return className;
-//                        System.out.println("className " + className);
                     }
                 }
             }

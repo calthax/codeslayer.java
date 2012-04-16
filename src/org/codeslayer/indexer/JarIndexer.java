@@ -108,7 +108,8 @@ public class JarIndexer implements Indexer {
             index.setMethodParametersVariables(parameters);
             index.setMethodParametersTypes(getParametersTypes(method));
 
-            index.setMethodReturnType(method.getReturnType().getSimpleName());
+            index.setMethodReturnType(method.getReturnType().getName());
+            index.setMethodSimpleReturnType(method.getReturnType().getSimpleName());
 
             results.add(index);
         }

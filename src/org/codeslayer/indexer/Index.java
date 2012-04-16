@@ -27,6 +27,7 @@ public class Index {
     private String methodParametersVariables;
     private String methodParametersTypes;
     private String methodReturnType;
+    private String methodSimpleReturnType;
     private String filePath;
     private String lineNumber;
 
@@ -98,6 +99,16 @@ public class Index {
     public void setMethodParametersTypes(String methodParametersTypes) {
      
         this.methodParametersTypes = methodParametersTypes;
+    }
+
+    public String getMethodSimpleReturnType() {
+        
+        return methodSimpleReturnType;
+    }
+
+    public void setMethodSimpleReturnType(String methodSimpleReturnType) {
+     
+        this.methodSimpleReturnType = methodSimpleReturnType;
     }
 
     public String getMethodReturnType() {

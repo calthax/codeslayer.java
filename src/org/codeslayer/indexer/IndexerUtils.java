@@ -225,12 +225,8 @@ public class IndexerUtils {
                     method.setModifier(split[2]);
                     method.setName(split[3]);
                     method.setParameters(getParameters(split));
-                    
-//                    method.setParameters(split[4]);
-//                    method.setParametersVariables(split[5]);
-//                    method.setParametersTypes(split[6]);
-                    
                     method.setReturnType(split[7]);
+                    method.setSimpleReturnType(split[8]);
                     
                     klass.addMethod(method);
                 } else if (klass != null) {
@@ -262,8 +258,17 @@ public class IndexerUtils {
             
             String parameter = parameters[i];
             String[] args = parameter.split("\\s");
-            String simpleType = args[0];
-            String variable = args[1];
+            
+            String simpleType;
+            String variable;
+
+            if (args.length == 1) {
+                simpleType = args[0];
+                variable = args[0];
+            } else {
+                simpleType = args[0];
+                variable = args[1];                
+            }            
             
             result.setVariable(variable);
             

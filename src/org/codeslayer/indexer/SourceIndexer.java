@@ -118,7 +118,10 @@ public class SourceIndexer implements Indexer {
                     method.setName(methodTree.getName().toString());
                     method.setModifier(getModifier(methodTree));
                     method.setParameters(getParameters(methodTree, scopeTree));
-                    method.setReturnType(getReturnType(methodTree));
+                    
+                    String simpleReturnType = getSimpleReturnType(methodTree);
+                    method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
+                    method.setSimpleReturnType(simpleReturnType);
                     method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
 
                     klass.addMethod(method);
@@ -182,14 +185,14 @@ public class SourceIndexer implements Indexer {
             return parameters;
         }
 
-        private String getReturnType(MethodTree methodTree) {
+        private String getSimpleReturnType(MethodTree methodTree) {
 
-            Tree returnType = methodTree.getReturnType();
-            if (returnType == null) {
+            Tree simpleReturnType = methodTree.getReturnType();
+            if (simpleReturnType == null) {
                 return "void";
             }
             
-            return returnType.toString();
+            return SourceUtils.removeGenerics(simpleReturnType.toString());
         }
 
         private String getFilePath() {

@@ -45,7 +45,7 @@ public class ScopeTree {
     
     public void addSimpleType(String variable, String simpleType) {
         
-        simpleTypes.put(variable, simpleType);
+        simpleTypes.put(variable, SourceUtils.removeGenerics(simpleType));
     }
 
     public List<String> getImportNames() {

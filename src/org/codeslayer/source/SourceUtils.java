@@ -89,10 +89,24 @@ public class SourceUtils {
         return Character.isLowerCase(simpleType.toCharArray()[0]);
     }
     
+    public static String removeGenerics(String simpleType) {
+        
+        int index = simpleType.indexOf("<");
+        if (index < 0) {
+            return simpleType;
+        }
+        
+        return simpleType.substring(0, index);
+    }
+    
     /*
      * This is flawed in that it will only find a class if it is in the imports.
      */
     public static String getClassName(ScopeTree scopeTree, String simpleType) {
+        
+        if (isPrimative(simpleType)) {
+            return simpleType;
+        }
         
         if (simpleType.equals("String")) {
             return "java.lang.String";

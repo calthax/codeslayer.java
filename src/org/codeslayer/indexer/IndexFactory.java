@@ -72,6 +72,7 @@ public class IndexFactory {
             index.setMethodParametersVariables(getMethodParametersVariables(method));
             index.setMethodParametersTypes(getMethodParametersTypes(method));
             index.setMethodReturnType(method.getReturnType());
+            index.setMethodSimpleReturnType(method.getSimpleReturnType());
             index.setFilePath(klass.getFilePath());
             index.setLineNumber(String.valueOf(method.getLineNumber()));
             indexes.add(index);
