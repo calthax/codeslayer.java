@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.Parameter;
+import org.codeslayer.source.SourceUtils;
 import org.codeslayer.usage.domain.Usage;
 
 public class UsageUtils {
@@ -83,6 +84,8 @@ public class UsageUtils {
         
         List<Parameter> methodParameters = method.getParameters();
         
+        System.out.println("methodParameters: " + methodParameters);
+        
         if (methodParameters == null || methodParameters.isEmpty()) {
             return usages;
         }
@@ -90,6 +93,8 @@ public class UsageUtils {
         for (Usage usage : usages) {
             List<Parameter> usageParameters = usage.getMethodParameters();
             
+            System.out.println("usageParameters: " + usageParameters);
+
             if (usageParameters.size() != methodParameters.size()) {
                 continue;
             }
@@ -110,7 +115,10 @@ public class UsageUtils {
         while (usageIterator.hasNext() && methodIterator.hasNext()) {
             Parameter usageParameter = usageIterator.next();
             Parameter methodParameter = methodIterator.next();
-            if (!usageParameter.getType().equals(methodParameter.getType())) {
+            String usageType = SourceUtils.removeGenerics(usageParameter.getType());
+            String methodType = SourceUtils.removeGenerics(methodParameter.getType());
+            
+            if (!usageType.equals(methodType)) {
                 return false;
             }
         }

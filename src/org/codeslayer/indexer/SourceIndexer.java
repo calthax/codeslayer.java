@@ -194,7 +194,7 @@ public class SourceIndexer implements Indexer {
                 return "void";
             }
             
-            return SourceUtils.removeGenerics(simpleReturnType.toString());
+            return simpleReturnType.toString();
         }
 
         private String getFilePath() {

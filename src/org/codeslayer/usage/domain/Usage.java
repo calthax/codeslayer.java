@@ -117,10 +117,10 @@ public class Usage {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" packageName: [").append(className).append("]");
-        sb.append(" className: [").append(simpleClassName).append("]");
+        sb.append(" className: [").append(className).append("]");
+        sb.append(" simpleClassName: [").append(simpleClassName).append("]");
         sb.append(" methodName: [").append(methodName).append("]");        
-        sb.append(" methodParameterTypes: [");
+        sb.append(" methodParameters: [");
         for (Parameter methodParameter : methodParameters) {
             sb.append(methodParameter.getType());
         }

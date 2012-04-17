@@ -66,16 +66,6 @@ public class Method {
         this.parameters.add(parameter);
     }
 
-    public String getSimpleReturnType() {
-        
-        return simpleReturnType;
-    }
-
-    public void setSimpleReturnType(String simpleReturnType) {
-     
-        this.simpleReturnType = simpleReturnType;
-    }
-
     public String getReturnType() {
         
         return returnType;
@@ -86,6 +76,16 @@ public class Method {
         this.returnType = returnType;
     }
     
+    public String getSimpleReturnType() {
+        
+        return simpleReturnType;
+    }
+
+    public void setSimpleReturnType(String simpleReturnType) {
+     
+        this.simpleReturnType = simpleReturnType;
+    }
+
     public String getClassName() {
         
         return className;
@@ -115,4 +115,23 @@ public class Method {
      
         this.lineNumber = lineNumber;
     }
+    
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(" name: [").append(name).append("]");
+        sb.append(" parameters: [");
+        for (Parameter parameter: parameters) {
+            sb.append(parameter.getType());
+        }
+        sb.append("]");
+        sb.append(" modifier: [").append(modifier).append("]");
+        sb.append(" returnType: [").append(returnType).append("]");        
+        sb.append(" simpleReturnType: [").append(simpleReturnType).append("]");        
+        sb.append(" className: [").append(className).append("]");        
+        sb.append(" simpleClassName: [").append(simpleClassName).append("]");        
+        sb.append(" lineNumber: [").append(lineNumber).append("]");        
+        return sb.toString();
+    }    
 }

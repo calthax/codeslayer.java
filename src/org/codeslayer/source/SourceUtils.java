@@ -89,6 +89,16 @@ public class SourceUtils {
         return Character.isLowerCase(simpleType.toCharArray()[0]);
     }
     
+    public static String getSimpleType(String type) {
+        
+        int index = type.lastIndexOf(".");
+        if (index < 0) {
+            return type;
+        }
+        
+        return type.substring(index + 1);
+    }
+    
     public static String removeGenerics(String simpleType) {
         
         int index = simpleType.indexOf("<");
@@ -108,14 +118,18 @@ public class SourceUtils {
             return simpleType;
         }
         
-        if (simpleType.equals("String")) {
+        String name = removeGenerics(simpleType);
+        
+        if (name.equals("String")) {
             return "java.lang.String";
-        } else if (simpleType.equals("Object")) {
+        } else if (name.equals("Object")) {
             return "java.lang.Object";
+        } else if (name.equals("Collection")) {
+            return "java.lang." + simpleType;
         }
         
         for (String importName : scopeTree.getImportNames()) {
-            if (importName.endsWith("." + simpleType)) {
+            if (importName.endsWith("." + name)) {
                 return importName;
             }
         }

@@ -185,6 +185,7 @@ public class MethodUsageScanner {
                     Parameter parameter = new Parameter();
                     
                     String type = getParameterType(expressionTree, scopeTree);
+                    parameter.setSimpleType(SourceUtils.getSimpleType(type));
                     parameter.setType(type);
                     
                     usage.addMethodParameter(parameter);
@@ -227,7 +228,7 @@ public class MethodUsageScanner {
                         Klass klass  = IndexerUtils.getIndexKlass(input.getIndexesFile(), method.getClassName());
                         for (Method klassMethod : klass.getMethods()) {
                             if (klassMethod.getName().equals(klassMethod.getName())) { // still need to compare the method parameters
-                                return klassMethod.getReturnType();
+                                return klassMethod.getSimpleReturnType();
                             }                        
                         }
                     } else { // must be a method of this class

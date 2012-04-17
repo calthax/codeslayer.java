@@ -52,4 +52,14 @@ public class Parameter {
         
         this.variable = variable;
     }
+
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(" simpleType: [").append(simpleType).append("]");
+        sb.append(" type: [").append(type).append("]");
+        sb.append(" variable: [").append(variable).append("]");        
+        return sb.toString();
+    }    
 }
