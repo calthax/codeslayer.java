@@ -18,7 +18,6 @@
 package org.codeslayer.usage.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SymbolManager {
@@ -27,13 +26,23 @@ public class SymbolManager {
 
     public List<Symbol> getSymbols() {
 
-        Collections.reverse(symbols);
-
         return symbols;
     }
 
     public void addSymbol(SymbolType symbolType, String value) {
 
-        symbols.add(new Symbol(symbolType, value));
+        symbols.add(0, new Symbol(symbolType, value));
     }
+    
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("symbolManager: [\n");
+        for (Symbol symbol: symbols) {
+            sb.append(symbol).append("\n");
+        }
+        sb.append("]");
+        return sb.toString();
+    }   
 }

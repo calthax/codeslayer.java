@@ -166,11 +166,9 @@ public class MethodUsageScanner {
             List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
             for (ExpressionTree expressionTree : expressionTrees) {
 
-//                System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
-
                 Tree.Kind kind = expressionTree.getKind();
                 String name = expressionTree.toString();
-
+                
                 if (kind == Tree.Kind.IDENTIFIER) { // items
                     Parameter parameter = new Parameter();
                     
@@ -184,7 +182,7 @@ public class MethodUsageScanner {
                 } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                     Parameter parameter = new Parameter();
                     
-                    String type = getParameterType(expressionTree, scopeTree);
+                    String type = getParameterType(usage, expressionTree, scopeTree);
                     parameter.setSimpleType(SourceUtils.getSimpleType(type));
                     parameter.setType(type);
                     
@@ -204,19 +202,16 @@ public class MethodUsageScanner {
             }
         }
 
-        private String getParameterType(ExpressionTree expressionTree, ScopeTree scopeTree) {
+        private String getParameterType(Usage usage, ExpressionTree expressionTree, ScopeTree scopeTree) {
 
             MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
             SymbolManager symbolManager = new SymbolManager();
             methodInvocationTree.accept(new SymbolScanner(), symbolManager);
             
-            //symbol  type: [IDENTIFIER] value: [presidentService]
-            //symbol  type: [MEMBER] value: [getPresidents]
-            
-//            for (Symbol symbol : symbolManager.getSymbols()) {
-//                System.out.println("symbol " + symbol);
-//            }
+            System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
 
+            System.out.println("symbolManager " + symbolManager);
+            
             for (Symbol symbol : symbolManager.getSymbols()) {
                 SymbolType symbolType = symbol.getSymbolType();
                 if (symbolType == SymbolType.IDENTIFIER) {
@@ -226,8 +221,9 @@ public class MethodUsageScanner {
                         Method method = getMethod(iterator, scopeTree);
                         
                         Klass klass  = IndexerUtils.getIndexKlass(input.getIndexesFile(), method.getClassName());
+                        System.out.println("klass " + klass);
                         for (Method klassMethod : klass.getMethods()) {
-                            if (klassMethod.getName().equals(klassMethod.getName())) { // still need to compare the method parameters
+                            if (method.getName().equals(klassMethod.getName())) { // still need to compare the method parameters
                                 return klassMethod.getSimpleReturnType();
                             }                        
                         }

@@ -26,7 +26,7 @@ public class Klass {
     private String simpleClassName;
     private String filePath;
     private String superClass;
-    private List<String> imports;
+    private List<String> imports = new ArrayList<String>();
     private List<Method> methods = new ArrayList<Method>();
 
     public String getClassName() {
@@ -88,4 +88,25 @@ public class Klass {
      
         this.superClass = superClass;
     }
+    
+
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(" className: [").append(className).append("]");
+        sb.append(" simpleClassName: [").append(simpleClassName).append("]");
+        sb.append(" filePath: [").append(filePath).append("]");
+        sb.append(" imports: [\n");
+        for (String imp: imports) {
+            sb.append(imp).append("\n");
+        }
+        sb.append("]");
+        sb.append(" methods: [\n");
+        for (Method method: methods) {
+            sb.append(method).append("\n");
+        }
+        sb.append("]");
+        return sb.toString();
+    }    
 }
