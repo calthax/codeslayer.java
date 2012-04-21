@@ -198,7 +198,7 @@ public class IndexerUtils {
         file.delete();
     }
     
-    public static Klass getIndexKlass(File file, String className) {
+    public static Klass getIndexClass(File file, String className) {
 
         Klass klass = null;
 

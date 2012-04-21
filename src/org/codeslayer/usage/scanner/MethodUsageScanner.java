@@ -24,13 +24,13 @@ import com.sun.source.tree.*;
 import com.sun.source.util.*;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.Klass;
 import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.*;
 import org.codeslayer.source.ScopeTreeFactory;
+import org.codeslayer.usage.UsageUtils;
 
 public class MethodUsageScanner {
     
@@ -210,61 +210,62 @@ public class MethodUsageScanner {
             
             System.out.println("parameter " + usage.getSimpleClassName() + " : " + expressionTree.getKind() + " -- " + expressionTree);
 
-            System.out.println("symbolManager " + symbolManager);
+//            System.out.println("symbolManager " + symbolManager);
             
+            if (UsageUtils.isClassMethod(symbolManager)) {
+                return getClassMethodType(symbolManager);
+            }
+
+            Method method = new Method();
+
             for (Symbol symbol : symbolManager.getSymbols()) {
                 SymbolType symbolType = symbol.getSymbolType();
+                String symbolValue = symbol.getValue();
+                
                 if (symbolType == SymbolType.IDENTIFIER) {
-                    String simpleType = scopeTree.getSimpleType(symbol.getValue());
-                    if (simpleType != null) {
-                        Iterator<Symbol> iterator = symbolManager.getSymbols().iterator();
-                        Method method = getMethod(iterator, scopeTree);
-                        
-                        Klass klass  = IndexerUtils.getIndexKlass(input.getIndexesFile(), method.getClassName());
-                        System.out.println("klass " + klass);
-                        for (Method klassMethod : klass.getMethods()) {
-                            if (method.getName().equals(klassMethod.getName())) { // still need to compare the method parameters
-                                return klassMethod.getSimpleReturnType();
-                            }                        
-                        }
-                    } else { // must be a method of this class
-                        Method methodToFind = new Method(); // would create this from the symbol
-                        methodToFind.setName(symbol.getValue());
-                        String className = getClassMethod(methodToFind).getReturnType();
-                        return className;
+                    String simpleType = scopeTree.getSimpleType(symbolValue);
+                    if (simpleType == null) {
+                        throw new IllegalStateException("not able to find the parameter identifier");
                     }
+                    
+                    System.out.println("param identifier => " + simpleType);
+                    
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
+                    
+                    System.out.println("param class => " + className);
+                    
+                    method.setClassName(className);
+                } else if (symbolType == SymbolType.MEMBER) {
+
+                    System.out.println("param member => " + symbolValue);
+                    
+                    method.setName(symbolValue);                    
+                } else if (symbolType == SymbolType.ARG) {
+                    System.out.println("param arg => " + symbolValue);
+
+                    Parameter parameter = new Parameter();
+                    parameter.setVariable(symbolValue);
+                    method.addParameter(parameter);
                 }
             }
 
-            return null;
+            Klass klass  = IndexerUtils.getIndexClass(input.getIndexesFile(), method.getClassName());
+            Method klassMethod = UsageUtils.findClassMethod(klass, method);
+            String returnType = klassMethod.getSimpleReturnType();
+            
+            System.out.println("param return type => " + returnType);
+            
+            return SourceUtils.getClassName(scopeTree, returnType);
         }
         
-        private Method getMethod(Iterator<Symbol> iterator, ScopeTree scopeTree) {
+        private String getClassMethodType(SymbolManager symbolManager) {
             
             Method method = new Method();
-            
-            while(iterator.hasNext()) {
-                Symbol symbol = iterator.next();
-                switch (symbol.getSymbolType()) {
-                    case IDENTIFIER:
-                        String simpleType = scopeTree.getSimpleType(symbol.getValue());
-                        String className = SourceUtils.getClassName(scopeTree, simpleType);
-                        method.setClassName(className);
-                        break;
-                    case MEMBER:
-                        method.setName(symbol.getValue());
-                        break;
-                    case ARG:
-                        Parameter parameter = new Parameter();
-                        parameter.setVariable(symbol.getValue());
-                        method.addParameter(parameter);
-                        break;
-                    default:
-                        return method;
-                }
-            }
-            
-            return method;
+            List<Symbol> symbols = symbolManager.getSymbols();
+            Symbol symbol = symbols.iterator().next();
+            method.setName(symbol.getValue());
+            String className = getClassMethod(method).getReturnType();
+            return className;
         }
         
         private Method getClassMethod(Method methodToFind) {

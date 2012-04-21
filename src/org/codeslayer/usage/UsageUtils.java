@@ -21,9 +21,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.codeslayer.source.Klass;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.source.SourceUtils;
+import org.codeslayer.usage.domain.Symbol;
+import org.codeslayer.usage.domain.SymbolManager;
+import org.codeslayer.usage.domain.SymbolType;
 import org.codeslayer.usage.domain.Usage;
 
 public class UsageUtils {
@@ -99,7 +103,7 @@ public class UsageUtils {
                 continue;
             }
             
-            if (usageParametersEqual(usageParameters, methodParameters)) {
+            if (isParametersEqual(usageParameters, methodParameters)) {
                 results.add(usage);
             }            
         }            
@@ -107,10 +111,38 @@ public class UsageUtils {
         return results;
     }
     
-    private static boolean usageParametersEqual(List<Parameter> usageParameters, List<Parameter> methodParameters) {
+    public static boolean isClassMethod(SymbolManager symbolManager) {
         
-        Iterator<Parameter> usageIterator = usageParameters.iterator();
-        Iterator<Parameter> methodIterator = methodParameters.iterator();
+        List<Symbol> symbols = symbolManager.getSymbols();
+        for (Symbol symbol : symbols) {
+            if (symbol.getSymbolType() == SymbolType.MEMBER) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    public static Method findClassMethod(Klass klass, Method method) {
+        
+        for (Method klassMethod : klass.getMethods()) {
+            if (isMethodsEqual(klassMethod, method)) {
+                return klassMethod;
+            }                        
+        }
+
+        throw new IllegalStateException("class method not found");
+    }
+    
+    public static boolean isMethodsEqual(Method method1, Method method2) {
+        
+        return isParametersEqual(method1.getParameters(), method2.getParameters());
+    }
+    
+    public static boolean isParametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
+        
+        Iterator<Parameter> usageIterator = parameters1.iterator();
+        Iterator<Parameter> methodIterator = parameters2.iterator();
 
         while (usageIterator.hasNext() && methodIterator.hasNext()) {
             Parameter usageParameter = usageIterator.next();
@@ -125,5 +157,4 @@ public class UsageUtils {
 
         return true;
     }
-    
 }

@@ -158,7 +158,7 @@ public class IndexFactory {
             String lib = libsLookup.get(className);
             if (lib != null) {
                 File file = new File(indexesFolder, "libs.indexes");
-                return IndexerUtils.getIndexKlass(file, className);
+                return IndexerUtils.getIndexClass(file, className);
             }
         }
         
