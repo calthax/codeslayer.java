@@ -151,11 +151,11 @@ public class MethodUsageScanner {
                     continue;
                 }
                 
-                List<Parameter> parameterMatches = new ArrayList<Parameter>();
-                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, input, parameterMatches);
+                List<Parameter> parameters = new ArrayList<Parameter>();
+                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, input, parameters);
                 parameterScanner.scan(methodInvocationTree, scopeTree);
                 
-                for (Parameter parameter : parameterMatches) {
+                for (Parameter parameter : parameters) {
                     usage.addMethodParameter(parameter);
                 }
             }
