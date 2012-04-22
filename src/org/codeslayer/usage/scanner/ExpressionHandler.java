@@ -70,10 +70,32 @@ public class ExpressionHandler {
                 System.out.println("symbol arg => " + arg.getValue());
             }
             
+            Identifier identifier = (Identifier)parent;
+            Method method = createMethod(identifier, member);
+            String returnType = getClassReturnType(method, scopeTree);
+            member.setType(returnType);
+            System.out.println("member type => " + member.getType());
+            
             return member.getType();
         }
 
         throw new IllegalStateException("Not able to find the type for " + child);
+    }
+    
+    private Method createMethod(Identifier identifier, Member member) {
+        
+        Method method = new Method();
+        method.setName(member.getValue());
+        
+        method.setClassName(identifier.getType());
+        
+        for (Arg arg : member.getArgs()) {
+            Parameter parameter = new Parameter();
+            parameter.setType(arg.getType());
+            method.addParameter(parameter);
+        }
+        
+        return method;
     }
     
     private String getClassName(Symbol parent, Symbol child, ScopeTree scopeTree) {
