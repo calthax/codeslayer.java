@@ -17,8 +17,30 @@
  */
 package org.codeslayer.usage.domain;
 
-public interface Symbol {
+public abstract class AbstractSymbol implements Symbol {
+    
+    private final String value;
+    private String type;
 
-    public String getType();
-    public String getValue();
+    public AbstractSymbol(String value) {
+     
+        this.value = value;
+    }
+    
+    @Override
+    public String getValue() {
+
+        return value;
+    }
+
+    @Override
+    public String getType() {
+        
+        return type;
+    }
+
+    public void setType(String type) {
+    
+        this.type = type;
+    }
 }

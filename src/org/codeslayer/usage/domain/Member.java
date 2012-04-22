@@ -17,7 +17,39 @@
  */
 package org.codeslayer.usage.domain;
 
-public enum SymbolType {
+import java.util.ArrayList;
+import java.util.List;
+
+public class Member extends AbstractSymbol {
     
-    ARG, MEMBER, IDENTIFIER
+    private List<Arg> args = new ArrayList<Arg>();
+
+    public Member(String value) {
+
+        super(value);
+    }
+
+    public List<Arg> getArgs() {
+     
+        return args;
+    }
+
+    public void addArg(Arg arg) {
+     
+        this.args.add(arg);
+    }
+    
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(" value: [").append(getValue()).append("]");
+        sb.append(" type: [").append(getType()).append("]");
+        sb.append(" args: [\n");
+        for (Arg arg: args) {
+            sb.append(arg).append("\n");
+        }
+        sb.append("]");
+        return sb.toString();
+    }    
 }

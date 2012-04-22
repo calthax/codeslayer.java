@@ -38,60 +38,71 @@ public class ExpressionHandler {
     
     public String getType(SymbolManager symbolManager, ScopeTree scopeTree) {
 
-        Method method = new Method();
-
-        for (Symbol symbol : symbolManager.getSymbols()) {
-            switch (symbol.getSymbolType()) {
-                case IDENTIFIER:
-                    String className = getIdentifierClassName(symbol, scopeTree);
-                    System.out.println("param identifier => " + className);
-                    method.setClassName(className);
-                    break;
-                case MEMBER:
-                    System.out.println("param member => " + symbol.getValue());
-                    method.setName(symbol.getValue());                    
-                    break;
-                case ARG:
-                    System.out.println("param arg => " + symbol.getValue());
-                    Parameter parameter = new Parameter();
-                    parameter.setVariable(symbol.getValue());
-                    method.addParameter(parameter);
-                    break;
-            }
-        }
-        
-        if (method.getName() == null) {
-            return method.getClassName();
-        }
-
-        return getClassReturnType(method, scopeTree);
+        Symbol symbol = symbolManager.getSymbol();
+        return resolveType(null, symbol, scopeTree);
     }
     
-    private String getIdentifierClassName(Symbol symbol, ScopeTree scopeTree) {
-       
-        String symbolValue = symbol.getValue();
+    private String resolveType(Symbol parent, Symbol child, ScopeTree scopeTree) {
         
-        if (symbolValue.equals("this")) {
+        if (child instanceof Identifier) {
+            Identifier identifier = (Identifier)child;
+            System.out.println("symbol identifier => " + identifier.getValue());
+            
+            for (Arg arg : identifier.getArgs()) {
+                System.out.println("symbol arg => " + arg.getValue());
+            }
+            
+            String className = getClassName(parent, identifier, scopeTree);
+            identifier.setType(className);
+            System.out.println("identifier type => " + identifier.getType());
+            
+            Member member = identifier.getMember();
+            if (member != null) {
+                return resolveType(identifier, member, scopeTree);
+            }
+            
+            return identifier.getType();
+        } else if (child instanceof Member) {
+            Member member = (Member)child;
+            System.out.println("symbol member => " + member.getValue());
+            
+            for (Arg arg : member.getArgs()) {
+                System.out.println("symbol arg => " + arg.getValue());
+            }
+            
+            return member.getType();
+        }
+        
+        return null;
+        
+//        throw new IllegalStateException("Not able to find the type for " + child);
+    }
+    
+    private String getClassName(Symbol parent, Symbol child, ScopeTree scopeTree) {
+       
+        String childValue = child.getValue();
+        
+        if (childValue.equals("this")) {
             return SourceUtils.getClassName(compilationUnitTree);
         } 
         
-        if (SourceUtils.isClass(symbolValue)) {
-            String className = SourceUtils.getClassName(scopeTree, symbolValue);
+        if (SourceUtils.isClass(childValue)) {
+            String className = SourceUtils.getClassName(scopeTree, childValue);
             if (className == null) {
-                throw new IllegalStateException("not able to find the parameter identifier " + symbolValue);
+                throw new IllegalStateException("Not able to find the parameter identifier " + childValue);
             }        
             return className;
         }
         
-        String simpleType = scopeTree.getSimpleType(symbolValue);
-        if (simpleType == null) { // assume this is a method of this class
+        String childSimpleType = scopeTree.getSimpleType(childValue);
+        if (childSimpleType == null) { // assume this is a method of this class
             Method method = new Method();
-            method.setName(symbolValue);
+            method.setName(childValue);
             method.setClassName(SourceUtils.getClassName(compilationUnitTree));
             return getClassReturnType(method, scopeTree);
         } else {
-            String className = SourceUtils.getClassName(scopeTree, simpleType);                   
-            System.out.println("param identifier => " + simpleType);
+            String className = SourceUtils.getClassName(scopeTree, childSimpleType);                   
+//            System.out.println("param identifier => " + simpleType);
             return className;
         }
     }
@@ -100,14 +111,14 @@ public class ExpressionHandler {
         
         Klass klass  = IndexerUtils.getIndexClass(input.getIndexesFile(), method.getClassName());
         if (klass == null) {
-            System.out.println("Not able to find class " + method.getClassName() + ". This may be ok if no source is available.");
+            System.out.println("Not able to find class " + method.getClassName() + ". This may be ok if no source is available");
             return null;
         }
         
         Method klassMethod = SourceUtils.findClassMethod(klass, method);
         String returnType = klassMethod.getSimpleReturnType();
 
-        System.out.println("param return type => " + returnType);
+//        System.out.println("param return type => " + returnType);
 
         return SourceUtils.getClassName(scopeTree, returnType);
     }

@@ -25,7 +25,6 @@ import com.sun.source.util.SimpleTreeVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.codeslayer.usage.domain.SymbolType;
 import org.codeslayer.usage.domain.SymbolManager;
 
 /**
@@ -37,7 +36,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     @Override
     public SymbolManager visitIdentifier(IdentifierTree identifierTree, SymbolManager symbolManager) {
 
-        symbolManager.addSymbol(SymbolType.IDENTIFIER, identifierTree.toString());
+        symbolManager.addIdentifier(identifierTree.toString());
 
         return symbolManager;
     }
@@ -45,7 +44,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     @Override
     public SymbolManager visitMemberSelect(MemberSelectTree memberSelectTree, SymbolManager symbolManager) {
 
-        symbolManager.addSymbol(SymbolType.MEMBER, memberSelectTree.getIdentifier().toString());
+        symbolManager.addMember(memberSelectTree.getIdentifier().toString());
 
         ExpressionTree expression = memberSelectTree.getExpression();
         return expression.accept(new SymbolScanner(), symbolManager);
@@ -61,7 +60,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
         Collections.reverse(args);
 
         for (ExpressionTree arg : args) {
-            symbolManager.addSymbol(SymbolType.ARG, arg.toString());
+            symbolManager.addArg(arg.toString());
         }
 
         ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();

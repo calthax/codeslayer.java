@@ -116,7 +116,9 @@ public class MethodUsageScanner {
                 SymbolManager symbolManager = new SymbolManager();
                 memberSelectTree.accept(new SymbolScanner(), symbolManager);
                 
-                symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
+                System.out.println(symbolManager);
+                
+//                symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
                 
                 ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, input);
                 String className = expressionHandler.getType(symbolManager, scopeTree);

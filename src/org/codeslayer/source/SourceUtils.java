@@ -156,7 +156,7 @@ public class SourceUtils {
             }                        
         }
 
-        throw new IllegalStateException("Class method not found for " + klass.getClassName() + " : " + method.getName());
+        throw new IllegalStateException("Class method not found for " + klass.getClassName() + "." + method.getName());
     }
     
     public static boolean isMethodsEqual(Method method1, Method method2) {
