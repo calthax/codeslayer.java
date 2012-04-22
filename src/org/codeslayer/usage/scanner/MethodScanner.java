@@ -60,7 +60,7 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     @Override
     public ScopeTree visitVariable(VariableTree variableTree, ScopeTree scopeTree) {
 
-        super.visitVariable(variableTree, scopeTree);            
+        super.visitVariable(variableTree, scopeTree);
 
         String type = variableTree.getType().toString();
         String variable = variableTree.getName().toString();
@@ -73,6 +73,8 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     public ScopeTree visitMethod(MethodTree methodTree, ScopeTree scopeTree) {
 
         super.visitMethod(methodTree, scopeTree);
+        
+//        System.out.println("method " + methodTree.getName().toString());
 
         if (methodName.equals(methodTree.getName().toString())) {
             Method method = new Method();

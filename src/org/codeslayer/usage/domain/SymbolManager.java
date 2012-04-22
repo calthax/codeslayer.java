@@ -34,6 +34,15 @@ public class SymbolManager {
         symbols.add(0, new Symbol(symbolType, value));
     }
     
+    public void removeLastSymbol() {
+        
+        if (symbols.isEmpty()) {
+            return;
+        }
+        
+        symbols.remove(symbols.size() - 1);
+    }
+    
     @Override
     public String toString() {
         

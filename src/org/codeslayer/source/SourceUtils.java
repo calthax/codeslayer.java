@@ -24,6 +24,8 @@ import com.sun.source.tree.Tree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 import javax.tools.*;
 
 public class SourceUtils {
@@ -89,6 +91,15 @@ public class SourceUtils {
         return Character.isLowerCase(simpleType.toCharArray()[0]);
     }
     
+    public static boolean isClass(String simpleType) {
+        
+        if (simpleType == null || simpleType.length() == 0) {
+            return false;
+        }
+        
+        return Character.isUpperCase(simpleType.toCharArray()[0]);
+    }
+    
     public static String getSimpleType(String type) {
         
         int index = type.lastIndexOf(".");
@@ -136,4 +147,39 @@ public class SourceUtils {
 
         return scopeTree.getPackageName() + "." + simpleType;
     }
+    
+    public static Method findClassMethod(Klass klass, Method method) {
+        
+        for (Method klassMethod : klass.getMethods()) {
+            if (isMethodsEqual(klassMethod, method)) {
+                return klassMethod;
+            }                        
+        }
+
+        throw new IllegalStateException("class method not found");
+    }
+    
+    public static boolean isMethodsEqual(Method method1, Method method2) {
+        
+        return isParametersEqual(method1.getParameters(), method2.getParameters());
+    }
+    
+    public static boolean isParametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
+        
+        Iterator<Parameter> usageIterator = parameters1.iterator();
+        Iterator<Parameter> methodIterator = parameters2.iterator();
+
+        while (usageIterator.hasNext() && methodIterator.hasNext()) {
+            Parameter usageParameter = usageIterator.next();
+            Parameter methodParameter = methodIterator.next();
+            String usageType = SourceUtils.removeGenerics(usageParameter.getType());
+            String methodType = SourceUtils.removeGenerics(methodParameter.getType());
+            
+            if (!usageType.equals(methodType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }    
 }

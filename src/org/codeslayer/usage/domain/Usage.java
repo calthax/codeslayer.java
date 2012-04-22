@@ -18,16 +18,13 @@
 package org.codeslayer.usage.domain;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import org.codeslayer.source.Parameter;
+import org.codeslayer.source.Method;
 
 public class Usage {
     
     private String className;
     private String simpleClassName;
-    private String methodName;
-    private List<Parameter> methodParameters = new ArrayList<Parameter>();
+    private Method method;
     private File file;
     private int lineNumber;
     private int startPosition;
@@ -53,24 +50,14 @@ public class Usage {
         this.simpleClassName = simpleClassName;
     }
 
-    public String getMethodName() {
+    public Method getMethod() {
         
-        return methodName;
+        return method;
     }
 
-    public void setMethodName(String methodName) {
-        
-        this.methodName = methodName;
-    }
-
-    public List<Parameter> getMethodParameters() {
-        
-        return methodParameters;
-    }
-
-    public void addMethodParameter(Parameter methodParameter) {
+    public void setMethod(Method method) {
      
-        this.methodParameters.add(methodParameter);
+        this.method = method;
     }
 
     public File getFile() {
@@ -119,11 +106,7 @@ public class Usage {
         StringBuilder sb = new StringBuilder();
         sb.append(" className: [").append(className).append("]");
         sb.append(" simpleClassName: [").append(simpleClassName).append("]");
-        sb.append(" methodName: [").append(methodName).append("]");        
-        sb.append(" methodParameters: [");
-        for (Parameter methodParameter : methodParameters) {
-            sb.append(methodParameter.getType());
-        }
+        sb.append(" method: [").append(method).append("]");        
         sb.append("]");
         sb.append(" file: [").append(file.getAbsolutePath()).append("]");
         sb.append(" lineNumber: [").append(lineNumber).append("]");

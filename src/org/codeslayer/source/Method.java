@@ -121,9 +121,9 @@ public class Method {
         
         StringBuilder sb = new StringBuilder();
         sb.append(" name: [").append(name).append("]");
-        sb.append(" parameters: [");
+        sb.append(" parameters: [\n");
         for (Parameter parameter: parameters) {
-            sb.append(parameter.getType());
+            sb.append(parameter.getType()).append("\n");
         }
         sb.append("]");
         sb.append(" modifier: [").append(modifier).append("]");

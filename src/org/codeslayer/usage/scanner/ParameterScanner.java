@@ -19,11 +19,8 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
-import java.util.ArrayList;
 import java.util.List;
-import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class ParameterScanner {
@@ -62,7 +59,11 @@ public class ParameterScanner {
             } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                 Parameter parameter = new Parameter();
 
-                String type = getParameterType(expressionTree, scopeTree);
+                SymbolManager symbolManager = new SymbolManager();
+                expressionTree.accept(new SymbolScanner(), symbolManager);
+
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, input);
+                String type = expressionHandler.getType(symbolManager, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);
 
@@ -80,85 +81,5 @@ public class ParameterScanner {
                 parameterMatches.add(parameter);
             }
         }
-    }
-
-    private String getParameterType(ExpressionTree expressionTree, ScopeTree scopeTree) {
-
-        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) expressionTree;
-        SymbolManager symbolManager = new SymbolManager();
-        methodInvocationTree.accept(new SymbolScanner(), symbolManager);
-
-        if (UsageUtils.isClassMethod(symbolManager)) {
-            return getClassMethodType(symbolManager);
-        }
-
-        Method method = new Method();
-
-        for (Symbol symbol : symbolManager.getSymbols()) {
-            SymbolType symbolType = symbol.getSymbolType();
-            String symbolValue = symbol.getValue();
-
-            if (symbolType == SymbolType.IDENTIFIER) {
-                String simpleType = scopeTree.getSimpleType(symbolValue);
-                if (simpleType == null) {
-                    throw new IllegalStateException("not able to find the parameter identifier");
-                }
-
-                System.out.println("param identifier => " + simpleType);
-
-                String className = SourceUtils.getClassName(scopeTree, simpleType);
-
-                System.out.println("param class => " + className);
-
-                method.setClassName(className);
-            } else if (symbolType == SymbolType.MEMBER) {
-
-                System.out.println("param member => " + symbolValue);
-
-                method.setName(symbolValue);                    
-            } else if (symbolType == SymbolType.ARG) {
-                System.out.println("param arg => " + symbolValue);
-
-                Parameter parameter = new Parameter();
-                parameter.setVariable(symbolValue);
-                method.addParameter(parameter);
-            }
-        }
-
-        Klass klass  = IndexerUtils.getIndexClass(input.getIndexesFile(), method.getClassName());
-        Method klassMethod = UsageUtils.findClassMethod(klass, method);
-        String returnType = klassMethod.getSimpleReturnType();
-
-        System.out.println("param return type => " + returnType);
-
-        return SourceUtils.getClassName(scopeTree, returnType);
-    }
-
-    private String getClassMethodType(SymbolManager symbolManager) {
-
-        Method method = new Method();
-        List<Symbol> symbols = symbolManager.getSymbols();
-        Symbol symbol = symbols.iterator().next();
-        method.setName(symbol.getValue());
-        String className = getClassMethod(method).getReturnType();
-        return className;
-    }
-
-    private Method getClassMethod(Method methodToFind) {
-
-        List<Method> methods = new ArrayList<Method>();
-
-        ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-        ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
-
-        MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, methodToFind.getName(), methods);
-
-        compilationUnitTree.accept(methodScanner, scopeTree);
-
-        for (Method method : methods) {
-            return method;
-        }
-
-        return null;
     }
 }

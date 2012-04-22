@@ -33,7 +33,9 @@ public class Main {
         System.out.println("usage file");
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/model/TableModel.java", "-methodusage", "setItems", "-linenumber", "127"};
+//            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/model/TableModel.java", "-methodusage", "setItems", "-linenumber", "127"};
+            
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/component/Column.java", "-methodusage", "getProperty", "-linenumber", "59"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
@@ -42,9 +44,15 @@ public class Main {
             InputScanner inputScanner = new InputScanner(input);
             Method method = inputScanner.scan();
             
+            if (method == null) {
+                throw new IllegalStateException("the input scanner did not find the method");
+            }
+            
             MethodUsageScanner methodUsageScanner = new MethodUsageScanner(method, input);
             List<Usage> usages = methodUsageScanner.scan();
             usages = UsageUtils.filterUsages(usages, method);
+            
+            System.out.println("************ Usage Search Results ************");
 
             for (Usage usage : usages) {
                 System.out.println(usage);

@@ -43,14 +43,14 @@ public class MethodUsageScanner {
     public List<Usage> scan() 
             throws Exception {
         
-        List<Usage> usages = new ArrayList<Usage>();
+        UsageManager usageManager = new UsageManager();
 
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(input.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usages);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usageManager);
                 ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
                 ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -60,7 +60,7 @@ public class MethodUsageScanner {
             System.err.println(e);
         }
         
-        return usages;
+        return usageManager.getUsages();
     }
     
     private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
@@ -68,13 +68,13 @@ public class MethodUsageScanner {
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
         private final File sourceFile;
-        private final List<Usage> usages;
+        private final UsageManager usageManager;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Usage> usages) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, UsageManager usageManager) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
-            this.usages = usages;
+            this.usageManager = usageManager;
             this.sourceFile = SourceUtils.getSourceFile(compilationUnitTree);
         }
 
@@ -115,17 +115,36 @@ public class MethodUsageScanner {
 
                 SymbolManager symbolManager = new SymbolManager();
                 memberSelectTree.accept(new SymbolScanner(), symbolManager);
+                
+                symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
+                
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, input);
+                String className = expressionHandler.getType(symbolManager, scopeTree);
+                if (className == null) {
+                    return scopeTree;
+                }
+                
+                if (!methodMatch.getClassName().equals(className)) {
+                    return scopeTree;
+                }
+                
+                Method method = new Method();
+                method.setName(methodMatch.getName());
+                method.setClassName(className);
+                method.setSimpleClassName(SourceUtils.getSimpleType(className));
+                
+                System.out.println("symbolManager " + symbolManager);
 
                 Usage usage = new Usage();
+                usage.setMethod(method);
                 usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
                 usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-                usage.setMethodName(methodMatch.getName());
                 usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
                 usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
                 usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree));
                 usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree));
 
-                usages.add(usage);
+                usageManager.addUsage(usage);
             }
 
             return scopeTree;
@@ -142,11 +161,11 @@ public class MethodUsageScanner {
             int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodInvocationTree);
             int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, methodInvocationTree);
 
-            for (Usage usage : usages) {
+            for (Usage usage : usageManager.getUsages()) {
                 if (lineNumber != usage.getLineNumber() || startPosition != usage.getStartPosition()) {
                     continue;
                 }
-
+                
                 if (!sourceFile.equals(usage.getFile())) {
                     continue;
                 }
@@ -156,7 +175,7 @@ public class MethodUsageScanner {
                 parameterScanner.scan(methodInvocationTree, scopeTree);
                 
                 for (Parameter parameter : parameters) {
-                    usage.addMethodParameter(parameter);
+                    usage.getMethod().addParameter(parameter);
                 }
             }
 
