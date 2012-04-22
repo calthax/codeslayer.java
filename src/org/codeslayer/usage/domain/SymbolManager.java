@@ -17,85 +17,66 @@
  */
 package org.codeslayer.usage.domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class SymbolManager {
     
-    private Symbol symbol;
-    private Symbol lastSymbol;
+    private List<Symbol> symbols = new ArrayList<Symbol>();
+    
+    private Symbol symbolTree;
 
-    public Symbol getSymbol() {
+    public Symbol getSymbolTree() {
+        
+        if (symbolTree != null) {
+            return symbolTree;
+        }
 
-        return symbol;
+        Collections.reverse(symbols);
+       
+        SymbolFactory symbolFactory = new SymbolFactory(symbols);
+        this.symbolTree = symbolFactory.createSymbolTree();
+
+        return this.symbolTree;
     }
-
+    
     public void addIdentifier(String value) {
         
         Identifier identifier = new Identifier(value);
-
-        if (symbol == null) {
-            symbol = identifier;
-        }
-
-        lastSymbol = identifier;
+        symbols.add(identifier);
     }
     
     public void addMember(String value) {
         
         Member member = new Member(value);
-        
-        if (lastSymbol instanceof Identifier) {
-            ((Identifier)lastSymbol).setMember(member);
-        }
-
-        lastSymbol = member;
+        symbols.add(member);
     }
     
     public void addArg(String value) {
         
         Arg arg = new Arg(value);
-        
-        if (lastSymbol instanceof Identifier) {
-            ((Identifier)lastSymbol).addArg(arg);
-        } else if (lastSymbol instanceof Member) {
-            ((Member)lastSymbol).addArg(arg);
-        }
-
-        lastSymbol = arg;
+        symbols.add(arg);
     }
     
-//    public void removeLastSymbol() {
-//        
-//        Identifier identifier = (Identifier)symbol;
-//        Member member = identifier.getMember();
-//        
-//        if (member == null) {
-//            symbol = null;
-//            return;
-//        }
-//        
-//        Identifier lastParent = (Identifier)findLastParent(identifier, member);
-//        lastParent.setMember(null);
-//    }
-//    
-//    private Symbol findLastParent(Symbol parent, Symbol child) {
-//        
-//        if (child == null) {
-//            return parent;
-//        }
-//
-//        if (parent != null && parent instanceof Identifier) {
-//            Identifier identifier = (Identifier)parent;
-//            Member member = identifier.getMember();
-//            return findLastParent(identifier, member);
-//        }
-//        
-//        throw new IllegalStateException("Not able to remove the last symbol");
-//    }
+    public void removeLastSymbol() {
+        
+        if (symbols.isEmpty()) {
+            return;
+        }
+        
+        if (symbolTree != null) {
+            throw new IllegalStateException("Not able to remove the last symbol");
+        }
+        
+        symbols.remove(0);
+    }
     
     @Override
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append("symbolManager: ").append(symbol);
+        sb.append("symbolManager: ").append(symbolTree);
         return sb.toString();
     }   
 }

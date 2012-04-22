@@ -43,7 +43,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
 
     @Override
     public SymbolManager visitMemberSelect(MemberSelectTree memberSelectTree, SymbolManager symbolManager) {
-
+        
         symbolManager.addMember(memberSelectTree.getIdentifier().toString());
 
         ExpressionTree expression = memberSelectTree.getExpression();

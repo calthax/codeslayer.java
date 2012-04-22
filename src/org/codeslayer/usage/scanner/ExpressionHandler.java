@@ -38,7 +38,7 @@ public class ExpressionHandler {
     
     public String getType(SymbolManager symbolManager, ScopeTree scopeTree) {
 
-        Symbol symbol = symbolManager.getSymbol();
+        Symbol symbol = symbolManager.getSymbolTree();
         return resolveType(null, symbol, scopeTree);
     }
     
@@ -72,10 +72,8 @@ public class ExpressionHandler {
             
             return member.getType();
         }
-        
-        return null;
-        
-//        throw new IllegalStateException("Not able to find the type for " + child);
+
+        throw new IllegalStateException("Not able to find the type for " + child);
     }
     
     private String getClassName(Symbol parent, Symbol child, ScopeTree scopeTree) {
