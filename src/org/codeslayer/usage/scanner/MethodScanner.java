@@ -36,14 +36,13 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
     private final String methodName;
-    private final List<Method> methodMatches;
+    private final List<Method> methodMatches = new ArrayList<Method>();
 
-    public MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, String methodName, List<Method> methodMatches) {
+    public MethodScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, String methodName) {
 
         this.compilationUnitTree = compilationUnitTree;
         this.sourcePositions = sourcePositions;
         this.methodName = methodName;
-        this.methodMatches = methodMatches;
     }
 
     @Override
@@ -119,5 +118,10 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
         }
 
         return results;
-    }    
+    }
+    
+    public List<Method> getScanResults() {
+        
+        return methodMatches;
+    }
 }

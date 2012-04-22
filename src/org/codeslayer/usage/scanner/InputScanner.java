@@ -46,13 +46,12 @@ public class InputScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                List<Method> methods = new ArrayList<Method>();
-                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage(), methods);
-
                 ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
                 ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
 
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage());
                 compilationUnitTree.accept(methodScanner, scopeTree);
+                List<Method> methods = methodScanner.getScanResults();
                 
                 for (Method method : methods) {
                     if (method.getLineNumber() == input.getLineNumber()) {

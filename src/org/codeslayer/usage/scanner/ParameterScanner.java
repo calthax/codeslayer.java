@@ -19,6 +19,7 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
+import java.util.ArrayList;
 import java.util.List;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.*;
@@ -28,14 +29,13 @@ public class ParameterScanner {
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
     private final Input input;
-    private final List<Parameter> parameterMatches;
+    private final List<Parameter> parameterMatches = new ArrayList<Parameter>();
 
-    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Input input, List<Parameter> parameterMatches) {
+    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Input input) {
      
         this.compilationUnitTree = compilationUnitTree;
         this.sourcePositions = sourcePositions;
         this.input = input;
-        this.parameterMatches = parameterMatches;
     }    
     
     public void scan(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
@@ -81,5 +81,10 @@ public class ParameterScanner {
                 parameterMatches.add(parameter);
             }
         }
+    }
+    
+    public List<Parameter> getScanResults() {
+        
+        return parameterMatches;
     }
 }

@@ -170,10 +170,10 @@ public class MethodUsageScanner {
                     continue;
                 }
                 
-                List<Parameter> parameters = new ArrayList<Parameter>();
-                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, input, parameters);
+                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, input);
                 parameterScanner.scan(methodInvocationTree, scopeTree);
-                
+                List<Parameter> parameters = parameterScanner.getScanResults();
+                         
                 for (Parameter parameter : parameters) {
                     usage.getMethod().addParameter(parameter);
                 }

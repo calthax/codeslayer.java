@@ -19,8 +19,6 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
-import java.util.ArrayList;
-import java.util.List;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.*;
@@ -40,54 +38,66 @@ public class ExpressionHandler {
     
     public String getType(SymbolManager symbolManager, ScopeTree scopeTree) {
 
-
         Method method = new Method();
 
         for (Symbol symbol : symbolManager.getSymbols()) {
-            SymbolType symbolType = symbol.getSymbolType();
-            String symbolValue = symbol.getValue();
-
-            if (symbolType == SymbolType.IDENTIFIER) {
-                if (symbolValue.equals("this")) {
-                    String className = SourceUtils.getClassName(compilationUnitTree);   
+            switch (symbol.getSymbolType()) {
+                case IDENTIFIER:
+                    String className = getIdentifierClassName(symbol, scopeTree);
                     System.out.println("param identifier => " + className);
                     method.setClassName(className);
-                } else if (SourceUtils.isClass(symbolValue)) {
-                    String className = SourceUtils.getClassName(scopeTree, symbolValue);
-                    if (className == null) {
-                        throw new IllegalStateException("not able to find the parameter identifier " + symbolValue);
-                    }
-                    System.out.println("param identifier => " + className);
-                    method.setClassName(className);
-                } else {
-                    String simpleType = scopeTree.getSimpleType(symbolValue);
-                    if (simpleType == null) { // assume this is a method of this class
-                        // getClassMethodType(symbolManager);
-                    } else {
-                        String className = SourceUtils.getClassName(scopeTree, simpleType);                   
-                        System.out.println("param identifier => " + simpleType);
-                        method.setClassName(className);
-                    }
-                }
-                
-            } else if (symbolType == SymbolType.MEMBER) {
-
-                System.out.println("param member => " + symbolValue);
-
-                method.setName(symbolValue);                    
-            } else if (symbolType == SymbolType.ARG) {
-                System.out.println("param arg => " + symbolValue);
-
-                Parameter parameter = new Parameter();
-                parameter.setVariable(symbolValue);
-                method.addParameter(parameter);
+                    break;
+                case MEMBER:
+                    System.out.println("param member => " + symbol.getValue());
+                    method.setName(symbol.getValue());                    
+                    break;
+                case ARG:
+                    System.out.println("param arg => " + symbol.getValue());
+                    Parameter parameter = new Parameter();
+                    parameter.setVariable(symbol.getValue());
+                    method.addParameter(parameter);
+                    break;
             }
         }
         
-        if (method.getName() == null) { // this is not good
+        if (method.getName() == null) {
             return method.getClassName();
         }
 
+        return getClassReturnType(method, scopeTree);
+    }
+    
+    private String getIdentifierClassName(Symbol symbol, ScopeTree scopeTree) {
+       
+        String symbolValue = symbol.getValue();
+        
+        if (symbolValue.equals("this")) {
+            return SourceUtils.getClassName(compilationUnitTree);
+        } 
+        
+        if (SourceUtils.isClass(symbolValue)) {
+            String className = SourceUtils.getClassName(scopeTree, symbolValue);
+            if (className == null) {
+                throw new IllegalStateException("not able to find the parameter identifier " + symbolValue);
+            }        
+            return className;
+        }
+        
+        String simpleType = scopeTree.getSimpleType(symbolValue);
+        if (simpleType == null) { // assume this is a method of this class
+            Method method = new Method();
+            method.setName(symbolValue);
+            method.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            return getClassReturnType(method, scopeTree);
+        } else {
+            String className = SourceUtils.getClassName(scopeTree, simpleType);                   
+            System.out.println("param identifier => " + simpleType);
+            return className;
+        }
+    }
+    
+    private String getClassReturnType(Method method, ScopeTree scopeTree) {
+        
         Klass klass  = IndexerUtils.getIndexClass(input.getIndexesFile(), method.getClassName());
         if (klass == null) {
             System.out.println("Not able to find class " + method.getClassName() + ". This may be ok if no source is available.");
@@ -100,33 +110,5 @@ public class ExpressionHandler {
         System.out.println("param return type => " + returnType);
 
         return SourceUtils.getClassName(scopeTree, returnType);
-    }
-
-    private String getClassMethodType(SymbolManager symbolManager) {
-
-        Method method = new Method();
-        List<Symbol> symbols = symbolManager.getSymbols();
-        Symbol symbol = symbols.iterator().next();
-        method.setName(symbol.getValue());
-        String className = getClassMethod(method).getReturnType();
-        return className;
-    }
-
-    private Method getClassMethod(Method methodToFind) {
-
-        List<Method> methods = new ArrayList<Method>();
-
-        ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-        ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
-
-        MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, methodToFind.getName(), methods);
-
-        compilationUnitTree.accept(methodScanner, scopeTree);
-
-        for (Method method : methods) {
-            return method;
-        }
-
-        return null;
     }
 }
