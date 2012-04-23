@@ -21,6 +21,7 @@ public class Index {
 
     private String className;
     private String simpleClassName;
+    private String superClassName;
     private String methodName;
     private String methodModifier;
     private String methodParameters;
@@ -50,7 +51,17 @@ public class Index {
 
         this.simpleClassName = simpleClassName;
     }
+    
+    public String getSuperClassName() {
+        
+        return superClassName;
+    }
 
+    public void setSuperClassName(String superClassName) {
+     
+        this.superClassName = superClassName;
+    }
+    
     public String getMethodName() {
 
         return methodName;

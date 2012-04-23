@@ -23,7 +23,6 @@ import org.codeslayer.source.Parameter;
 import com.sun.source.tree.*;
 import com.sun.source.util.*;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.*;

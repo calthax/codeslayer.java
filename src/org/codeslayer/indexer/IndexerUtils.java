@@ -18,10 +18,8 @@
 package org.codeslayer.indexer;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.codeslayer.source.Klass;
@@ -32,6 +30,10 @@ import org.codeslayer.source.SourceUtils;
 public class IndexerUtils {
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
+    
+    private static final String REGEX = "import\\s+(.*?);";
+    private static final Pattern PATTERN = Pattern.compile(REGEX);
+    
 
     public static List<String> getSuppressions(String path) {
 
@@ -282,4 +284,36 @@ public class IndexerUtils {
         
         return results;
     }
+    
+    
+    private Map<String, String> getLibsLookup() {
+
+//        Map<String, String> results = new HashMap<String, String>();
+//
+//        try{
+//            File file = new File(indexesFolder, "libs.classes");
+//            FileInputStream fstream = new FileInputStream(file);
+//            DataInputStream in = new DataInputStream(fstream);
+//            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+//            String strLine;
+//            while ((strLine = br.readLine()) != null) {
+//                if (strLine == null || strLine.trim().length() == 0) {
+//                    continue;
+//                }
+//                
+//                String[] split = strLine.split("\\t");
+//                String simpleClassName = split[0];
+//                String className = split[1];
+//                results.put(className, simpleClassName);
+//            }
+//            in.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.err.println("not able to load the libs.classes file.");
+//        }
+//
+//        return results;
+        
+        return null;
+    }    
 }

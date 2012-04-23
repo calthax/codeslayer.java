@@ -29,7 +29,7 @@ public class Main {
             Modifiers modifiers = new Modifiers(dummy);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
-            IndexFactory indexFactory = new IndexFactory(modifiers.getIndexesFolder());
+            IndexFactory indexFactory = new IndexFactory();
             
             List<Index> indexes = new ArrayList<Index>();
             

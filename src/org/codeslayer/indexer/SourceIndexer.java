@@ -108,7 +108,7 @@ public class SourceIndexer implements Indexer {
             klass.setSimpleClassName(simpleClassName);
             klass.setClassName(className);
             klass.setFilePath(getFilePath());
-            klass.setSuperClass(getSuperClass(classTree));
+            klass.setSuperClassName(getSuperClassName(classTree, scopeTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
@@ -144,14 +144,14 @@ public class SourceIndexer implements Indexer {
             return results;
         }
 
-        private String getSuperClass(ClassTree classTree) {
+        private String getSuperClassName(ClassTree classTree, ScopeTree scopeTree) {
             
             Tree tree = classTree.getExtendsClause();
             if (tree == null) {
-                return null;
+                return "java.lang.Object";
             }
             
-            return tree.toString();
+            return SourceUtils.getClassName(scopeTree, tree.toString());
         }
 
         private String getModifier(MethodTree methodTree) {

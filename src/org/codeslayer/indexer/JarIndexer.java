@@ -87,7 +87,8 @@ public class JarIndexer implements Indexer {
         List<Index> results = new ArrayList<Index>();
         
         String packageName = clazz.getPackage().getName();
-        String className = clazz.getSimpleName();
+        String simpleClassName = clazz.getSimpleName();
+        String superClassName = clazz.getSuperclass().getName();
         
         for (Method method : clazz.getMethods()) {
 
@@ -97,8 +98,9 @@ public class JarIndexer implements Indexer {
             
             Index index = new Index();
 
-            index.setClassName(packageName + "." + className);
-            index.setSimpleClassName(className);
+            index.setClassName(packageName + "." + simpleClassName);
+            index.setSimpleClassName(simpleClassName);
+            index.setSuperClassName(superClassName);
 
             index.setMethodName(method.getName());
             index.setMethodModifier(getModifier(method));
