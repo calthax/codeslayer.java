@@ -22,21 +22,11 @@ import java.io.File;
 public class Input {
     
     private File[] sourceFolders;
-    private File indexesFile;
+    private File indexesFolder;
     private File usageFile;
     private String methodUsage;
     private String classUsage;
     private int lineNumber;
-
-    public File getUsageFile() {
-        
-        return usageFile;
-    }
-
-    public void setUsageFile(File usageFile) {
-        
-        this.usageFile = usageFile;
-    }
 
     public String getClassUsage() {
         
@@ -78,13 +68,23 @@ public class Input {
         this.sourceFolders = sourceFolders;
     }
 
-    public File getIndexesFile() {
+    public File getIndexesFolder() {
         
-        return indexesFile;
+        return indexesFolder;
     }
 
-    public void setIndexesFile(File indexesFile) {
+    public void setIndexesFolder(File indexesFolder) {
      
-        this.indexesFile = indexesFile;
+        this.indexesFolder = indexesFolder;
+    }
+    
+    public File getUsageFile() {
+        
+        return usageFile;
+    }
+
+    public void setUsageFile(File usageFile) {
+        
+        this.usageFile = usageFile;
     }
 }

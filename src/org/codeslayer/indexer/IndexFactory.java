@@ -39,7 +39,7 @@ public class IndexFactory {
             Index index = new Index();
             index.setClassName(klass.getClassName());
             index.setSimpleClassName(klass.getSimpleClassName());
-            index.setSuperClassName(klass.getSuperClassName());
+            index.setSuperClassName(klass.getSuperClass());
             index.setMethodModifier(method.getModifier());
             index.setMethodName(method.getName());
             index.setMethodParameters( getMethodParameters(method));

@@ -68,35 +68,35 @@ public class Main {
     
     private static Input getInput(Modifiers modifiers) {
         
-        Input result = new Input();
+        Input intput = new Input();
         
         File[] sourceFiles = getSourceFiles(modifiers);
-        result.setSourceFolders(sourceFiles);
+        intput.setSourceFolders(sourceFiles);
         
         String indexesFolder = modifiers.getIndexesFolder();
         if (indexesFolder != null) {
-            result.setIndexesFile(new File(indexesFolder, "projects.indexes"));
+            intput.setIndexesFolder(new File(indexesFolder));
         }
         
         String usageFile = modifiers.getUsageFile();
         System.out.println("usageFile " + usageFile);
         File file = new File(usageFile);
-        result.setUsageFile(file);
+        intput.setUsageFile(file);
         
         String methodUsage = modifiers.getMethodUsage();
         System.out.println("methodUsage " + methodUsage);
-        result.setMethodUsage(methodUsage);
+        intput.setMethodUsage(methodUsage);
         
         String classUsage = modifiers.getClassUsage();
-        result.setClassUsage(classUsage);
+        intput.setClassUsage(classUsage);
         
         String lineNumber = modifiers.getLineNumber();
         System.out.println("lineNumber " + lineNumber);
         if (lineNumber != null) {
-            result.setLineNumber(Integer.parseInt(lineNumber));
+            intput.setLineNumber(Integer.parseInt(lineNumber));
         }
         
-        return result;
+        return intput;
     }
     
     private static File[] getSourceFiles(Modifiers modifiers) {

@@ -19,20 +19,23 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
-import org.codeslayer.indexer.IndexerUtils;
+import java.util.List;
 import org.codeslayer.source.*;
+import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class ExpressionHandler {
     
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
+    private final HierarchyManager hierarchyManager;
     private final Input input;
 
-    public ExpressionHandler(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Input input) {
+    public ExpressionHandler(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, Input input) {
      
         this.compilationUnitTree = compilationUnitTree;
         this.sourcePositions = sourcePositions;
+        this.hierarchyManager = hierarchyManager;
         this.input = input;
     }    
     
@@ -72,7 +75,7 @@ public class ExpressionHandler {
             
             Identifier identifier = (Identifier)parent;
             Method method = createMethod(identifier, member);
-            String returnType = getClassReturnType(method, scopeTree);
+            String returnType = getClassReturnType(method);
             member.setType(returnType);
             System.out.println("member type => " + member.getType());
             
@@ -103,7 +106,7 @@ public class ExpressionHandler {
             Method method = new Method();
             method.setName(childValue);
             method.setClassName(SourceUtils.getClassName(compilationUnitTree));
-            return getClassReturnType(method, scopeTree);
+            return getClassReturnType(method);
         } else {
             String className = SourceUtils.getClassName(scopeTree, childSimpleType);                   
 //            System.out.println("param identifier => " + simpleType);
@@ -111,20 +114,19 @@ public class ExpressionHandler {
         }
     }
     
-    private String getClassReturnType(Method method, ScopeTree scopeTree) {
+    private String getClassReturnType(Method method) {
         
-        Klass klass  = IndexerUtils.getIndexClass(input.getIndexesFile(), method.getClassName());
-        if (klass == null) {
-            System.out.println("Not able to find class " + method.getClassName() + ". This may be ok if no source is available");
-            return null;
+        List<Klass> klasses = hierarchyManager.getKlassHierarchy(method.getClassName());
+        for (Klass klass : klasses) {
+            List<Method> classMethods = UsageUtils.getClassMethodsByName(klass.getFilePath(), method.getName());
+            for (Method classMethod : classMethods) {
+                if (SourceUtils.isMethodsEqual(classMethod, method)) {
+                    return classMethod.getReturnType();
+                }
+            }
         }
         
-        Method klassMethod = SourceUtils.findClassMethod(klass, method);
-        String returnType = klassMethod.getSimpleReturnType();
-
-//        System.out.println("param return type => " + returnType);
-
-        return SourceUtils.getClassName(scopeTree, returnType);
+        return null;
     }
     
     private Method createMethod(Identifier identifier, Member member) {

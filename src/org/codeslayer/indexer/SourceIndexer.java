@@ -108,7 +108,7 @@ public class SourceIndexer implements Indexer {
             klass.setSimpleClassName(simpleClassName);
             klass.setClassName(className);
             klass.setFilePath(getFilePath());
-            klass.setSuperClassName(getSuperClassName(classTree, scopeTree));
+            klass.setSuperClass(getSuperClassName(classTree, scopeTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {

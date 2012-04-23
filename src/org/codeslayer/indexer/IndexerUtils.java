@@ -22,10 +22,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.codeslayer.source.Klass;
-import org.codeslayer.source.Method;
-import org.codeslayer.source.Parameter;
-import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.*;
 
 public class IndexerUtils {
 
@@ -200,7 +197,7 @@ public class IndexerUtils {
         file.delete();
     }
     
-    public static Klass getIndexClass(File file, String className) {
+    public static Klass findClassByIndexFile(File file, String className) {
 
         Klass klass = null;
 
@@ -244,6 +241,36 @@ public class IndexerUtils {
         return klass;
     }
     
+    public static HierarchyManager loadHierarchyFile(File file) {
+
+        HierarchyManager hierarchyManager = new HierarchyManager();
+
+        try{
+            FileInputStream fstream = new FileInputStream(file);
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                if (strLine == null || strLine.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] split = strLine.split("\\t");
+                Hierarchy hierarchy = new Hierarchy();
+                hierarchy.setClassName(split[0]);
+                hierarchy.setSuperClass(split[1]);
+                hierarchy.setFilePath(split[2]);
+                hierarchyManager.addHierarchy(hierarchy);
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("not able to load the libs.indexes file.");
+        }
+
+        return hierarchyManager;
+    }
+    
     private static List<Parameter> getParameters(String[] split) {
         
         List<Parameter> results = new ArrayList<Parameter>();
@@ -284,36 +311,4 @@ public class IndexerUtils {
         
         return results;
     }
-    
-    
-    private Map<String, String> getLibsLookup() {
-
-//        Map<String, String> results = new HashMap<String, String>();
-//
-//        try{
-//            File file = new File(indexesFolder, "libs.classes");
-//            FileInputStream fstream = new FileInputStream(file);
-//            DataInputStream in = new DataInputStream(fstream);
-//            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-//            String strLine;
-//            while ((strLine = br.readLine()) != null) {
-//                if (strLine == null || strLine.trim().length() == 0) {
-//                    continue;
-//                }
-//                
-//                String[] split = strLine.split("\\t");
-//                String simpleClassName = split[0];
-//                String className = split[1];
-//                results.put(className, simpleClassName);
-//            }
-//            in.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.err.println("not able to load the libs.classes file.");
-//        }
-//
-//        return results;
-        
-        return null;
-    }    
 }

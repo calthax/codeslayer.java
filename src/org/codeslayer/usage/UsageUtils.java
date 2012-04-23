@@ -17,13 +17,17 @@
  */
 package org.codeslayer.usage;
 
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.SourcePositions;
+import com.sun.source.util.Trees;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.codeslayer.source.Method;
-import org.codeslayer.source.Parameter;
-import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.scanner.MethodScanner;
 
 public class UsageUtils {
 
@@ -104,5 +108,27 @@ public class UsageUtils {
         }            
         
         return results;
+    }
+    
+    public static List<Method> getClassMethodsByName(String filePath, String methodName) {
+        
+        try {
+            File file = new File(filePath);            
+            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{file});
+            SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
+            Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
+            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, methodName);                
+                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
+                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+                compilationUnitTree.accept(methodScanner, scopeTree);
+                return methodScanner.getScanResults();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e);
+        }
+        
+        return Collections.emptyList();
     }
 }

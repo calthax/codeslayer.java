@@ -28,13 +28,15 @@ public class ParameterScanner {
     
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
+    private final HierarchyManager hierarchyManager;
     private final Input input;
     private final List<Parameter> parameterMatches = new ArrayList<Parameter>();
 
-    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Input input) {
+    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, Input input) {
      
         this.compilationUnitTree = compilationUnitTree;
         this.sourcePositions = sourcePositions;
+        this.hierarchyManager = hierarchyManager;
         this.input = input;
     }    
     
@@ -62,7 +64,7 @@ public class ParameterScanner {
                 SymbolManager symbolManager = new SymbolManager();
                 expressionTree.accept(new SymbolScanner(), symbolManager);
 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, input);
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, hierarchyManager, input);
                 String type = expressionHandler.getType(symbolManager, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);

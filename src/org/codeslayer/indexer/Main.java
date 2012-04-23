@@ -62,6 +62,7 @@ public class Main {
             if (indexes != null && !indexes.isEmpty()) {
                 new IndexesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
                 new ClassesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
+                new HierarchyFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
             }
         } catch (Exception e) {
             e.printStackTrace();

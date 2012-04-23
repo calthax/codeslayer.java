@@ -24,9 +24,9 @@ import com.sun.source.tree.*;
 import com.sun.source.util.*;
 import java.io.*;
 import java.util.List;
-import org.codeslayer.source.Method;
+import org.codeslayer.indexer.IndexerUtils;
+import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.*;
-import org.codeslayer.source.ScopeTreeFactory;
 
 public class MethodUsageScanner {
     
@@ -43,13 +43,16 @@ public class MethodUsageScanner {
             throws Exception {
         
         UsageManager usageManager = new UsageManager();
+        
+        File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
+        HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
 
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(input.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usageManager);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usageManager, hierarchyManager);
                 ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
                 ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -68,12 +71,14 @@ public class MethodUsageScanner {
         private final SourcePositions sourcePositions;
         private final File sourceFile;
         private final UsageManager usageManager;
+        private final HierarchyManager hierarchyManager;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, UsageManager usageManager) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, UsageManager usageManager, HierarchyManager hierarchyManager) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
             this.usageManager = usageManager;
+            this.hierarchyManager = hierarchyManager;
             this.sourceFile = SourceUtils.getSourceFile(compilationUnitTree);
         }
 
@@ -117,7 +122,7 @@ public class MethodUsageScanner {
                 
                 symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
                 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, input);
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, hierarchyManager, input);
                 String className = expressionHandler.getType(symbolManager, scopeTree);
                 if (className == null) {
                     return scopeTree;
@@ -169,7 +174,7 @@ public class MethodUsageScanner {
                     continue;
                 }
                 
-                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, input);
+                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, hierarchyManager, input);
                 parameterScanner.scan(methodInvocationTree, scopeTree);
                 List<Parameter> parameters = parameterScanner.getScanResults();
                          
