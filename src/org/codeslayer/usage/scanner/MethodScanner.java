@@ -17,19 +17,12 @@
  */
 package org.codeslayer.usage.scanner;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ImportTree;
-import com.sun.source.tree.MethodTree;
-import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import org.codeslayer.source.Method;
-import org.codeslayer.source.Parameter;
-import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.ScopeTree;
+import org.codeslayer.source.*;
 
 public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
     
@@ -67,57 +60,47 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         return scopeTree;                    
     }
-
+    
     @Override
-    public ScopeTree visitMethod(MethodTree methodTree, ScopeTree scopeTree) {
-
-        super.visitMethod(methodTree, scopeTree);
+    public ScopeTree visitClass(ClassTree classTree, ScopeTree scopeTree) {
         
-//        System.out.println("method " + methodTree.getName().toString());
+        super.visitClass(classTree, scopeTree);
 
-        if (methodName.equals(methodTree.getName().toString())) {
-            Method method = new Method();
-            method.setClassName(SourceUtils.getClassName(compilationUnitTree));
-            method.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-            method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
-            method.setName(methodTree.getName().toString());
-            method.setParameters(getParameters(methodTree, scopeTree));
-            
-            String simpleReturnType = methodTree.getReturnType().toString();
-            method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
-            method.setSimpleReturnType(simpleReturnType);
-            
-            methodMatches.add(method);
+        List<? extends Tree> members = classTree.getMembers();
+
+//        Klass klass = new Klass();
+//        klass.setImports(SourceUtils.getImports(compilationUnitTree));
+//        klass.setSimpleClassName(simpleClassName);
+//        klass.setClassName(className);
+//        klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+//        klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+//        klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+
+        for (Tree memberTree : members) {
+            if (memberTree instanceof MethodTree) {
+                MethodTree methodTree = (MethodTree)memberTree;
+
+                if (methodName.equals(methodTree.getName().toString())) {
+                    Method method = new Method();
+                    method.setClassName(SourceUtils.getClassName(compilationUnitTree));
+                    method.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+                    method.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+                    method.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+                    
+                    method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
+                    method.setName(methodTree.getName().toString());
+                    method.setParameters(SourceUtils.getParameters(methodTree, scopeTree));
+
+                    String simpleReturnType = methodTree.getReturnType().toString();
+                    method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
+                    method.setSimpleReturnType(simpleReturnType);
+
+                    methodMatches.add(method);
+                }
+            }
         }
 
         return scopeTree;
-    }
-
-    private List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
-
-        List<Parameter> results = new ArrayList<Parameter>(); 
-
-        Iterator<? extends VariableTree> iterator = methodTree.getParameters().iterator();
-        while (iterator.hasNext()) {
-            VariableTree variableTree = iterator.next();
-
-            String simpleType = variableTree.getType().toString();
-            String variable = variableTree.getName().toString();
-
-            Parameter parameter = new Parameter();
-            parameter.setVariable(variable);
-            parameter.setSimpleType(simpleType);
-            
-            if (SourceUtils.isPrimative(simpleType)) {
-                parameter.setType(simpleType);
-            } else {
-                parameter.setType(SourceUtils.getClassName(scopeTree, simpleType));
-            }
-
-            results.add(parameter);
-        }
-
-        return results;
     }
     
     public List<Method> getScanResults() {

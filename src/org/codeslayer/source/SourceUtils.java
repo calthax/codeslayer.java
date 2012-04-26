@@ -17,15 +17,15 @@
  */
 package org.codeslayer.source;
 
-import com.sun.source.tree.CompilationUnitTree;
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.LineMap;
-import com.sun.source.tree.Tree;
+import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import javax.lang.model.element.Modifier;
 import javax.tools.*;
 
 public class SourceUtils {
@@ -58,6 +58,89 @@ public class SourceUtils {
         FileObject sourceFile = compilationUnitTree.getSourceFile();
         String className = sourceFile.getName().toString();
         return className.substring(0, className.length()-5);
+    }
+    
+    public static List<String> getImports(CompilationUnitTree compilationUnitTree) {
+
+        List<String> results = new ArrayList<String>();
+
+        for (ImportTree importTree : compilationUnitTree.getImports()) {
+            results.add(importTree.toString());
+        }
+
+        return results;
+    }
+
+    public static String getSuperClass(ClassTree classTree, ScopeTree scopeTree) {
+
+        Tree tree = classTree.getExtendsClause();
+        if (tree == null) {
+            return "java.lang.Object";
+        }
+
+        return SourceUtils.getClassName(scopeTree, tree.toString());
+    }
+
+    public static List<String> getInterfaces(ClassTree classTree, ScopeTree scopeTree) {
+
+        List<String> results = new ArrayList<String>();
+
+        for (Tree implementsTree : classTree.getImplementsClause()) {
+            results.add(SourceUtils.getClassName(scopeTree, implementsTree.toString()));
+        }
+
+        return results;
+    }
+
+    public static String getModifier(MethodTree methodTree) {
+
+        ModifiersTree modifiersTree = methodTree.getModifiers();
+        Set<Modifier> flags = modifiersTree.getFlags();
+        for (Modifier modifier : flags) {
+            return modifier.toString();
+        }
+
+        return "package";
+    }
+
+    public static List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
+
+        List<Parameter> parameters = new ArrayList<Parameter>();
+
+        for (VariableTree variableTree : methodTree.getParameters()) {
+            String simpleType = variableTree.getType().toString();
+            String variable = variableTree.getName().toString();
+
+            Parameter parameter = new Parameter();
+            parameter.setVariable(variable);
+            parameter.setSimpleType(simpleType);
+            
+            if (SourceUtils.isPrimative(simpleType)) {
+                parameter.setType(simpleType);
+            } else {
+                parameter.setType(SourceUtils.getClassName(scopeTree, simpleType));
+            }
+
+            parameters.add(parameter);
+        }
+
+        return parameters;
+    }
+
+    public static String getSimpleReturnType(MethodTree methodTree) {
+
+        Tree simpleReturnType = methodTree.getReturnType();
+        if (simpleReturnType == null) {
+            return "void";
+        }
+
+        return simpleReturnType.toString();
+    }
+
+    public static String getSourceFilePath(CompilationUnitTree compilationUnitTree) {
+
+        FileObject sourceFile = compilationUnitTree.getSourceFile();
+        return sourceFile.toUri().getPath();
     }
 
     public static File getSourceFile(CompilationUnitTree compilationUnitTree) {

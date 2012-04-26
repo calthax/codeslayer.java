@@ -17,7 +17,7 @@
  */
 package org.codeslayer.source;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Klass {
@@ -26,9 +26,9 @@ public class Klass {
     private String simpleClassName;
     private String filePath;
     private String superClass;
-    private List<String> imports = new ArrayList<String>();
-    private List<String> interfaces = new ArrayList<String>();
-    private List<Method> methods = new ArrayList<Method>();
+    private List<String> imports;
+    private List<String> interfaces;
+    private List<Method> methods;
 
     public String getClassName() {
         
@@ -50,27 +50,11 @@ public class Klass {
         this.simpleClassName = simpleClassName;
     }
 
-    public String getFilePath() {
-        
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-     
-        this.filePath = filePath;
-    }
-
-    public List<Method> getMethods() {
-        
-        return methods;
-    }
-
-    public void addMethod(Method method) {
-     
-        this.methods.add(method);
-    }
-
     public List<String> getImports() {
+        
+        if (imports == null) {
+            return Collections.emptyList();
+        }
         
         return imports;
     }
@@ -92,12 +76,40 @@ public class Klass {
 
     public List<String> getInterfaces() {
         
-        return interfaces;
+        if (interfaces == null) {
+            return Collections.emptyList();
+        }
+        
+       return interfaces;
     }
 
     public void setInterfaces(List<String> interfaces) {
      
         this.interfaces = interfaces;
+    }
+    
+    public String getFilePath() {
+        
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+     
+        this.filePath = filePath;
+    }
+
+    public List<Method> getMethods() {
+        
+        if (methods == null) {
+            return Collections.emptyList();
+        }
+        
+        return methods;
+    }
+
+    public void addMethod(Method method) {
+     
+        this.methods.add(method);
     }
     
     @Override
@@ -107,17 +119,23 @@ public class Klass {
         sb.append(" className: [").append(className).append("]");
         sb.append(" simpleClassName: [").append(simpleClassName).append("]");
         sb.append(" superClassName: [").append(superClass).append("]");
-        sb.append(" filePath: [").append(filePath).append("]");
+        sb.append(" superClass: [").append(superClass).append("]");        
+        sb.append(" interfaces: [\n");
+        for (String interfaceName: getInterfaces()) {
+            sb.append(interfaceName).append("\n");
+        }
+        sb.append("]");
         sb.append(" imports: [\n");
-        for (String imp: imports) {
+        for (String imp: getImports()) {
             sb.append(imp).append("\n");
         }
         sb.append("]");
         sb.append(" methods: [\n");
-        for (Method method: methods) {
+        for (Method method: getMethods()) {
             sb.append(method).append("\n");
         }
         sb.append("]");
+        sb.append(" filePath: [").append(filePath).append("]");
         return sb.toString();
     }    
 }

@@ -17,6 +17,7 @@
  */
 package org.codeslayer.source;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Hierarchy {
@@ -48,6 +49,10 @@ public class Hierarchy {
 
     public List<String> getInterfaces() {
         
+        if (interfaces == null) {
+            return Collections.emptyList();
+        }
+
         return interfaces;
     }
 

@@ -18,17 +18,20 @@
 package org.codeslayer.source;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Method {
     
     private String name;
     private String modifier;
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Parameter> parameters;
     private String simpleReturnType;
     private String returnType;
     private String className;
     private String simpleClassName;
+    private String superClass;
+    private List<String> interfaces;
     private int lineNumber;
 
     public String getName() {
@@ -53,6 +56,10 @@ public class Method {
     
     public List<Parameter> getParameters() {
         
+        if (parameters == null) {
+            return Collections.emptyList();
+        }
+        
         return parameters;
     }
 
@@ -62,6 +69,10 @@ public class Method {
     }
 
     public void addParameter(Parameter parameter) {
+        
+        if (parameters == null) {
+            this.parameters = new ArrayList<Parameter>();
+        }
      
         this.parameters.add(parameter);
     }
@@ -106,6 +117,30 @@ public class Method {
         this.simpleClassName = simpleClassName;
     }
 
+    public String getSuperClass() {
+        
+        return superClass;
+    }
+
+    public void setSuperClass(String superClass) {
+     
+        this.superClass = superClass;
+    }
+
+    public List<String> getInterfaces() {
+        
+        if (interfaces == null) {
+            return Collections.emptyList();
+        }
+        
+        return interfaces;
+    }
+
+    public void setInterfaces(List<String> interfaces) {
+     
+        this.interfaces = interfaces;
+    }
+
     public int getLineNumber() {
         
         return lineNumber;
@@ -122,7 +157,7 @@ public class Method {
         StringBuilder sb = new StringBuilder();
         sb.append(" name: [").append(name).append("]");
         sb.append(" parameters: [\n");
-        for (Parameter parameter: parameters) {
+        for (Parameter parameter: getParameters()) {
             sb.append(parameter.getType()).append("\n");
         }
         sb.append("]");
@@ -131,6 +166,12 @@ public class Method {
         sb.append(" simpleReturnType: [").append(simpleReturnType).append("]");        
         sb.append(" className: [").append(className).append("]");        
         sb.append(" simpleClassName: [").append(simpleClassName).append("]");        
+        sb.append(" superClass: [").append(superClass).append("]");        
+        sb.append(" interfaces: [\n");
+        for (String interfaceName: getInterfaces()) {
+            sb.append(interfaceName).append("\n");
+        }
+        sb.append("]");
         sb.append(" lineNumber: [").append(lineNumber).append("]");        
         return sb.toString();
     }    

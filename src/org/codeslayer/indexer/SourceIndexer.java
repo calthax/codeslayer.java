@@ -19,15 +19,12 @@ package org.codeslayer.indexer;
 
 import com.sun.source.tree.*;
 import java.util.ArrayList;
-import java.util.Set;
-import javax.lang.model.element.Modifier;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
-import javax.tools.FileObject;
 import org.codeslayer.source.*;
 import org.codeslayer.source.ScopeTreeFactory;
 
@@ -104,12 +101,12 @@ public class SourceIndexer implements Indexer {
             }
             
             Klass klass = new Klass();
-            klass.setImports(getImports());
+            klass.setImports(SourceUtils.getImports(compilationUnitTree));
             klass.setSimpleClassName(simpleClassName);
             klass.setClassName(className);
-            klass.setFilePath(getFilePath());
-            klass.setSuperClass(getSuperClass(classTree, scopeTree));
-            klass.setInterfaces(getInterfaces(classTree, scopeTree));
+            klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+            klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+            klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
@@ -117,10 +114,10 @@ public class SourceIndexer implements Indexer {
 
                     Method method = new Method();
                     method.setName(methodTree.getName().toString());
-                    method.setModifier(getModifier(methodTree));
-                    method.setParameters(getParameters(methodTree, scopeTree));
+                    method.setModifier(SourceUtils.getModifier(methodTree));
+                    method.setParameters(SourceUtils.getParameters(methodTree, scopeTree));
                     
-                    String simpleReturnType = getSimpleReturnType(methodTree);
+                    String simpleReturnType = SourceUtils.getSimpleReturnType(methodTree);
                     method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
                     method.setSimpleReturnType(simpleReturnType);
                     method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
@@ -132,87 +129,6 @@ public class SourceIndexer implements Indexer {
             indexClasses.add(klass);
 
             return super.visitClass(classTree, scopeTree);
-        }
-
-        private List<String> getImports() {
-            
-            List<String> results = new ArrayList<String>();
-
-            for (ImportTree importTree : compilationUnitTree.getImports()) {
-                results.add(importTree.toString());
-            }
-                
-            return results;
-        }
-
-        private String getSuperClass(ClassTree classTree, ScopeTree scopeTree) {
-            
-            Tree tree = classTree.getExtendsClause();
-            if (tree == null) {
-                return "java.lang.Object";
-            }
-            
-            return SourceUtils.getClassName(scopeTree, tree.toString());
-        }
-        
-        private List<String> getInterfaces(ClassTree classTree, ScopeTree scopeTree) {
-            
-            List<String> results = new ArrayList<String>();
-
-            for (Tree implementsTree : classTree.getImplementsClause()) {
-                results.add(SourceUtils.getClassName(scopeTree, implementsTree.toString()));
-            }
-                
-            return results;
-        }
-
-        private String getModifier(MethodTree methodTree) {
-
-            ModifiersTree modifiersTree = methodTree.getModifiers();
-            Set<Modifier> flags = modifiersTree.getFlags();
-            for (Modifier modifier : flags) {
-                return modifier.toString();
-            }
-
-            return "package";
-        }
-
-        private List<Parameter> getParameters(MethodTree methodTree, ScopeTree scopeTree) {
-
-            List<Parameter> parameters = new ArrayList<Parameter>();
-            
-            for (VariableTree variableTree : methodTree.getParameters()) {
-                Parameter parameter = new Parameter();
-                parameter.setVariable(variableTree.getName().toString());
-
-                String simpleType = variableTree.getType().toString();
-                parameter.setSimpleType(simpleType);
-                if (SourceUtils.isPrimative(simpleType)) {
-                    parameter.setType(simpleType);
-                } else {
-                    parameter.setType(SourceUtils.getClassName(scopeTree, simpleType));
-                }                
-                
-                parameters.add(parameter);
-            }
-
-            return parameters;
-        }
-
-        private String getSimpleReturnType(MethodTree methodTree) {
-
-            Tree simpleReturnType = methodTree.getReturnType();
-            if (simpleReturnType == null) {
-                return "void";
-            }
-            
-            return simpleReturnType.toString();
-        }
-
-        private String getFilePath() {
-            
-            FileObject sourceFile = compilationUnitTree.getSourceFile();
-            return sourceFile.toUri().getPath();
         }
     }
 }
