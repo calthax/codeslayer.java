@@ -118,7 +118,6 @@ public class Klass {
         StringBuilder sb = new StringBuilder();
         sb.append(" className: [").append(className).append("]");
         sb.append(" simpleClassName: [").append(simpleClassName).append("]");
-        sb.append(" superClassName: [").append(superClass).append("]");
         sb.append(" superClass: [").append(superClass).append("]");        
         sb.append(" interfaces: [\n");
         for (String interfaceName: getInterfaces()) {
@@ -128,11 +127,6 @@ public class Klass {
         sb.append(" imports: [\n");
         for (String imp: getImports()) {
             sb.append(imp).append("\n");
-        }
-        sb.append("]");
-        sb.append(" methods: [\n");
-        for (Method method: getMethods()) {
-            sb.append(method).append("\n");
         }
         sb.append("]");
         sb.append(" filePath: [").append(filePath).append("]");

@@ -128,14 +128,16 @@ public class MethodUsageScanner {
                     return scopeTree;
                 }
                 
-                if (!methodMatch.getClassName().equals(className)) {
+                if (!methodMatch.getKlass().getClassName().equals(className)) {
                     return scopeTree;
                 }
                 
                 Method method = new Method();
                 method.setName(methodMatch.getName());
-                method.setClassName(className);
-                method.setSimpleClassName(SourceUtils.getSimpleType(className));
+                Klass klass = new Klass();
+                klass.setClassName(className);
+                klass.setSimpleClassName(SourceUtils.getSimpleType(className));
+                method.setKlass(klass);
                 
 //                System.out.println("symbolManager " + symbolManager);
 

@@ -105,7 +105,9 @@ public class ExpressionHandler {
         if (childSimpleType == null) { // assume this is a method of this class
             Method method = new Method();
             method.setName(childValue);
-            method.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            Klass klass = new Klass();
+            klass.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            method.setKlass(klass);
             return getReturnType(method);
         } else {
             String className = SourceUtils.getClassName(scopeTree, childSimpleType);                   
@@ -116,7 +118,7 @@ public class ExpressionHandler {
     
     private String getReturnType(Method method) {
         
-        List<Klass> klasses = hierarchyManager.getClassHierarchy(method.getClassName());
+        List<Klass> klasses = hierarchyManager.getClassHierarchy(method.getKlass().getClassName());
         for (Klass klass : klasses) {
             List<Method> classMethods = UsageUtils.getClassMethodsByName(klass.getFilePath(), method.getName());
             for (Method classMethod : classMethods) {
@@ -134,7 +136,9 @@ public class ExpressionHandler {
         Method method = new Method();
         method.setName(member.getValue());
         
-        method.setClassName(identifier.getType());
+        Klass klass = new Klass();
+        klass.setClassName(identifier.getType());
+        method.setKlass(klass);
         
         for (Arg arg : member.getArgs()) {
             Parameter parameter = new Parameter();

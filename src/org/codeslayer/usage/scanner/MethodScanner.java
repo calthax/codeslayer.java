@@ -68,13 +68,13 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         List<? extends Tree> members = classTree.getMembers();
 
-//        Klass klass = new Klass();
-//        klass.setImports(SourceUtils.getImports(compilationUnitTree));
-//        klass.setSimpleClassName(simpleClassName);
-//        klass.setClassName(className);
-//        klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
-//        klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
-//        klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+        Klass klass = new Klass();
+        klass.setImports(SourceUtils.getImports(compilationUnitTree));
+        klass.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+        klass.setClassName(SourceUtils.getClassName(compilationUnitTree));
+        klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+        klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+        klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
 
         for (Tree memberTree : members) {
             if (memberTree instanceof MethodTree) {
@@ -82,11 +82,9 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
                 if (methodName.equals(methodTree.getName().toString())) {
                     Method method = new Method();
-                    method.setClassName(SourceUtils.getClassName(compilationUnitTree));
-                    method.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-                    method.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
-                    method.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
                     
+                    method.setKlass(klass);
+
                     method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
                     method.setName(methodTree.getName().toString());
                     method.setParameters(SourceUtils.getParameters(methodTree, scopeTree));

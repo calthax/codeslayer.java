@@ -28,11 +28,8 @@ public class Method {
     private List<Parameter> parameters;
     private String simpleReturnType;
     private String returnType;
-    private String className;
-    private String simpleClassName;
-    private String superClass;
-    private List<String> interfaces;
     private int lineNumber;
+    private Klass klass;
 
     public String getName() {
         
@@ -97,50 +94,16 @@ public class Method {
         this.simpleReturnType = simpleReturnType;
     }
 
-    public String getClassName() {
+    public Klass getKlass() {
         
-        return className;
+        return klass;
     }
 
-    public void setClassName(String className) {
-     
-        this.className = className;
+    public void setKlass(Klass klass) {
+    
+        this.klass = klass;
     }
-
-    public String getSimpleClassName() {
-        
-        return simpleClassName;
-    }
-
-    public void setSimpleClassName(String simpleClassName) {
-     
-        this.simpleClassName = simpleClassName;
-    }
-
-    public String getSuperClass() {
-        
-        return superClass;
-    }
-
-    public void setSuperClass(String superClass) {
-     
-        this.superClass = superClass;
-    }
-
-    public List<String> getInterfaces() {
-        
-        if (interfaces == null) {
-            return Collections.emptyList();
-        }
-        
-        return interfaces;
-    }
-
-    public void setInterfaces(List<String> interfaces) {
-     
-        this.interfaces = interfaces;
-    }
-
+    
     public int getLineNumber() {
         
         return lineNumber;
@@ -164,14 +127,6 @@ public class Method {
         sb.append(" modifier: [").append(modifier).append("]");
         sb.append(" returnType: [").append(returnType).append("]");        
         sb.append(" simpleReturnType: [").append(simpleReturnType).append("]");        
-        sb.append(" className: [").append(className).append("]");        
-        sb.append(" simpleClassName: [").append(simpleClassName).append("]");        
-        sb.append(" superClass: [").append(superClass).append("]");        
-        sb.append(" interfaces: [\n");
-        for (String interfaceName: getInterfaces()) {
-            sb.append(interfaceName).append("\n");
-        }
-        sb.append("]");
         sb.append(" lineNumber: [").append(lineNumber).append("]");        
         return sb.toString();
     }    
