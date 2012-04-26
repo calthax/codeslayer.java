@@ -151,7 +151,7 @@ public class SourceUtils {
     public static Method findClassMethod(Klass klass, Method method) {
         
         for (Method klassMethod : klass.getMethods()) {
-            if (isMethodsEqual(klassMethod, method)) {
+            if (methodsEqual(klassMethod, method)) {
                 return klassMethod;
             }                        
         }
@@ -159,16 +159,16 @@ public class SourceUtils {
         throw new IllegalStateException("Class method not found for " + klass.getClassName() + "." + method.getName());
     }
     
-    public static boolean isMethodsEqual(Method method1, Method method2) {
+    public static boolean methodsEqual(Method method1, Method method2) {
         
         if (!method1.getName().equals(method2.getName())) {
             return false;
         }
         
-        return isParametersEqual(method1.getParameters(), method2.getParameters());
+        return parametersEqual(method1.getParameters(), method2.getParameters());
     }
     
-    public static boolean isParametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
+    public static boolean parametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
         
         Iterator<Parameter> usageIterator = parameters1.iterator();
         Iterator<Parameter> methodIterator = parameters2.iterator();

@@ -17,10 +17,13 @@
  */
 package org.codeslayer.source;
 
+import java.util.List;
+
 public class Hierarchy {
     
     private String className;
     private String superClass;
+    private List<String> interfaces;
     private String filePath;
 
     public String getClassName() {
@@ -41,6 +44,16 @@ public class Hierarchy {
     public void setSuperClass(String superClass) {
      
         this.superClass = superClass;
+    }
+
+    public List<String> getInterfaces() {
+        
+        return interfaces;
+    }
+
+    public void setInterfaces(List<String> interfaces) {
+     
+        this.interfaces = interfaces;
     }
 
     public String getFilePath() {

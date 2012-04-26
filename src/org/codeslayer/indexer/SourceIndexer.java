@@ -108,7 +108,8 @@ public class SourceIndexer implements Indexer {
             klass.setSimpleClassName(simpleClassName);
             klass.setClassName(className);
             klass.setFilePath(getFilePath());
-            klass.setSuperClass(getSuperClassName(classTree, scopeTree));
+            klass.setSuperClass(getSuperClass(classTree, scopeTree));
+            klass.setInterfaces(getInterfaces(classTree, scopeTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
@@ -144,7 +145,7 @@ public class SourceIndexer implements Indexer {
             return results;
         }
 
-        private String getSuperClassName(ClassTree classTree, ScopeTree scopeTree) {
+        private String getSuperClass(ClassTree classTree, ScopeTree scopeTree) {
             
             Tree tree = classTree.getExtendsClause();
             if (tree == null) {
@@ -152,6 +153,17 @@ public class SourceIndexer implements Indexer {
             }
             
             return SourceUtils.getClassName(scopeTree, tree.toString());
+        }
+        
+        private List<String> getInterfaces(ClassTree classTree, ScopeTree scopeTree) {
+            
+            List<String> results = new ArrayList<String>();
+
+            for (Tree implementsTree : classTree.getImplementsClause()) {
+                results.add(SourceUtils.getClassName(scopeTree, implementsTree.toString()));
+            }
+                
+            return results;
         }
 
         private String getModifier(MethodTree methodTree) {

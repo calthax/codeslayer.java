@@ -27,6 +27,7 @@ public class Klass {
     private String filePath;
     private String superClass;
     private List<String> imports = new ArrayList<String>();
+    private List<String> interfaces = new ArrayList<String>();
     private List<Method> methods = new ArrayList<Method>();
 
     public String getClassName() {
@@ -87,6 +88,16 @@ public class Klass {
     public void setSuperClass(String superClass) {
      
         this.superClass = superClass;
+    }
+
+    public List<String> getInterfaces() {
+        
+        return interfaces;
+    }
+
+    public void setInterfaces(List<String> interfaces) {
+     
+        this.interfaces = interfaces;
     }
     
     @Override

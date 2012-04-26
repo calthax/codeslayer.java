@@ -102,7 +102,7 @@ public class UsageUtils {
                 continue;
             }
             
-            if (SourceUtils.isParametersEqual(usageParameters, methodParameters)) {
+            if (SourceUtils.parametersEqual(usageParameters, methodParameters)) {
                 results.add(usage);
             }            
         }            

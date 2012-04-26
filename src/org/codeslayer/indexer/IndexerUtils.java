@@ -259,7 +259,8 @@ public class IndexerUtils {
                 Hierarchy hierarchy = new Hierarchy();
                 hierarchy.setClassName(split[0]);
                 hierarchy.setSuperClass(split[1]);
-                hierarchy.setFilePath(split[2]);
+                hierarchy.setInterfaces(getInterfaces(split[2]));
+                hierarchy.setFilePath(split[3]);
                 hierarchyManager.addHierarchy(hierarchy);
             }
             in.close();
@@ -269,6 +270,21 @@ public class IndexerUtils {
         }
 
         return hierarchyManager;
+    }
+    
+    private static List<String> getInterfaces(String interfaces) {
+        
+        List<String> results = new ArrayList<String>();
+        
+        if (interfaces == null || interfaces.isEmpty()) {
+            return results;
+        }
+        
+        for (String interfaceName : interfaces.split(",")) {
+            results.add(interfaceName);
+        }
+        
+        return results;
     }
     
     private static List<Parameter> getParameters(String[] split) {

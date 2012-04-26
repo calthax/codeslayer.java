@@ -52,11 +52,17 @@ public class HierarchyFile {
             sb.append(index.getClassName());
             sb.append("\t");
             
-            sb.append(index.getSuperClassName());
+            sb.append(index.getSuperClass());
+            sb.append("\t");
             
+            String interfaces = index.getInterfaces();
+            if (interfaces != null) {
+                sb.append(interfaces);
+            }
+            sb.append("\t");
+
             String filePath = index.getFilePath();
             if (filePath != null) {
-                sb.append("\t");
                 sb.append(filePath);
             }
 

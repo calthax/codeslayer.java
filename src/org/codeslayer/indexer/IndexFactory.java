@@ -35,11 +35,14 @@ public class IndexFactory {
 
     private void createIndexesForClass(List<Index> indexes, Klass klass) {
 
+        String interfaces = getInterfaces(klass);
+        
         for (Method method : klass.getMethods()) {
             Index index = new Index();
             index.setClassName(klass.getClassName());
             index.setSimpleClassName(klass.getSimpleClassName());
-            index.setSuperClassName(klass.getSuperClass());
+            index.setSuperClass(klass.getSuperClass());
+            index.setInterfaces(interfaces);
             index.setMethodModifier(method.getModifier());
             index.setMethodName(method.getName());
             index.setMethodParameters( getMethodParameters(method));
@@ -51,6 +54,21 @@ public class IndexFactory {
             index.setLineNumber(String.valueOf(method.getLineNumber()));
             indexes.add(index);
         }
+    }
+    
+    private String getInterfaces(Klass klass) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        Iterator<String> iterator = klass.getInterfaces().iterator();
+        while (iterator.hasNext()) {
+            sb.append(iterator.next());
+            if (iterator.hasNext()) {
+                sb.append(", ");
+            }
+        }
+        
+        return sb.toString();
     }
     
     private String getMethodParameters(Method method) {
@@ -85,8 +103,7 @@ public class IndexFactory {
         
         return sb.toString();
     }
-    
-    
+        
     private String getMethodParametersTypes(Method method) {
         
         StringBuilder sb = new StringBuilder();

@@ -26,7 +26,7 @@ public class HierarchyManager {
     
     private Map<String, Hierarchy> lookup = new HashMap<String, Hierarchy>();
 
-    public List<Klass> getKlassHierarchy(String className) {
+    public List<Klass> getClassHierarchy(String className) {
         
         List<Klass> klasses = new ArrayList<Klass>();
         createHierarchy(klasses, className);
