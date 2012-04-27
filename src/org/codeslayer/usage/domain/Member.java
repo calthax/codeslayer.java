@@ -43,13 +43,14 @@ public class Member extends AbstractSymbol {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" value: [").append(getValue()).append("]");
-        sb.append(" type: [").append(getType()).append("]");
-        sb.append(" args: [\n");
+        sb.append(super.toString());
+        sb.append("[value=").append(getValue());
+        sb.append(", type=").append(getType());
+        sb.append(", args={");
         for (Arg arg: args) {
-            sb.append(arg).append("\n");
+            sb.append(arg).append(",");
         }
-        sb.append("]");
-        return sb.toString();
+        sb.append("}");
+        return sb.append("]").toString();
     }    
 }

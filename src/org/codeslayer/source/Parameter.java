@@ -57,9 +57,10 @@ public class Parameter {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" type: [").append(type).append("]");
-        sb.append(" simpleType: [").append(simpleType).append("]");
-        sb.append(" variable: [").append(variable).append("]");        
-        return sb.toString();
+        sb.append(super.toString());
+        sb.append("[type=").append(type);
+        sb.append(", simpleType=").append(simpleType);
+        sb.append(", variable=").append(variable);
+        return sb.append("]").toString();
     }    
 }

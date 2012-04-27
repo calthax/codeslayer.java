@@ -118,16 +118,20 @@ public class Method {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" name: [").append(name).append("]");
-        sb.append(" parameters: [\n");
+        sb.append(super.toString());
+        sb.append("[name=").append(name);
+        sb.append(", parameters={");
         for (Parameter parameter: getParameters()) {
-            sb.append(parameter.getType()).append("\n");
+            sb.append(parameter.getType()).append(",");
         }
-        sb.append("]");
-        sb.append(" modifier: [").append(modifier).append("]");
-        sb.append(" returnType: [").append(returnType).append("]");        
-        sb.append(" simpleReturnType: [").append(simpleReturnType).append("]");        
-        sb.append(" lineNumber: [").append(lineNumber).append("]");        
-        return sb.toString();
+        sb.append("}");
+        sb.append(", modifier=").append(modifier);
+        sb.append(", returnType=").append(returnType);
+        sb.append(", simpleReturnType=").append(simpleReturnType);
+        sb.append(", lineNumber=").append(lineNumber);
+        if (klass != null) {
+            sb.append(", ").append(klass);
+        }
+        return sb.append("]").toString();
     }    
 }

@@ -104,14 +104,14 @@ public class Usage {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" className: [").append(className).append("]");
-        sb.append(" simpleClassName: [").append(simpleClassName).append("]");
-        sb.append(" method: [").append(method).append("]");        
-        sb.append("]");
-        sb.append(" file: [").append(file.getAbsolutePath()).append("]");
-        sb.append(" lineNumber: [").append(lineNumber).append("]");
-        sb.append(" startPosition: [").append(startPosition).append("]");
-        sb.append(" endPosition: [").append(endPosition).append("]");
-        return sb.toString();
+        sb.append(super.toString());
+        sb.append("[className=").append(className);
+        sb.append(", simpleClassName=").append(simpleClassName);
+        sb.append(", file=").append(file.getAbsolutePath());
+        sb.append(", lineNumber=").append(lineNumber);
+        sb.append(", startPosition=").append(startPosition);
+        sb.append(", endPosition=").append(endPosition);
+        sb.append(", ").append(method);
+        return sb.append("]").toString();
     }   
 }

@@ -70,4 +70,20 @@ public class Hierarchy {
         
         this.filePath = filePath;
     }
+
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append("[className=").append(className);
+        sb.append(", superClass=").append(superClass);        
+        sb.append(", interfaces={");
+        for (String interfaceName: getInterfaces()) {
+            sb.append(interfaceName).append(",");
+        }
+        sb.append("}");
+        sb.append(", filePath=").append(filePath);
+        return sb.append("]").toString();
+    }    
 }
