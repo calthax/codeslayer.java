@@ -76,7 +76,8 @@ public class SymbolManager {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append("symbolManager: ").append(symbolTree);
+        sb.append(super.toString());
+        sb.append(symbolTree);
         return sb.toString();
     }   
 }

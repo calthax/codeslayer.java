@@ -54,18 +54,17 @@ public class Identifier extends AbstractSymbol {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" value: [").append(getValue()).append("]");
-        sb.append(" type: [").append(getType()).append("]");
-        
+        sb.append(super.toString());
+        sb.append("[value=").append(getValue());
+        sb.append(", type=").append(getType());        
         if (member != null) {
-            sb.append(" member: [").append(member).append("]");            
-        }
-        
-        sb.append(" args: [\n");
+            sb.append(", member=").append(member); 
+        }        
+        sb.append(", args={");
         for (Arg arg: args) {
-            sb.append(arg).append("\n");
+            sb.append(arg).append(",");
         }
-        sb.append("]");
-        return sb.toString();
+        sb.append("}");
+        return sb.append("]").toString();
     }   
 }

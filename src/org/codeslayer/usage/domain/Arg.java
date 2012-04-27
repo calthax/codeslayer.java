@@ -28,8 +28,9 @@ public class Arg extends AbstractSymbol {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(" value: [").append(getValue()).append("]");
-        sb.append(" type: [").append(getType()).append("]");
-        return sb.toString();
+        sb.append(super.toString());
+        sb.append("[value=").append(getValue());
+        sb.append(", type=").append(getType());
+        return sb.append("]").toString();
     }   
 }

@@ -17,6 +17,7 @@
  */
 package org.codeslayer.source;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -109,7 +110,12 @@ public class Klass {
 
     public void addMethod(Method method) {
      
+        if (methods == null) {
+            methods = new ArrayList<Method>();
+        }
+
         this.methods.add(method);
+        method.setKlass(this);
     }
     
     @Override

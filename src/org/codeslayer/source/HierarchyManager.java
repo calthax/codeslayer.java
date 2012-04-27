@@ -33,6 +33,24 @@ public class HierarchyManager {
         return klasses;
     }
     
+    public Klass getClass(String className) {
+        
+        Hierarchy hierarchy = lookup.get(className);
+        
+        if (hierarchy == null) {
+            return null;
+        }
+        
+        Klass klass = new Klass();
+        klass.setClassName(className);
+        klass.setFilePath(hierarchy.getFilePath());
+        
+        String superClass = hierarchy.getSuperClass();
+        klass.setSuperClass(superClass);
+        
+        return klass;
+    }
+    
     private void createHierarchy(List<Klass> klasses, String className) {
         
         Hierarchy hierarchy = lookup.get(className);
