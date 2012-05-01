@@ -106,12 +106,12 @@ public class Usage {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append("[className=").append(className);
-        sb.append(", simpleClassName=").append(simpleClassName);
+//        sb.append(", simpleClassName=").append(simpleClassName);
         sb.append(", file=").append(file.getAbsolutePath());
         sb.append(", lineNumber=").append(lineNumber);
-        sb.append(", startPosition=").append(startPosition);
-        sb.append(", endPosition=").append(endPosition);
-        sb.append(", ").append(method);
+//        sb.append(", startPosition=").append(startPosition);
+//        sb.append(", endPosition=").append(endPosition);
+//        sb.append(", ").append(method);
         return sb.append("]").toString();
     }   
 }

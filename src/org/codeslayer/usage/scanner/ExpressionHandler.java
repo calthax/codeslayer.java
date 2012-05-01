@@ -118,9 +118,8 @@ public class ExpressionHandler {
     
     private String getReturnType(Method method) {
         
-        List<Klass> klasses = hierarchyManager.getClassHierarchy(method.getKlass().getClassName());
-        for (Klass klass : klasses) {
-            List<Method> classMethods = UsageUtils.getClassMethodsByName(klass.getFilePath(), method.getName());
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(method.getKlass().getClassName())) {
+            List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), method.getName());
             for (Method classMethod : classMethods) {
                 if (SourceUtils.methodsEqual(classMethod, method)) {
                     return classMethod.getReturnType();

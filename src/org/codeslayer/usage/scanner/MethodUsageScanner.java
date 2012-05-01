@@ -128,13 +128,18 @@ public class MethodUsageScanner {
                     return scopeTree;
                 }
                 
-                ClassScanner classScanner = new ClassScanner(hierarchyManager, className);
-                Klass scan = classScanner.scan();
-                if (scan != null) {
-                    System.out.println("** Scan ** " + scan);
-                }
+//                ClassScanner classScanner = new ClassScanner(hierarchyManager, className);
+//                Klass scan = classScanner.scan();
+//                if (scan != null) {
+//                    System.out.println("** Scan ** " + scan);
+//                }
+//                
+//                if (!methodMatch.getKlass().getClassName().equals(className)) {
+//                    return scopeTree;
+//                }
                 
-                if (!methodMatch.getKlass().getClassName().equals(className)) {
+                ClassMatcher classMatcher = new ClassMatcher(hierarchyManager);
+                if (!classMatcher.hasMatch(methodMatch, className)) {
                     return scopeTree;
                 }
                 
@@ -161,7 +166,7 @@ public class MethodUsageScanner {
 
             return scopeTree;
         }
-
+        
         /**
          * At this point we have the method usages figured out, but now we need the method parameters.
          */

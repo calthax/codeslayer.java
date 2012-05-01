@@ -43,12 +43,12 @@ public class ClassScanner {
     public Klass scan() {
         
         try {
-            Klass klass = hierarchyManager.getClass(className);
-            if (klass == null) {
+            Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
+            if (hierarchy == null) {
                 return null;
             }
             
-            File file = new File(klass.getFilePath());
+            File file = new File(hierarchy.getFilePath());
 
             JavacTask javacTask = SourceUtils.getJavacTask(new File[]{file});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
@@ -57,6 +57,7 @@ public class ClassScanner {
                 ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
                 ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
 
+                Klass klass = new Klass();
                 InternalScanner internalScanner = new InternalScanner(compilationUnitTree, sourcePositions, klass);
                 compilationUnitTree.accept(internalScanner, scopeTree);
                 return klass;

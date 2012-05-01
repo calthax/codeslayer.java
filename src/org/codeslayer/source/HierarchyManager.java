@@ -26,32 +26,19 @@ public class HierarchyManager {
     
     private Map<String, Hierarchy> lookup = new HashMap<String, Hierarchy>();
 
-    public List<Klass> getClassHierarchy(String className) {
+    public List<Hierarchy> getHierarchyList(String className) {
         
-        List<Klass> klasses = new ArrayList<Klass>();
-        createHierarchy(klasses, className);
-        return klasses;
+        List<Hierarchy> list = new ArrayList<Hierarchy>();
+        createHierarchy(list, className);
+        return list;
     }
     
-    public Klass getClass(String className) {
+    public Hierarchy getHierarchy(String className) {
         
-        Hierarchy hierarchy = lookup.get(className);
-        
-        if (hierarchy == null) {
-            return null;
-        }
-        
-        Klass klass = new Klass();
-        klass.setClassName(className);
-        klass.setFilePath(hierarchy.getFilePath());
-        
-        String superClass = hierarchy.getSuperClass();
-        klass.setSuperClass(superClass);
-        
-        return klass;
+        return lookup.get(className);
     }
     
-    private void createHierarchy(List<Klass> klasses, String className) {
+    private void createHierarchy(List<Hierarchy> list, String className) {
         
         Hierarchy hierarchy = lookup.get(className);
         
@@ -59,16 +46,9 @@ public class HierarchyManager {
             return;
         }
         
-        Klass klass = new Klass();
-        klass.setClassName(className);
-        klass.setFilePath(hierarchy.getFilePath());
-        
-        String superClass = hierarchy.getSuperClass();
-        klass.setSuperClass(superClass);
-        
-        klasses.add(klass);
+        list.add(hierarchy);
 
-        createHierarchy(klasses, superClass);        
+        createHierarchy(list, hierarchy.getSuperClass());        
     }
 
     public void addHierarchy(Hierarchy hierarchy) {

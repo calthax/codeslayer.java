@@ -242,6 +242,15 @@ public class SourceUtils {
         throw new IllegalStateException("Class method not found for " + klass.getClassName() + "." + method.getName());
     }
     
+    public static boolean classesEqual(Klass klass1, Method method1, Klass klass2, Method method2) {
+        
+        if (!klass1.getClassName().equals(klass2.getClassName())) {
+            return false;
+        }
+        
+        return methodsEqual(method1, method2);
+    }
+
     public static boolean methodsEqual(Method method1, Method method2) {
         
         if (!method1.getName().equals(method2.getName())) {
@@ -253,20 +262,20 @@ public class SourceUtils {
     
     public static boolean parametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
         
-        Iterator<Parameter> usageIterator = parameters1.iterator();
-        Iterator<Parameter> methodIterator = parameters2.iterator();
+        Iterator<Parameter> iteration1 = parameters1.iterator();
+        Iterator<Parameter> iteration2 = parameters2.iterator();
 
-        while (usageIterator.hasNext() && methodIterator.hasNext()) {
-            Parameter usageParameter = usageIterator.next();
-            Parameter methodParameter = methodIterator.next();
-            String usageType = SourceUtils.removeGenerics(usageParameter.getType());
-            String methodType = SourceUtils.removeGenerics(methodParameter.getType());
+        while (iteration1.hasNext() && iteration2.hasNext()) {
+            Parameter usageParameter = iteration1.next();
+            Parameter methodParameter = iteration2.next();
+            String type1 = SourceUtils.removeGenerics(usageParameter.getType());
+            String type2 = SourceUtils.removeGenerics(methodParameter.getType());
             
-            if (!usageType.equals(methodType)) {
+            if (!type1.equals(type2)) {
                 return false;
             }
         }
 
         return true;
-    }    
+    }
 }
