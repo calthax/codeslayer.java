@@ -39,6 +39,8 @@ public class SymbolFactory {
         Symbol lastSymbol = null;
         
         for (Symbol symbol : symbols) {
+            
+            System.out.println("symbol " + symbol.getType() + ":"+ symbol.getValue());
 
             if (symbol instanceof Identifier) {
                 lastSymbol = symbol;

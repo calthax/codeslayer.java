@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.tools.*;
+import org.codeslayer.usage.UsageUtils;
 
 public class SourceUtils {
     
@@ -240,6 +241,26 @@ public class SourceUtils {
         }
 
         throw new IllegalStateException("Class method not found for " + klass.getClassName() + "." + method.getName());
+    }
+    
+    public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+        
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
+            
+            List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
+            for (Method classMethod : classMethods) {
+                
+                if (!classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
+                    continue;
+                }                
+                
+                if (SourceUtils.methodsEqual(classMethod, methodMatch)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
     
     public static boolean classesEqual(Klass klass1, Method method1, Klass klass2, Method method2) {

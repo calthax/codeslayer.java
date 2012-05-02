@@ -17,17 +17,17 @@
  */
 package org.codeslayer.usage.scanner;
 
-import org.codeslayer.source.ScopeTree;
-import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.Method;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
-import java.util.*;
-import org.codeslayer.usage.domain.*;
+import java.util.List;
 import org.codeslayer.source.ScopeTreeFactory;
+import org.codeslayer.source.ScopeTree;
+import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.Method;
+import org.codeslayer.usage.domain.Input;
 
 public class InputScanner {
     
@@ -54,7 +54,8 @@ public class InputScanner {
                 List<Method> methods = methodScanner.getScanResults();
                 
                 for (Method method : methods) {
-                    if (method.getLineNumber() == input.getLineNumber()) {
+                    if (method.getLineNumber() == input.getLineNumber() ||
+                            method.getLineNumber() + 1 == input.getLineNumber()) {
                         System.out.println("********** input ****************");
                         System.out.println(method);
                         System.out.println("*********************************");

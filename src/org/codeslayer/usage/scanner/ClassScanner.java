@@ -17,17 +17,20 @@
  */
 package org.codeslayer.usage.scanner;
 
-import org.codeslayer.source.ScopeTree;
-import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.Method;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import java.io.File;
-import java.util.*;
-import org.codeslayer.source.*;
+import java.util.List;
+import org.codeslayer.source.Hierarchy;
+import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.Klass;
+import org.codeslayer.source.ScopeTree;
+import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.ScopeTreeFactory;
 
 public class ClassScanner {
     

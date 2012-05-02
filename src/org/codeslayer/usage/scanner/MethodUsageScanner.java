@@ -17,16 +17,25 @@
  */
 package org.codeslayer.usage.scanner;
 
+import java.util.List;
+import java.io.File;
+import com.sun.source.util.JavacTask;
+import com.sun.source.util.SourcePositions;
+import com.sun.source.util.TreeScanner;
+import com.sun.source.util.Trees;
+import com.sun.source.tree.*;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
-import com.sun.source.tree.*;
-import com.sun.source.util.*;
-import java.io.*;
-import java.util.List;
 import org.codeslayer.indexer.IndexerUtils;
-import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.*;
+import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.Klass;
+import org.codeslayer.source.Method;
+import org.codeslayer.source.ScopeTreeFactory;
+import org.codeslayer.usage.domain.Input;
+import org.codeslayer.usage.domain.SymbolManager;
+import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.domain.UsageManager;
 
 public class MethodUsageScanner {
     
@@ -52,7 +61,7 @@ public class MethodUsageScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usageManager, hierarchyManager);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, hierarchyManager, usageManager);
                 ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
                 ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -69,16 +78,16 @@ public class MethodUsageScanner {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
-        private final File sourceFile;
-        private final UsageManager usageManager;
         private final HierarchyManager hierarchyManager;
+        private final UsageManager usageManager;
+        private final File sourceFile;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, UsageManager usageManager, HierarchyManager hierarchyManager) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, UsageManager usageManager) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
-            this.usageManager = usageManager;
             this.hierarchyManager = hierarchyManager;
+            this.usageManager = usageManager;
             this.sourceFile = SourceUtils.getSourceFile(compilationUnitTree);
         }
 
@@ -122,24 +131,13 @@ public class MethodUsageScanner {
                 
                 symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
                 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, hierarchyManager, input);
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);
                 String className = expressionHandler.getType(symbolManager, scopeTree);
                 if (className == null) {
                     return scopeTree;
                 }
                 
-//                ClassScanner classScanner = new ClassScanner(hierarchyManager, className);
-//                Klass scan = classScanner.scan();
-//                if (scan != null) {
-//                    System.out.println("** Scan ** " + scan);
-//                }
-//                
-//                if (!methodMatch.getKlass().getClassName().equals(className)) {
-//                    return scopeTree;
-//                }
-                
-                ClassMatcher classMatcher = new ClassMatcher(hierarchyManager);
-                if (!classMatcher.hasMatch(methodMatch, className)) {
+                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
                     return scopeTree;
                 }
                 
@@ -187,7 +185,7 @@ public class MethodUsageScanner {
                     continue;
                 }
                 
-                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, hierarchyManager, input);
+                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, hierarchyManager);
                 parameterScanner.scan(methodInvocationTree, scopeTree);
                 List<Parameter> parameters = parameterScanner.getScanResults();
                          

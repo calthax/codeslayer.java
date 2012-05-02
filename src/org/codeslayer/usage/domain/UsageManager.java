@@ -22,7 +22,7 @@ import java.util.List;
 
 public class UsageManager {
     
-    private final List<Usage> usages = new ArrayList<Usage>();
+    private List<Usage> usages = new ArrayList<Usage>();
 
     public List<Usage> getUsages() {
      

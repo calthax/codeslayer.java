@@ -25,8 +25,8 @@ import java.util.Map;
 public class ScopeTree {
     
     private String packageName;
-    private final Map<String, String> simpleTypes = new HashMap<String, String>();
-    private final List<String> importNames = new ArrayList<String>();
+    private Map<String, String> simpleTypes = new HashMap<String, String>();
+    private List<String> importNames = new ArrayList<String>();
 
     public String getPackageName() {
         

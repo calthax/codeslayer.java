@@ -18,7 +18,6 @@
 package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
-import com.sun.source.util.SourcePositions;
 import java.util.List;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.UsageUtils;
@@ -27,16 +26,12 @@ import org.codeslayer.usage.domain.*;
 public class ExpressionHandler {
     
     private final CompilationUnitTree compilationUnitTree;
-    private final SourcePositions sourcePositions;
     private final HierarchyManager hierarchyManager;
-    private final Input input;
 
-    public ExpressionHandler(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, Input input) {
+    public ExpressionHandler(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
      
         this.compilationUnitTree = compilationUnitTree;
-        this.sourcePositions = sourcePositions;
         this.hierarchyManager = hierarchyManager;
-        this.input = input;
     }    
     
     public String getType(SymbolManager symbolManager, ScopeTree scopeTree) {

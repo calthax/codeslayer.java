@@ -18,7 +18,6 @@
 package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
-import com.sun.source.util.SourcePositions;
 import java.util.ArrayList;
 import java.util.List;
 import org.codeslayer.source.*;
@@ -27,17 +26,13 @@ import org.codeslayer.usage.domain.*;
 public class ParameterScanner {
     
     private final CompilationUnitTree compilationUnitTree;
-    private final SourcePositions sourcePositions;
     private final HierarchyManager hierarchyManager;
-    private final Input input;
     private final List<Parameter> parameterMatches = new ArrayList<Parameter>();
 
-    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, Input input) {
+    public ParameterScanner(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
      
         this.compilationUnitTree = compilationUnitTree;
-        this.sourcePositions = sourcePositions;
         this.hierarchyManager = hierarchyManager;
-        this.input = input;
     }    
     
     public void scan(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
@@ -64,7 +59,7 @@ public class ParameterScanner {
                 SymbolManager symbolManager = new SymbolManager();
                 expressionTree.accept(new SymbolScanner(), symbolManager);
 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, sourcePositions, hierarchyManager, input);
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);
                 String type = expressionHandler.getType(symbolManager, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);

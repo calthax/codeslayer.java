@@ -34,23 +34,23 @@ public class Main {
         
         try {
 //            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/model/TableModel.java", "-methodusage", "setItems", "-linenumber", "144"};
-            
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/component/Column.java", "-methodusage", "getProperty", "-linenumber", "59"};
+//            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/component/Column.java", "-methodusage", "getProperty", "-linenumber", "59"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/html/component/HtmlColumn.java", "-methodusage", "title", "-linenumber", "86"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
             Input input = getInput(modifiers);
             
             InputScanner inputScanner = new InputScanner(input);
-            Method method = inputScanner.scan();
+            Method methodMatch = inputScanner.scan();
             
-            if (method == null) {
+            if (methodMatch == null) {
                 throw new IllegalStateException("the input scanner did not find the method");
             }
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(method, input);
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input);
             List<Usage> usages = methodUsageScanner.scan();
-            usages = UsageUtils.filterUsages(usages, method);
+            usages = UsageUtils.filterUsages(usages, methodMatch);
             
             System.out.println("************ Usage Search Results ************");
 
