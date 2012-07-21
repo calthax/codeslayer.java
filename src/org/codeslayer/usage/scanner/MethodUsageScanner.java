@@ -125,17 +125,22 @@ public class MethodUsageScanner {
             super.visitMemberSelect(memberSelectTree, scopeTree);
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
+                
+                System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
                 SymbolManager symbolManager = new SymbolManager();
                 memberSelectTree.accept(new SymbolScanner(), symbolManager);
                 
                 symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
                 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);
+                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);                
                 String className = expressionHandler.getType(symbolManager, scopeTree);
                 if (className == null) {
+                    System.out.println("*** class end ***");
                     return scopeTree;
                 }
+
+                System.out.println("*** class end ***");
                 
                 if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
                     return scopeTree;

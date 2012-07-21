@@ -42,17 +42,30 @@ public class ExpressionHandler {
     
     private String resolveType(Symbol parent, Symbol child, ScopeTree scopeTree) {
         
-        if (child instanceof Identifier) {
+        if (child instanceof NewClass) {
+            NewClass newClass = (NewClass)child;
+            System.out.println("symbol resolve NewClass => " + newClass.getValue());
+            
+            for (Arg arg : newClass.getArgs()) {
+                System.out.println("symbol resolve Arg => " + arg.getValue());
+            }
+
+            String className = getClassName(parent, newClass, scopeTree);
+            newClass.setType(className);
+            System.out.println("symbol resolve NewClass type => " + newClass.getType());
+            
+            return newClass.getType();
+        } else if (child instanceof Identifier) {
             Identifier identifier = (Identifier)child;
-            System.out.println("symbol identifier => " + identifier.getValue());
+            System.out.println("symbol resolve Identifier => " + identifier.getValue());
             
             for (Arg arg : identifier.getArgs()) {
-                System.out.println("symbol arg => " + arg.getValue());
+                System.out.println("symbol resolve Arg => " + arg.getValue());
             }
             
             String className = getClassName(parent, identifier, scopeTree);
             identifier.setType(className);
-            System.out.println("identifier type => " + identifier.getType());
+            System.out.println("symbol resolve Identifier type => " + identifier.getType());
             
             Member member = identifier.getMember();
             if (member != null) {
@@ -62,17 +75,17 @@ public class ExpressionHandler {
             return identifier.getType();
         } else if (child instanceof Member) {
             Member member = (Member)child;
-            System.out.println("symbol member => " + member.getValue());
+            System.out.println("symbol resolve Member => " + member.getValue());
             
             for (Arg arg : member.getArgs()) {
-                System.out.println("symbol arg => " + arg.getValue());
+                System.out.println("symbol resolve Arg => " + arg.getValue());
             }
             
             Identifier identifier = (Identifier)parent;
             Method method = createMethod(identifier, member);
             String returnType = getReturnType(method);
             member.setType(returnType);
-            System.out.println("member type => " + member.getType());
+            System.out.println("symbol resolve Member type => " + member.getType());
             
             return member.getType();
         }

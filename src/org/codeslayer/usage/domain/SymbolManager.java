@@ -41,6 +41,12 @@ public class SymbolManager {
         return this.symbolTree;
     }
     
+    public void addNewClass(String value) {
+        
+        NewClass newClass = new NewClass(value);
+        symbols.add(newClass);
+    }
+    
     public void addIdentifier(String value) {
         
         Identifier identifier = new Identifier(value);

@@ -56,9 +56,9 @@ public class InputScanner {
                 for (Method method : methods) {
                     if (method.getLineNumber() == input.getLineNumber() ||
                             method.getLineNumber() + 1 == input.getLineNumber()) {
-                        System.out.println("********** input ****************");
+                        System.out.println("*** input begin ***");
                         System.out.println(method);
-                        System.out.println("*********************************");
+                        System.out.println("*** input end ***");
                         return method;
                     }
                 }

@@ -31,6 +31,11 @@ public class SymbolFactory {
     public Symbol createSymbolTree() {
         
         create();
+        
+        if (symbols == null || symbols.isEmpty()) {
+            return null;
+        }
+        
         return symbols.get(0);
     }
     
@@ -40,30 +45,47 @@ public class SymbolFactory {
         
         for (Symbol symbol : symbols) {
             
-            System.out.println("symbol " + symbol.getType() + ":"+ symbol.getValue());
+            System.out.println("symbol factory " + symbol.getClass().getSimpleName() + " => " + symbol.getValue());
 
+            if (symbol instanceof NewClass) {
+                lastSymbol = symbol;
+                continue;
+            }
+            
             if (symbol instanceof Identifier) {
                 lastSymbol = symbol;
                 continue;
             }
             
-            if (symbol instanceof Member) {
-                Identifier identifier = (Identifier)lastSymbol;
-                Member member = (Member)symbol;
-                identifier.setMember(member);
-                lastSymbol = member;
+            if (symbol instanceof Member) {                
+                if (lastSymbol instanceof Identifier) {
+                    Identifier lastIdentifier = (Identifier)lastSymbol;
+                    Member member = (Member)symbol;
+                    lastIdentifier.setMember(member);
+                    lastSymbol = member;
+                } else if (lastSymbol instanceof Member) {
+                    Member lastMember = (Member)lastSymbol;
+                    Member member = (Member)symbol;
+                    lastMember.setMember(member);
+                    lastSymbol = member;
+                }
+                
                 continue;
             }
             
             if (symbol instanceof Arg) {
+                
                 Arg arg = (Arg)symbol;
                 
-                if (lastSymbol instanceof Identifier) {
-                    Identifier identifier = (Identifier)lastSymbol;
-                    identifier.addArg(arg);
+                if (lastSymbol instanceof NewClass) {
+                    NewClass lastNewClass = (NewClass)lastSymbol;
+                    lastNewClass.addArg(arg);                    
+                } else if (lastSymbol instanceof Identifier) {
+                    Identifier lastIdentifier = (Identifier)lastSymbol;
+                    lastIdentifier.addArg(arg);
                 } else {
-                    Member member = (Member)lastSymbol;
-                    member.addArg(arg);
+                    Member lastMember = (Member)lastSymbol;
+                    lastMember.addArg(arg);
                 }
             }
         }

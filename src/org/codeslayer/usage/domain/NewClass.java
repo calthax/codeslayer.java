@@ -20,16 +20,16 @@ package org.codeslayer.usage.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Member extends AbstractSymbol {
+public class NewClass extends AbstractSymbol {
     
     private Member member;
     private List<Arg> args = new ArrayList<Arg>();
 
-    public Member(String value) {
+    public NewClass(String value) {
 
         super(value);
     }
-
+    
     public List<Arg> getArgs() {
      
         return args;
@@ -56,12 +56,15 @@ public class Member extends AbstractSymbol {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append("[value=").append(getValue());
-        sb.append(", type=").append(getType());
+        sb.append(", type=").append(getType());        
+        if (member != null) {
+            sb.append(", member=").append(member); 
+        }        
         sb.append(", args={");
         for (Arg arg: args) {
             sb.append(arg).append(",");
         }
         sb.append("}");
         return sb.append("]").toString();
-    }    
+    }   
 }

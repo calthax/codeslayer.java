@@ -17,10 +17,7 @@
  */
 package org.codeslayer.usage.scanner;
 
-import com.sun.source.tree.ExpressionTree;
-import com.sun.source.tree.IdentifierTree;
-import com.sun.source.tree.MemberSelectTree;
-import com.sun.source.tree.MethodInvocationTree;
+import com.sun.source.tree.*;
 import com.sun.source.util.SimpleTreeVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +29,23 @@ import org.codeslayer.usage.domain.SymbolManager;
  * dao.getPresidents() it would identify that this has the IDENTIFIER dao and the MEMBER getPresidents.
  */
 public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManager> {
+    
+    public SymbolManager visitNewClass(NewClassTree newClassTree, SymbolManager symbolManager) {
+        
+        List<? extends ExpressionTree> arguments = newClassTree.getArguments();
+
+        List<ExpressionTree> args = new ArrayList<ExpressionTree>(arguments);
+
+        Collections.reverse(args);
+
+        for (ExpressionTree arg : args) {
+            symbolManager.addArg(arg.toString());
+        }
+
+        symbolManager.addNewClass(newClassTree.getIdentifier().toString());
+
+        return symbolManager;
+    }
     
     @Override
     public SymbolManager visitIdentifier(IdentifierTree identifierTree, SymbolManager symbolManager) {
