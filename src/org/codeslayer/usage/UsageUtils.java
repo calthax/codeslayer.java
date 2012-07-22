@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.codeslayer.source.*;
+import org.codeslayer.usage.domain.Symbol;
 import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.MethodScanner;
 
@@ -130,5 +131,15 @@ public class UsageUtils {
         }
         
         return Collections.emptyList();
+    }
+    
+    public static Symbol findFirstSymbol(Symbol symbol) {
+        
+        Symbol prevSymbol = symbol.getPrevSymbol();
+        if (prevSymbol != null) {
+            return findFirstSymbol(prevSymbol);
+        }
+        
+        return symbol;
     }
 }

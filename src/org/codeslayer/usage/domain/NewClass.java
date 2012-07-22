@@ -22,7 +22,6 @@ import java.util.List;
 
 public class NewClass extends AbstractSymbol {
     
-    private Member member;
     private List<Arg> args = new ArrayList<Arg>();
 
     public NewClass(String value) {
@@ -40,16 +39,6 @@ public class NewClass extends AbstractSymbol {
         this.args = args;
     }
 
-    public Member getMember() {
-        
-        return member;
-    }
-
-    public void setMember(Member member) {
-     
-        this.member = member;
-    }
-    
     @Override
     public String toString() {
         
@@ -57,9 +46,6 @@ public class NewClass extends AbstractSymbol {
         sb.append(super.toString());
         sb.append("[value=").append(getValue());
         sb.append(", type=").append(getType());        
-        if (member != null) {
-            sb.append(", member=").append(member); 
-        }        
         sb.append(", args={");
         for (Arg arg: args) {
             sb.append(arg).append(",");

@@ -17,9 +17,10 @@
  */
 package org.codeslayer.usage.scanner;
 
-import com.sun.source.tree.*;
+import com.sun.source.tree.CompilationUnitTree;
 import java.util.List;
 import org.codeslayer.source.*;
+import org.codeslayer.source.Parameter;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
@@ -34,9 +35,8 @@ public class ExpressionHandler {
         this.hierarchyManager = hierarchyManager;
     }    
     
-    public String getType(SymbolManager symbolManager, ScopeTree scopeTree) {
+    public String getType(Symbol symbol, ScopeTree scopeTree) {
 
-        Symbol symbol = symbolManager.getSymbolTree();
         return resolveType(null, symbol, scopeTree);
     }
     
@@ -67,7 +67,7 @@ public class ExpressionHandler {
             identifier.setType(className);
             System.out.println("symbol resolve Identifier type => " + identifier.getType());
             
-            Member member = identifier.getMember();
+            Member member = (Member)identifier.getNextSymbol();
             if (member != null) {
                 return resolveType(identifier, member, scopeTree);
             }
@@ -86,7 +86,7 @@ public class ExpressionHandler {
             member.setType(returnType);
             System.out.println("symbol resolve Member type => " + member.getType());
             
-            Member member2 = member.getMember();
+            Member member2 = (Member)member.getNextSymbol();
             if (member2 != null) {
                 return resolveType(member, member2, scopeTree);
             }

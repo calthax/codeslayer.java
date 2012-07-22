@@ -21,4 +21,8 @@ public interface Symbol {
 
     public String getType();
     public String getValue();
+    public Symbol getNextSymbol();
+    public void setNextSymbol(Symbol nextSymbol);
+    public Symbol getPrevSymbol();
+    public void setPrevSymbol(Symbol prevSymbol);
 }

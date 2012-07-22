@@ -28,42 +28,62 @@ import org.codeslayer.usage.domain.*;
  * Walk a code path and identify what each part of the path contains. For instance given the path 
  * dao.getPresidents() it would identify that this has the IDENTIFIER dao and the MEMBER getPresidents.
  */
-public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManager> {
+public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
     
-    public SymbolManager visitNewClass(NewClassTree newClassTree, SymbolManager symbolManager) {
-        
-        addArgs(symbolManager, newClassTree.getArguments());
-
-        symbolManager.addNewClass(newClassTree.getIdentifier().toString());
-        return symbolManager;
-    }
+//    public Symbol visitNewClass(NewClassTree newClassTree, SymbolManager symbolManager) {
+//        
+//        addArgs(symbolManager, newClassTree.getArguments());
+//
+//        System.out.println("visitNewClass (" + symbolManager.current + ") => " + newClassTree.getIdentifier().toString());
+//        
+//        symbolManager.addNewClass(newClassTree.getIdentifier().toString());
+//        return symbolManager;
+//    }
     
     @Override
-    public SymbolManager visitIdentifier(IdentifierTree identifierTree, SymbolManager symbolManager) {
+    public Symbol visitIdentifier(IdentifierTree identifierTree, Void p) {
         
-        symbolManager.addIdentifier(identifierTree.toString());
-        return symbolManager;
+        super.visitIdentifier(identifierTree, p);
+        
+        Identifier result = new Identifier(identifierTree.getName().toString());
+        return result;
     }
 
     @Override
-    public SymbolManager visitMemberSelect(MemberSelectTree memberSelectTree, SymbolManager symbolManager) {
+    public Symbol visitMemberSelect(MemberSelectTree memberSelectTree, Void p) {
         
-        symbolManager.addMember(memberSelectTree.getIdentifier().toString());
+        super.visitMemberSelect(memberSelectTree, p);
+
+        Member member = new Member(memberSelectTree.getIdentifier().toString());
         
         ExpressionTree expression = memberSelectTree.getExpression();
-        return expression.accept(new SymbolScanner(), symbolManager);
+        Symbol result = expression.accept(new SymbolScanner(), p);
+        
+        if (result instanceof Member) {
+            Member prev = (Member)result;
+            prev.setNextSymbol(member);
+        } else if (result instanceof Identifier) {
+            Identifier prev = (Identifier)result;
+            prev.setNextSymbol(member);
+        }
+        
+        return member;
     }
 
     @Override
-    public SymbolManager visitMethodInvocation(MethodInvocationTree methodInvocationTree, SymbolManager symbolManager) {
+    public Symbol visitMethodInvocation(MethodInvocationTree methodInvocationTree, Void p) {
 
-        addArgs(symbolManager, methodInvocationTree.getArguments());
+        super.visitMethodInvocation(methodInvocationTree, p);
 
         ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();
-        return methodSelect.accept(new SymbolScanner(), symbolManager);
+        Symbol result = methodSelect.accept(new SymbolScanner(), p);
+
+        addArgs(result, methodInvocationTree.getArguments());
+        
+        return result;
     }
     
-    private void addArgs(SymbolManager symbolManager, List<? extends ExpressionTree> arguments) {
+    private void addArgs(Symbol symbol, List<? extends ExpressionTree> arguments) {
         
         List<ExpressionTree> expressionTrees = new ArrayList<ExpressionTree>(arguments);
         
@@ -74,16 +94,19 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
         Collections.reverse(expressionTrees);
 
         for (ExpressionTree expressionTree : expressionTrees) {
-            addArg(symbolManager, expressionTree);
+            addArg(symbol, expressionTree);
         }
     }
     
-    private void addArg(SymbolManager symbolManager, ExpressionTree expressionTree) {
+    private void addArg(Symbol symbol, ExpressionTree expressionTree) {
         
-        SymbolManager argsSymbolManager = new SymbolManager();
-        expressionTree.accept(new SymbolScanner(), argsSymbolManager);
-        Symbol symbolTree = argsSymbolManager.getSymbolTree();
-        Arg arg = new Arg(symbolTree);
-        symbolManager.addArg(arg);
+        Symbol accept = expressionTree.accept(new SymbolScanner(), null);
+
+        Arg arg = new Arg(accept);
+        
+        if (symbol instanceof Member) {
+            Member member = (Member)symbol;
+            member.addArg(arg);
+        }
     }
 }

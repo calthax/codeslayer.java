@@ -21,6 +21,8 @@ public abstract class AbstractSymbol implements Symbol {
     
     private final String value;
     private String type;
+    private Symbol nextSymbol;
+    private Symbol prevSymbol;
 
     public AbstractSymbol(String value) {
      
@@ -42,5 +44,26 @@ public abstract class AbstractSymbol implements Symbol {
     public void setType(String type) {
     
         this.type = type;
+    }
+    
+    public Symbol getPrevSymbol() {
+        
+        return prevSymbol;
+    }
+
+    public void setPrevSymbol(Symbol prevSymbol) {
+     
+        this.prevSymbol = prevSymbol;
+    }
+
+    public Symbol getNextSymbol() {
+        
+        return nextSymbol;
+    }
+
+    public void setNextSymbol(Symbol nextSymbol) {
+     
+        this.nextSymbol = nextSymbol;
+        this.nextSymbol.setPrevSymbol(this);
     }
 }

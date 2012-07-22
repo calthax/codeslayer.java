@@ -55,12 +55,11 @@ public class ParameterScanner {
                 parameterMatches.add(parameter);
             } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                 Parameter parameter = new Parameter();
-
-                SymbolManager symbolManager = new SymbolManager();
-                expressionTree.accept(new SymbolScanner(), symbolManager);
+                
+                Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
 
                 ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);
-                String type = expressionHandler.getType(symbolManager, scopeTree);
+                String type = expressionHandler.getType(symbol, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);
 

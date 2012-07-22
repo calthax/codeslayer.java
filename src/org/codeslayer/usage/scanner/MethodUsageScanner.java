@@ -32,10 +32,8 @@ import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.Klass;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.ScopeTreeFactory;
-import org.codeslayer.usage.domain.Input;
-import org.codeslayer.usage.domain.SymbolManager;
-import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.domain.UsageManager;
+import org.codeslayer.usage.UsageUtils;
+import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner {
     
@@ -133,13 +131,11 @@ public class MethodUsageScanner {
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
-                SymbolManager symbolManager = new SymbolManager();
-                memberSelectTree.accept(new SymbolScanner(), symbolManager);
-                
-                symbolManager.removeLastSymbol(); // the last symbol is the same as the method we are looking for
+                Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
+                Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
                 ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);                
-                String className = expressionHandler.getType(symbolManager, scopeTree);
+                String className = expressionHandler.getType(firstSymbol, scopeTree);
                 if (className == null) {
                     System.out.println("*** class end ***");
                     return scopeTree;

@@ -22,7 +22,6 @@ import java.util.List;
 
 public class Member extends AbstractSymbol {
     
-    private Member member;
     private List<Arg> args = new ArrayList<Arg>();
 
     public Member(String value) {
@@ -39,17 +38,12 @@ public class Member extends AbstractSymbol {
      
         this.args = args;
     }
-
-    public Member getMember() {
-        
-        return member;
-    }
-
-    public void setMember(Member member) {
-     
-        this.member = member;
-    }
     
+    public void addArg(Arg arg) {
+     
+        this.args.add(arg);
+    }
+
     @Override
     public String toString() {
         

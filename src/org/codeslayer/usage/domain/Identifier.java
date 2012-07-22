@@ -22,22 +22,11 @@ import java.util.List;
 
 public class Identifier extends AbstractSymbol {
     
-    private Member member;
     private List<Arg> args = new ArrayList<Arg>();
 
     public Identifier(String value) {
 
         super(value);
-    }
-
-    public Member getMember() {
-        
-        return member;
-    }
-
-    public void setMember(Member member) {
-     
-        this.member = member;
     }
 
     public List<Arg> getArgs() {
@@ -57,9 +46,6 @@ public class Identifier extends AbstractSymbol {
         sb.append(super.toString());
         sb.append("[value=").append(getValue());
         sb.append(", type=").append(getType());        
-        if (member != null) {
-            sb.append(", member=").append(member); 
-        }        
         sb.append(", args={");
         for (Arg arg: args) {
             sb.append(arg).append(",");
