@@ -17,20 +17,28 @@
  */
 package org.codeslayer.usage.domain;
 
-public class Arg extends AbstractSymbol {
+public class Arg {
     
-    public Arg(String value) {
+    private final Symbol symbol;
 
-        super(value);
+    public Arg(Symbol symbol) {
+     
+        this.symbol = symbol;
     }
-    
+
+    public Symbol getSymbol() {
+     
+        return symbol;
+    }
+
     @Override
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append("[value=").append(getValue());
-        sb.append(", type=").append(getType());
+        sb.append("[");
+        if (symbol != null) {
+            sb.append("symbol=").append(symbol);            
+        }
         return sb.append("]").toString();
-    }   
+    }
 }

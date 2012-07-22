@@ -35,9 +35,9 @@ public class NewClass extends AbstractSymbol {
         return args;
     }
 
-    public void addArg(Arg arg) {
+    public void setArgs(List<Arg> args) {
      
-        this.args.add(arg);
+        this.args = args;
     }
 
     public Member getMember() {

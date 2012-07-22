@@ -72,22 +72,6 @@ public class SymbolFactory {
                 
                 continue;
             }
-            
-            if (symbol instanceof Arg) {
-                
-                Arg arg = (Arg)symbol;
-                
-                if (lastSymbol instanceof NewClass) {
-                    NewClass lastNewClass = (NewClass)lastSymbol;
-                    lastNewClass.addArg(arg);                    
-                } else if (lastSymbol instanceof Identifier) {
-                    Identifier lastIdentifier = (Identifier)lastSymbol;
-                    lastIdentifier.addArg(arg);
-                } else {
-                    Member lastMember = (Member)lastSymbol;
-                    lastMember.addArg(arg);
-                }
-            }
         }
     }    
 }

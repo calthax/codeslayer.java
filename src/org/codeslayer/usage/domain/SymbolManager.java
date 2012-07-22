@@ -25,6 +25,11 @@ public class SymbolManager {
     
     private List<Symbol> symbols = new ArrayList<Symbol>();
     
+    /*
+     * We need to create the args before the class or method.
+     */
+    private List<Arg> args = new ArrayList<Arg>();
+    
     private Symbol symbolTree;
 
     public Symbol getSymbolTree() {
@@ -41,28 +46,34 @@ public class SymbolManager {
         return this.symbolTree;
     }
     
-    public void addNewClass(String value) {
+    public NewClass addNewClass(String value) {
         
         NewClass newClass = new NewClass(value);
+        newClass.setArgs(new ArrayList<Arg>(args));
         symbols.add(newClass);
+        args.clear();
+        return newClass;
     }
     
-    public void addIdentifier(String value) {
+    public Identifier addIdentifier(String value) {
         
         Identifier identifier = new Identifier(value);
         symbols.add(identifier);
+        return identifier;
     }
     
-    public void addMember(String value) {
+    public Member addMember(String value) {
         
         Member member = new Member(value);
+        member.setArgs(new ArrayList<Arg>(args));
         symbols.add(member);
+        args.clear();
+        return member;
     }
     
-    public void addArg(String value) {
+    public void addArg(Arg arg) {
         
-        Arg arg = new Arg(value);
-        symbols.add(arg);
+        args.add(arg);
     }
     
     public void removeLastSymbol() {

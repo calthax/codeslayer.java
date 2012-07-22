@@ -22,7 +22,7 @@ import com.sun.source.util.SimpleTreeVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.codeslayer.usage.domain.SymbolManager;
+import org.codeslayer.usage.domain.*;
 
 /**
  * Walk a code path and identify what each part of the path contains. For instance given the path 
@@ -32,26 +32,16 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     
     public SymbolManager visitNewClass(NewClassTree newClassTree, SymbolManager symbolManager) {
         
-        List<? extends ExpressionTree> arguments = newClassTree.getArguments();
-
-        List<ExpressionTree> args = new ArrayList<ExpressionTree>(arguments);
-
-        Collections.reverse(args);
-
-        for (ExpressionTree arg : args) {
-            symbolManager.addArg(arg.toString());
-        }
+        addArgs(symbolManager, newClassTree.getArguments());
 
         symbolManager.addNewClass(newClassTree.getIdentifier().toString());
-
         return symbolManager;
     }
     
     @Override
     public SymbolManager visitIdentifier(IdentifierTree identifierTree, SymbolManager symbolManager) {
-
+        
         symbolManager.addIdentifier(identifierTree.toString());
-
         return symbolManager;
     }
 
@@ -59,7 +49,7 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     public SymbolManager visitMemberSelect(MemberSelectTree memberSelectTree, SymbolManager symbolManager) {
         
         symbolManager.addMember(memberSelectTree.getIdentifier().toString());
-
+        
         ExpressionTree expression = memberSelectTree.getExpression();
         return expression.accept(new SymbolScanner(), symbolManager);
     }
@@ -67,17 +57,33 @@ public class SymbolScanner extends SimpleTreeVisitor<SymbolManager, SymbolManage
     @Override
     public SymbolManager visitMethodInvocation(MethodInvocationTree methodInvocationTree, SymbolManager symbolManager) {
 
-        List<? extends ExpressionTree> arguments = methodInvocationTree.getArguments();
-
-        List<ExpressionTree> args = new ArrayList<ExpressionTree>(arguments);
-
-        Collections.reverse(args);
-
-        for (ExpressionTree arg : args) {
-            symbolManager.addArg(arg.toString());
-        }
+        addArgs(symbolManager, methodInvocationTree.getArguments());
 
         ExpressionTree methodSelect = methodInvocationTree.getMethodSelect();
         return methodSelect.accept(new SymbolScanner(), symbolManager);
-    }    
+    }
+    
+    private void addArgs(SymbolManager symbolManager, List<? extends ExpressionTree> arguments) {
+        
+        List<ExpressionTree> expressionTrees = new ArrayList<ExpressionTree>(arguments);
+        
+        if (expressionTrees == null || expressionTrees.isEmpty()) {
+            return;
+        }
+
+        Collections.reverse(expressionTrees);
+
+        for (ExpressionTree expressionTree : expressionTrees) {
+            addArg(symbolManager, expressionTree);
+        }
+    }
+    
+    private void addArg(SymbolManager symbolManager, ExpressionTree expressionTree) {
+        
+        SymbolManager argsSymbolManager = new SymbolManager();
+        expressionTree.accept(new SymbolScanner(), argsSymbolManager);
+        Symbol symbolTree = argsSymbolManager.getSymbolTree();
+        Arg arg = new Arg(symbolTree);
+        symbolManager.addArg(arg);
+    }
 }

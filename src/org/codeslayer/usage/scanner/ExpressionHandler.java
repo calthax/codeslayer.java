@@ -47,7 +47,7 @@ public class ExpressionHandler {
             System.out.println("symbol resolve NewClass => " + newClass.getValue());
             
             for (Arg arg : newClass.getArgs()) {
-                System.out.println("symbol resolve Arg => " + arg.getValue());
+                System.out.println("symbol resolve Arg => " + arg.toString());
             }
 
             String className = getClassName(parent, newClass, scopeTree);
@@ -60,7 +60,7 @@ public class ExpressionHandler {
             System.out.println("symbol resolve Identifier => " + identifier.getValue());
             
             for (Arg arg : identifier.getArgs()) {
-                System.out.println("symbol resolve Arg => " + arg.getValue());
+                System.out.println("symbol resolve Arg => " + arg.toString());
             }
             
             String className = getClassName(parent, identifier, scopeTree);
@@ -78,14 +78,18 @@ public class ExpressionHandler {
             System.out.println("symbol resolve Member => " + member.getValue());
             
             for (Arg arg : member.getArgs()) {
-                System.out.println("symbol resolve Arg => " + arg.getValue());
+                System.out.println("symbol resolve Arg => " + arg.toString());
             }
             
-            Identifier identifier = (Identifier)parent;
-            Method method = createMethod(identifier, member);
+            Method method = createMethod(parent, member);
             String returnType = getReturnType(method);
             member.setType(returnType);
             System.out.println("symbol resolve Member type => " + member.getType());
+            
+            Member member2 = member.getMember();
+            if (member2 != null) {
+                return resolveType(member, member2, scopeTree);
+            }
             
             return member.getType();
         }
@@ -138,20 +142,20 @@ public class ExpressionHandler {
         return null;
     }
     
-    private Method createMethod(Identifier identifier, Member member) {
+    private Method createMethod(Symbol parent, Member member) {
         
         Method method = new Method();
         method.setName(member.getValue());
         
         Klass klass = new Klass();
-        klass.setClassName(identifier.getType());
+        klass.setClassName(parent.getType());
         method.setKlass(klass);
         
-        for (Arg arg : member.getArgs()) {
-            Parameter parameter = new Parameter();
-            parameter.setType(arg.getType());
-            method.addParameter(parameter);
-        }
+//        for (Arg arg : member.getArgs()) {
+//            Parameter parameter = new Parameter();
+//            parameter.setType(arg.getType());
+//            method.addParameter(parameter);
+//        }
         
         return method;
     }
