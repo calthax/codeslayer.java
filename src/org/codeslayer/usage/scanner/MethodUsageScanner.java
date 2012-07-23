@@ -133,24 +133,25 @@ public class MethodUsageScanner {
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
                 Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
-                SymbolResolver symbolHandler = new SymbolResolver(compilationUnitTree, hierarchyManager);                
-                String className = symbolHandler.getType(firstSymbol, scopeTree);
-                if (className == null) {
+                SymbolResolver symbolResolver = new SymbolResolver(compilationUnitTree, hierarchyManager);                
+                
+                String type = symbolResolver.getType(firstSymbol, scopeTree);
+                if (type == null) {
                     System.out.println("*** class end ***");
                     return scopeTree;
                 }
 
                 System.out.println("*** class end ***");
                 
-                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, type)) {
                     return scopeTree;
                 }
                 
                 Method method = new Method();
                 method.setName(methodMatch.getName());
                 Klass klass = new Klass();
-                klass.setClassName(className);
-                klass.setSimpleClassName(SourceUtils.getSimpleType(className));
+                klass.setClassName(type);
+                klass.setSimpleClassName(SourceUtils.getSimpleType(type));
                 method.setKlass(klass);
                 
 //                System.out.println("symbolManager " + symbolManager);
