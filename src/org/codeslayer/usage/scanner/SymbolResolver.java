@@ -20,16 +20,16 @@ package org.codeslayer.usage.scanner;
 import com.sun.source.tree.CompilationUnitTree;
 import java.util.List;
 import org.codeslayer.source.*;
-import org.codeslayer.source.Parameter;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
+import static org.codeslayer.usage.domain.SymbolType.*;
 
-public class ExpressionHandler {
+public class SymbolResolver {
     
     private final CompilationUnitTree compilationUnitTree;
     private final HierarchyManager hierarchyManager;
 
-    public ExpressionHandler(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
+    public SymbolResolver(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
      
         this.compilationUnitTree = compilationUnitTree;
         this.hierarchyManager = hierarchyManager;
@@ -42,59 +42,56 @@ public class ExpressionHandler {
     
     private String resolveType(Symbol parent, Symbol child, ScopeTree scopeTree) {
         
-        if (child instanceof NewClass) {
-            NewClass newClass = (NewClass)child;
-            System.out.println("symbol resolve NewClass => " + newClass.getValue());
+        if (child.getSymbolType() == NEW_CLASS) {
+            System.out.println("symbol resolve NewClass => " + child.getValue());
             
-            for (Arg arg : newClass.getArgs()) {
+            for (Arg arg : child.getArgs()) {
                 System.out.println("symbol resolve Arg => " + arg.toString());
             }
 
-            String className = getClassName(parent, newClass, scopeTree);
-            newClass.setType(className);
-            System.out.println("symbol resolve NewClass type => " + newClass.getType());
+            String className = getClassName(parent, child, scopeTree);
+            child.setType(className);
+            System.out.println("symbol resolve NewClass className => " + child.getType());
             
-            return newClass.getType();
-        } else if (child instanceof Identifier) {
-            Identifier identifier = (Identifier)child;
-            System.out.println("symbol resolve Identifier => " + identifier.getValue());
+            return child.getType();
+        } else if (child.getSymbolType() == IDENTIFIER) {
+            System.out.println("symbol resolve Identifier => " + child.getValue());
             
-            for (Arg arg : identifier.getArgs()) {
+            for (Arg arg : child.getArgs()) {
                 System.out.println("symbol resolve Arg => " + arg.toString());
             }
             
-            String className = getClassName(parent, identifier, scopeTree);
-            identifier.setType(className);
-            System.out.println("symbol resolve Identifier type => " + identifier.getType());
+            String className = getClassName(parent, child, scopeTree);
+            child.setType(className);
+            System.out.println("symbol resolve Identifier className => " + child.getType());
             
-            Member member = (Member)identifier.getNextSymbol();
+            Symbol member = child.getNextSymbol();
             if (member != null) {
-                return resolveType(identifier, member, scopeTree);
+                return resolveType(child, member, scopeTree);
             }
             
-            return identifier.getType();
-        } else if (child instanceof Member) {
-            Member member = (Member)child;
-            System.out.println("symbol resolve Member => " + member.getValue());
+            return child.getType();
+        } else if (child.getSymbolType() == MEMBER) {
+            System.out.println("symbol resolve Member => " + child.getValue());
             
-            for (Arg arg : member.getArgs()) {
+            for (Arg arg : child.getArgs()) {
                 System.out.println("symbol resolve Arg => " + arg.toString());
             }
             
-            Method method = createMethod(parent, member);
+            Method method = createMethod(parent, child);
             String returnType = getReturnType(method);
-            member.setType(returnType);
-            System.out.println("symbol resolve Member type => " + member.getType());
+            child.setType(returnType);
+            System.out.println("symbol resolve Member className => " + child.getType());
             
-            Member member2 = (Member)member.getNextSymbol();
-            if (member2 != null) {
-                return resolveType(member, member2, scopeTree);
+            Symbol member = child.getNextSymbol();
+            if (member != null) {
+                return resolveType(child, member, scopeTree);
             }
             
-            return member.getType();
+            return child.getType();
         }
 
-        throw new IllegalStateException("Not able to find the type for " + child);
+        throw new IllegalStateException("Not able to find the class name for " + child);
     }
     
     private String getClassName(Symbol parent, Symbol child, ScopeTree scopeTree) {
@@ -142,20 +139,20 @@ public class ExpressionHandler {
         return null;
     }
     
-    private Method createMethod(Symbol parent, Member member) {
+    private Method createMethod(Symbol parent, Symbol child) {
         
         Method method = new Method();
-        method.setName(member.getValue());
+        method.setName(child.getValue());
         
         Klass klass = new Klass();
         klass.setClassName(parent.getType());
         method.setKlass(klass);
         
-//        for (Arg arg : member.getArgs()) {
-//            Parameter parameter = new Parameter();
-//            parameter.setType(arg.getType());
-//            method.addParameter(parameter);
-//        }
+        for (Arg arg : child.getArgs()) {
+            Parameter parameter = new Parameter();
+            parameter.setType(arg.getSymbol().getType());
+            method.addParameter(parameter);
+        }
         
         return method;
     }

@@ -17,12 +17,87 @@
  */
 package org.codeslayer.usage.domain;
 
-public interface Symbol {
+import java.util.ArrayList;
+import java.util.List;
 
-    public String getType();
-    public String getValue();
-    public Symbol getNextSymbol();
-    public void setNextSymbol(Symbol nextSymbol);
-    public Symbol getPrevSymbol();
-    public void setPrevSymbol(Symbol prevSymbol);
+public class Symbol {
+    
+    private final SymbolType symbolType;
+    private final String value;
+    private String type;
+    private Symbol nextSymbol;
+    private Symbol prevSymbol;
+    private List<Arg> args = new ArrayList<Arg>();
+
+    public Symbol(SymbolType symbolType, String value) {
+     
+        this.symbolType = symbolType;
+        this.value = value;
+    }
+
+    public SymbolType getSymbolType() {
+     
+        return symbolType;
+    }
+    
+    public String getValue() {
+
+        return value;
+    }
+
+    public String getType() {
+        
+        return type;
+    }
+
+    public void setType(String type) {
+    
+        this.type = type;
+    }
+    
+    public List<Arg> getArgs() {
+     
+        return args;
+    }
+
+    public void addArg(Arg arg) {
+     
+        this.args.add(arg);
+    }
+    
+    public Symbol getPrevSymbol() {
+        
+        return prevSymbol;
+    }
+
+    public void setPrevSymbol(Symbol prevSymbol) {
+     
+        this.prevSymbol = prevSymbol;
+    }
+
+    public Symbol getNextSymbol() {
+        
+        return nextSymbol;
+    }
+
+    public void setNextSymbol(Symbol nextSymbol) {
+     
+        this.nextSymbol = nextSymbol;
+        this.nextSymbol.setPrevSymbol(this);
+    }
+    
+    @Override
+    public String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString());
+        sb.append("[value=").append(getValue());
+        sb.append(", className=").append(getType());        
+        sb.append(", args={");
+        for (Arg arg: args) {
+            sb.append(arg).append(",");
+        }
+        sb.append("}");
+        return sb.append("]").toString();
+    }   
 }

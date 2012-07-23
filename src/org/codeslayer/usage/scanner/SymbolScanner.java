@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.codeslayer.usage.domain.*;
+import static org.codeslayer.usage.domain.SymbolType.*;
 
 /**
  * Walk a code path and identify what each part of the path contains. For instance given the path 
@@ -30,22 +31,23 @@ import org.codeslayer.usage.domain.*;
  */
 public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
     
-//    public Symbol visitNewClass(NewClassTree newClassTree, SymbolManager symbolManager) {
-//        
-//        addArgs(symbolManager, newClassTree.getArguments());
-//
-//        System.out.println("visitNewClass (" + symbolManager.current + ") => " + newClassTree.getIdentifier().toString());
-//        
-//        symbolManager.addNewClass(newClassTree.getIdentifier().toString());
-//        return symbolManager;
-//    }
+    public Symbol visitNewClass(NewClassTree newClassTree, Void p) {
+        
+        super.visitNewClass(newClassTree, p);
+        
+        Symbol newClass = new Symbol(NEW_CLASS, newClassTree.getIdentifier().toString());
+        
+        addArgs(newClass, newClassTree.getArguments());
+        
+        return newClass;
+    }
     
     @Override
     public Symbol visitIdentifier(IdentifierTree identifierTree, Void p) {
         
         super.visitIdentifier(identifierTree, p);
         
-        Identifier result = new Identifier(identifierTree.getName().toString());
+        Symbol result = new Symbol(IDENTIFIER, identifierTree.getName().toString());
         return result;
     }
 
@@ -54,18 +56,12 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
         
         super.visitMemberSelect(memberSelectTree, p);
 
-        Member member = new Member(memberSelectTree.getIdentifier().toString());
+        Symbol member = new Symbol(MEMBER, memberSelectTree.getIdentifier().toString());
         
         ExpressionTree expression = memberSelectTree.getExpression();
         Symbol result = expression.accept(new SymbolScanner(), p);
-        
-        if (result instanceof Member) {
-            Member prev = (Member)result;
-            prev.setNextSymbol(member);
-        } else if (result instanceof Identifier) {
-            Identifier prev = (Identifier)result;
-            prev.setNextSymbol(member);
-        }
+
+        result.setNextSymbol(member);
         
         return member;
     }
@@ -100,13 +96,9 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
     
     private void addArg(Symbol symbol, ExpressionTree expressionTree) {
         
-        Symbol accept = expressionTree.accept(new SymbolScanner(), null);
+        Symbol result = expressionTree.accept(new SymbolScanner(), null);
 
-        Arg arg = new Arg(accept);
-        
-        if (symbol instanceof Member) {
-            Member member = (Member)symbol;
-            member.addArg(arg);
-        }
+        Arg arg = new Arg(result);
+        symbol.addArg(arg);
     }
 }

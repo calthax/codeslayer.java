@@ -128,14 +128,13 @@ public class MethodUsageScanner {
                     return null;
                 }
                 
-                
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
                 Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);                
-                String className = expressionHandler.getType(firstSymbol, scopeTree);
+                SymbolResolver symbolHandler = new SymbolResolver(compilationUnitTree, hierarchyManager);                
+                String className = symbolHandler.getType(firstSymbol, scopeTree);
                 if (className == null) {
                     System.out.println("*** class end ***");
                     return scopeTree;

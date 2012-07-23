@@ -58,8 +58,8 @@ public class ParameterScanner {
                 
                 Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
 
-                ExpressionHandler expressionHandler = new ExpressionHandler(compilationUnitTree, hierarchyManager);
-                String type = expressionHandler.getType(symbol, scopeTree);
+                SymbolResolver symbolHandler = new SymbolResolver(compilationUnitTree, hierarchyManager);
+                String type = symbolHandler.getType(symbol, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);
 
