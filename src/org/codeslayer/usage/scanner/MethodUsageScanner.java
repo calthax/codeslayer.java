@@ -124,7 +124,7 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.toolbar.TextItem")) {
+                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.BasicPresidentController")) {
                     return null;
                 }
                 
@@ -133,9 +133,9 @@ public class MethodUsageScanner {
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
                 Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
-                SymbolResolver symbolResolver = new SymbolResolver(compilationUnitTree, hierarchyManager);                
+                SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
                 
-                String type = symbolResolver.getType(firstSymbol, scopeTree);
+                String type = symbolHandler.getType(firstSymbol, scopeTree);
                 if (type == null) {
                     System.out.println("*** class end ***");
                     return scopeTree;

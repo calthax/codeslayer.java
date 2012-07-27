@@ -82,11 +82,11 @@ public class UsageUtils {
         }
     }
     
-    public static List<Usage> filterUsages(List<Usage> usages, Method method) {
+    public static List<Usage> filterUsages(Method methodMatch, List<Usage> usages) {
         
         List<Usage> results = new ArrayList<Usage>();
         
-        List<Parameter> methodParameters = method.getParameters();
+        List<Parameter> methodParameters = methodMatch.getParameters();
         
         System.out.println("methodParameters: " + methodParameters);
         

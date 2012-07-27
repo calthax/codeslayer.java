@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.codeslayer.usage.domain.*;
-import static org.codeslayer.usage.domain.SymbolType.*;
 
 /**
  * Walk a code path and identify what each part of the path contains. For instance given the path 
@@ -35,7 +34,7 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
         
         super.visitNewClass(newClassTree, p);
         
-        Symbol newClass = new Symbol(NEW_CLASS, newClassTree.getIdentifier().toString());
+        Symbol newClass = new Symbol(newClassTree.getIdentifier().toString());
         
         addArgs(newClass, newClassTree.getArguments());
         
@@ -47,7 +46,7 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
         
         super.visitIdentifier(identifierTree, p);
         
-        Symbol result = new Symbol(IDENTIFIER, identifierTree.getName().toString());
+        Symbol result = new Symbol(identifierTree.getName().toString());
         return result;
     }
 
@@ -56,7 +55,7 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
         
         super.visitMemberSelect(memberSelectTree, p);
 
-        Symbol member = new Symbol(MEMBER, memberSelectTree.getIdentifier().toString());
+        Symbol member = new Symbol(memberSelectTree.getIdentifier().toString());
         
         ExpressionTree expression = memberSelectTree.getExpression();
         Symbol result = expression.accept(new SymbolScanner(), p);

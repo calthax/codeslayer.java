@@ -22,24 +22,17 @@ import java.util.List;
 
 public class Symbol {
     
-    private final SymbolType symbolType;
     private final String value;
     private String type;
     private Symbol nextSymbol;
     private Symbol prevSymbol;
     private List<Arg> args = new ArrayList<Arg>();
 
-    public Symbol(SymbolType symbolType, String value) {
+    public Symbol(String value) {
      
-        this.symbolType = symbolType;
         this.value = value;
     }
 
-    public SymbolType getSymbolType() {
-     
-        return symbolType;
-    }
-    
     public String getValue() {
 
         return value;
@@ -92,7 +85,7 @@ public class Symbol {
         StringBuilder sb = new StringBuilder();
         sb.append(super.toString());
         sb.append("[value=").append(getValue());
-        sb.append(", className=").append(getType());        
+        sb.append(", type=").append(getType());        
         sb.append(", args={");
         for (Arg arg: args) {
             sb.append(arg).append(",");

@@ -43,7 +43,14 @@ public class ParameterScanner {
             Tree.Kind kind = expressionTree.getKind();
             String name = expressionTree.toString();
 
-            if (kind == Tree.Kind.IDENTIFIER) { // items
+            if (kind == Tree.Kind.STRING_LITERAL) {
+                Parameter parameter = new Parameter();
+                
+                parameter.setSimpleType(String.class.getSimpleName());
+                parameter.setType(String.class.getName());
+
+                parameterMatches.add(parameter);
+            } else if (kind == Tree.Kind.IDENTIFIER) { // items
                 Parameter parameter = new Parameter();
 
                 String simpleType = scopeTree.getSimpleType(name);
@@ -58,7 +65,7 @@ public class ParameterScanner {
                 
                 Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
 
-                SymbolResolver symbolHandler = new SymbolResolver(compilationUnitTree, hierarchyManager);
+                SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
                 String type = symbolHandler.getType(symbol, scopeTree);
                 parameter.setSimpleType(SourceUtils.getSimpleType(type));
                 parameter.setType(type);

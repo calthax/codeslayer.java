@@ -50,7 +50,7 @@ public class Main {
             
             MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input);
             List<Usage> usages = methodUsageScanner.scan();
-            usages = UsageUtils.filterUsages(usages, methodMatch);
+            usages = UsageUtils.filterUsages(methodMatch, usages);
             
             System.out.println("************ Usage Search Results ************");
 
