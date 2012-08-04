@@ -245,14 +245,16 @@ public class SourceUtils {
     
     public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
         
+        boolean superClass = isSuperClass(hierarchyManager, methodMatch, className);
+        
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
             List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
             for (Method classMethod : classMethods) {
                 
-                if (!classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
+                if (!superClass && !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
                     continue;
-                }                
+                }
                 
                 if (SourceUtils.methodsEqual(classMethod, methodMatch)) {
                     return true;
@@ -260,6 +262,17 @@ public class SourceUtils {
             }
         }
 
+        return false;
+    }
+    
+    private static boolean isSuperClass(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+        
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
+            if (hierarchy.getClassName().equals(className)) {
+                return true;
+            }
+        }
+        
         return false;
     }
     
