@@ -44,7 +44,8 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
         super.visitImport(importTree, scopeTree);
 
         String importName = importTree.getQualifiedIdentifier().toString();
-        scopeTree.addImportName(importName);
+        Import impt = new Import(importName, importTree.isStatic());
+        scopeTree.addImport(impt);
 
         return scopeTree;
     }

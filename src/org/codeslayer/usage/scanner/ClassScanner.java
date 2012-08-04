@@ -24,13 +24,7 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.List;
-import org.codeslayer.source.Hierarchy;
-import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.Klass;
-import org.codeslayer.source.ScopeTree;
-import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.Method;
-import org.codeslayer.source.ScopeTreeFactory;
+import org.codeslayer.source.*;
 
 public class ClassScanner {
     
@@ -92,7 +86,8 @@ public class ClassScanner {
             super.visitImport(importTree, scopeTree);
 
             String importName = importTree.getQualifiedIdentifier().toString();
-            scopeTree.addImportName(importName);
+            Import impt = new Import(importName, importTree.isStatic());
+            scopeTree.addImport(impt);
 
             return scopeTree;
         }

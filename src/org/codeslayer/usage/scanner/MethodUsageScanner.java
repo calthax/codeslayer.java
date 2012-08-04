@@ -28,10 +28,7 @@ import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.indexer.IndexerUtils;
-import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.Klass;
-import org.codeslayer.source.Method;
-import org.codeslayer.source.ScopeTreeFactory;
+import org.codeslayer.source.*;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
@@ -95,7 +92,8 @@ public class MethodUsageScanner {
             super.visitImport(importTree, scopeTree);
 
             String importName = importTree.getQualifiedIdentifier().toString();
-            scopeTree.addImportName(importName);
+            Import impt = new Import(importName, importTree.isStatic());
+            scopeTree.addImport(impt);
 
             return scopeTree;
         }
@@ -110,6 +108,37 @@ public class MethodUsageScanner {
             scopeTree.addSimpleType(variable, simpleType);
 
             return scopeTree;                    
+        }
+
+        @Override
+        public ScopeTree visitIdentifier(IdentifierTree identifierTree, ScopeTree scopeTree) {
+            
+            super.visitIdentifier(identifierTree, scopeTree);
+            
+            if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
+                
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.BasicPresidentController")) {
+//                    return null;
+//                }
+                
+                System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree) + " ***");
+                
+                // assume this is a method of this class
+                
+                Method method = new Method();
+                method.setName(methodMatch.getName());
+                Klass klass = new Klass();
+                String className = SourceUtils.getClassName(compilationUnitTree);
+                klass.setClassName(className);
+                klass.setSimpleClassName(SourceUtils.getSimpleType(className));
+                method.setKlass(klass);
+                
+                usageManager.addUsage(createUsage(method, identifierTree));
+                
+                System.out.println("*** class end ***");
+            }            
+            
+            return scopeTree;
         }
 
         /**
@@ -137,13 +166,12 @@ public class MethodUsageScanner {
                 
                 String type = symbolHandler.getType(firstSymbol, scopeTree);
                 if (type == null) {
-                    System.out.println("*** class end ***");
+                    System.out.println("*** class end no type ***");
                     return scopeTree;
                 }
 
-                System.out.println("*** class end ***");
-                
                 if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, type)) {
+                    System.out.println("*** class end no match ***");
                     return scopeTree;
                 }
                 
@@ -154,21 +182,25 @@ public class MethodUsageScanner {
                 klass.setSimpleClassName(SourceUtils.getSimpleType(type));
                 method.setKlass(klass);
                 
-//                System.out.println("symbolManager " + symbolManager);
+                usageManager.addUsage(createUsage(method, memberSelectTree));
 
-                Usage usage = new Usage();
-                usage.setMethod(method);
-                usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
-                usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-                usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
-                usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree));
-                usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree));
-                usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree));
-
-                usageManager.addUsage(usage);
+                System.out.println("*** class end ***");
             }
 
             return scopeTree;
+        }
+        
+        private Usage createUsage(Method method, Tree tree) {
+            
+            Usage usage = new Usage();
+            usage.setMethod(method);
+            usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+            usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
+            usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree));
+            usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, tree));
+            usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, tree));
+            return usage;
         }
         
         /**

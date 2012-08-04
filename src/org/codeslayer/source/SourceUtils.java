@@ -204,6 +204,16 @@ public class SourceUtils {
         return simpleType.substring(0, index);
     }
     
+    public static String removeArray(String simpleType) {
+        
+        int index = simpleType.indexOf("[");
+        if (index < 0) {
+            return simpleType;
+        }
+        
+        return simpleType.substring(0, index);
+    }
+    
     /*
      * This is flawed in that it will only find a class if it is in the imports.
      */
@@ -213,18 +223,20 @@ public class SourceUtils {
             return simpleType;
         }
         
-        String name = removeGenerics(simpleType);
+        String simpleName = removeGenerics(simpleType);
+        simpleName = removeArray(simpleType);
         
-        if (name.equals("String")) {
+        if (simpleName.equals("String")) {
             return "java.lang.String";
-        } else if (name.equals("Object")) {
+        } else if (simpleName.equals("Object")) {
             return "java.lang.Object";
-        } else if (name.equals("Collection")) {
+        } else if (simpleName.equals("Collection")) {
             return "java.lang." + simpleType;
         }
         
-        for (String importName : scopeTree.getImportNames()) {
-            if (importName.endsWith("." + name)) {
+        for (Import impt : scopeTree.getImports()) {
+            String importName = impt.getName();
+            if (importName.endsWith("." + simpleName)) {
                 return importName;
             }
         }
@@ -265,7 +277,7 @@ public class SourceUtils {
         return false;
     }
     
-    private static boolean isSuperClass(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+    public static boolean isSuperClass(HierarchyManager hierarchyManager, Method methodMatch, String className) {
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
             if (hierarchy.getClassName().equals(className)) {
@@ -274,6 +286,37 @@ public class SourceUtils {
         }
         
         return false;
+    }
+    
+    public static boolean isStaticMethod(ScopeTree scopeTree, String methodName) {
+        
+        return getStaticMethod(scopeTree, methodName) != null;
+    }
+    
+    public static Method getStaticMethod(ScopeTree scopeTree, String methodName) {
+        
+        for (Import impt : scopeTree.getImports()) {
+            if (impt.isStatic()) {
+                String importName = impt.getName();
+                String[] split = importName.split("\\.");
+                String name = split[split.length - 1];
+                if (name.equals(methodName)) {
+                    Method method = new Method();
+                    method.setName(name);
+                    
+                    int index = importName.indexOf(methodName);
+                    String className = importName.substring(0, index - 1);
+                    
+                    Klass klass = new Klass();
+                    klass.setClassName(className);
+                    method.setKlass(klass);
+                   
+                    return method;
+                }
+            }
+        }
+        
+        return null;
     }
     
     public static boolean classesEqual(Klass klass1, Method method1, Klass klass2, Method method2) {

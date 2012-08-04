@@ -85,7 +85,8 @@ public class SourceIndexer implements Indexer {
         public ScopeTree visitImport(ImportTree importTree, ScopeTree scopeTree) {
 
             String importName = importTree.getQualifiedIdentifier().toString();
-            scopeTree.addImportName(importName);
+            Import impt = new Import(importName, importTree.isStatic());
+            scopeTree.addImport(impt);
             return super.visitImport(importTree, scopeTree);
         }
         

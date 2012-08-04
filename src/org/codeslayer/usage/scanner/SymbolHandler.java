@@ -96,6 +96,11 @@ public class SymbolHandler {
             return className;
         }
         
+        Method staticMethod = SourceUtils.getStaticMethod(scopeTree, value);
+        if (staticMethod != null) {
+            return getReturnType(staticMethod);
+        }
+        
         String simpleType = scopeTree.getSimpleType(value);
         if (simpleType == null) { // assume this is a method of this class
             Method method = new Method();

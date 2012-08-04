@@ -26,7 +26,7 @@ public class ScopeTree {
     
     private String packageName;
     private Map<String, String> simpleTypes = new HashMap<String, String>();
-    private List<String> importNames = new ArrayList<String>();
+    private List<Import> imports = new ArrayList<Import>();
 
     public String getPackageName() {
         
@@ -48,13 +48,13 @@ public class ScopeTree {
         simpleTypes.put(variable, simpleType);
     }
 
-    public List<String> getImportNames() {
+    public List<Import> getImports() {
      
-        return importNames;
+        return imports;
     }
 
-    public void addImportName(String importName) {
+    public void addImport(Import impt) {
      
-        importNames.add(importName);
+        imports.add(impt);
     }
 }
