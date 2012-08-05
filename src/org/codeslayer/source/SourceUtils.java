@@ -258,13 +258,14 @@ public class SourceUtils {
     public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
         
         boolean superClass = isSuperClass(hierarchyManager, methodMatch, className);
+        boolean containsInterface = containsInterface(hierarchyManager, methodMatch);
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
             List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
             for (Method classMethod : classMethods) {
                 
-                if (!superClass && !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
+                if (!superClass && !containsInterface && !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
                     continue;
                 }
                 
@@ -274,6 +275,23 @@ public class SourceUtils {
             }
         }
 
+        return false;
+    }
+    
+    public static boolean containsInterface(HierarchyManager hierarchyManager, Method methodMatch) {
+        
+        List<String> methodMatchInterfaces = methodMatch.getKlass().getInterfaces();
+        
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
+            List<String> interfaces = hierarchy.getInterfaces();
+            
+            for (String iface : methodMatchInterfaces) {
+                if (interfaces.contains(iface)) {
+                    return true;
+                }
+            }
+        }
+        
         return false;
     }
     

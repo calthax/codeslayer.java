@@ -153,9 +153,9 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.BasicPresidentController")) {
-//                    return null;
-//                }
+                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.LimitPresidentController")) {
+                    return null;
+                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
