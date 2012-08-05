@@ -101,6 +101,8 @@ public class SourceIndexer implements Indexer {
                 return super.visitClass(classTree, scopeTree);
             }
             
+            System.out.println("className " + className);
+            
             Klass klass = new Klass();
             klass.setImports(SourceUtils.getImports(compilationUnitTree));
             klass.setSimpleClassName(simpleClassName);
@@ -128,7 +130,7 @@ public class SourceIndexer implements Indexer {
             }
             
             indexClasses.add(klass);
-
+            
             return super.visitClass(classTree, scopeTree);
         }
     }

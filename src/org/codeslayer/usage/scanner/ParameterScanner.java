@@ -54,6 +54,9 @@ public class ParameterScanner {
                 Parameter parameter = new Parameter();
 
                 String simpleType = scopeTree.getSimpleType(name);
+                if (simpleType == null) {
+                    simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
+                }
                 String className = SourceUtils.getClassName(scopeTree, simpleType);
 
                 parameter.setSimpleType(simpleType);

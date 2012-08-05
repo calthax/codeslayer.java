@@ -48,7 +48,7 @@ public class HierarchyFile {
             if (simpleClassName == null || simpleClassName.length() == 0) {
                 continue;
             }
-
+            
             sb.append(index.getClassName());
             sb.append("\t");
             

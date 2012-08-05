@@ -27,7 +27,6 @@ import com.sun.source.tree.*;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
-import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
@@ -116,9 +115,9 @@ public class MethodUsageScanner {
             
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.BasicPresidentController")) {
-//                    return null;
-//                }
+                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.expression.BsfExpressionCellEditor")) {
+                    return null;
+                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree) + " ***");
                 
@@ -127,7 +126,7 @@ public class MethodUsageScanner {
                 String className = SourceUtils.getClassName(compilationUnitTree);
 
                 if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
-                    System.out.println("*** class end no match ***");
+                    System.out.println("*** class end no match (identifier) ***");
                     return scopeTree;
                 }
                 
@@ -140,7 +139,7 @@ public class MethodUsageScanner {
                 
                 usageManager.addUsage(createUsage(method, identifierTree));
                 
-                System.out.println("*** class end ***");
+                System.out.println("*** class end (identifier) ***");
             }            
             
             return scopeTree;
@@ -158,9 +157,9 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.LimitPresidentController")) {
-//                    return null;
-//                }
+                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.expression.BsfExpressionCellEditor")) {
+                    return null;
+                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 

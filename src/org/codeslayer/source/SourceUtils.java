@@ -28,6 +28,8 @@ import java.util.Set;
 import javax.lang.model.element.Modifier;
 import javax.tools.*;
 import org.codeslayer.usage.UsageUtils;
+import org.codeslayer.usage.domain.Variable;
+import org.codeslayer.usage.scanner.ClassVariableScanner;
 
 public class SourceUtils {
     
@@ -266,13 +268,16 @@ public class SourceUtils {
         
         boolean superClass = isSuperClass(hierarchyManager, methodMatch, className);
         boolean containsInterface = containsInterface(hierarchyManager, methodMatch);
+        boolean superClassContainsInterface = superClassContainsInterface(hierarchyManager, methodMatch, className);
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
             List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
             for (Method classMethod : classMethods) {
                 
-                if (!superClass && !containsInterface && !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
+                if (!superClassContainsInterface && 
+                    !superClass && !containsInterface && 
+                    !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
                     continue;
                 }
                 
@@ -302,7 +307,53 @@ public class SourceUtils {
         return false;
     }
     
+    public static boolean containsInterface(HierarchyManager hierarchyManager, String interfaceName, String interfaceNameToFind) {
+        
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(interfaceName)) {
+            for (String iface : hierarchy.getInterfaces()) {
+                if (iface.contains(interfaceNameToFind)) {
+                    return true;
+                }
+                
+                if (containsInterface(hierarchyManager, iface, interfaceNameToFind)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    public static boolean superClassContainsInterface(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+        
+        List<Hierarchy> hierarchyList = hierarchyManager.getHierarchyList(className);
+        String interfaceName = methodMatch.getKlass().getClassName();
+        
+        for (Hierarchy hierarchy : hierarchyList) {
+            List<String> interfaces = hierarchy.getInterfaces();
+            if (interfaces == null || interfaces.isEmpty()) {
+                continue;
+            }
+            
+            for (String iface : interfaces) {
+                if (iface.equals(interfaceName)) {
+                    return true;
+                }
+                
+                if (containsInterface(hierarchyManager, iface, interfaceName)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
     public static boolean isSuperClass(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+        
+        if (methodMatch.getKlass().getClassName().equals(className)) {
+            return false;
+        }
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
             if (hierarchy.getClassName().equals(className)) {
@@ -344,6 +395,50 @@ public class SourceUtils {
         return null;
     }
     
+    public static boolean isStaticImportVariable(ScopeTree scopeTree, String variableName) {
+        
+        for (Import impt : scopeTree.getImports()) {
+            if (impt.isStatic()) {
+                String importName = impt.getName();
+                String[] split = importName.split("\\.");
+                String name = split[split.length - 1];
+                if (name.equals(variableName)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    public static String getStaticImportType(HierarchyManager hierarchyManager, ScopeTree scopeTree, String variableName) {
+        
+        for (Import impt : scopeTree.getImports()) {
+            if (impt.isStatic()) {
+                String importName = impt.getName();
+                String[] split = importName.split("\\.");
+                String name = split[split.length - 1];
+                if (name.equals(variableName)) {
+                    
+                    int index = importName.indexOf(variableName);
+                    String className = importName.substring(0, index - 1);
+                    
+                    ClassVariableScanner scanner = new ClassVariableScanner(hierarchyManager, className);
+                    List<Variable> variables = scanner.scan();
+                    for (Variable variable : variables) {
+                        if (variable.getName().equals(name)) {
+                            return variable.getType();
+                        }
+                    }
+                    
+                    return null;
+                }
+            }
+        }
+        
+        return null;
+    }
+        
     public static boolean classesEqual(HierarchyManager hierarchyManager, Klass klass1, Method method1, Klass klass2, Method method2) {
         
         if (!klass1.getClassName().equals(klass2.getClassName())) {
@@ -375,6 +470,9 @@ public class SourceUtils {
             
             if (isClass(getSimpleType(type1)) && isClass(getSimpleType(type2))) {
                 if (type1.equals("java.lang.Object") || type2.equals("java.lang.Object")) {
+                    return true;
+                }
+                if (type1.equals(type2)) {
                     return true;
                 }
                 return parametersEqual(hierarchyManager, type1, type2);

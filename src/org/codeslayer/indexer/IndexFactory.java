@@ -37,22 +37,42 @@ public class IndexFactory {
 
         String interfaces = getInterfaces(klass);
         
-        for (Method method : klass.getMethods()) {
+        List<Method> methods = klass.getMethods();
+        
+        if (methods == null || methods.isEmpty()) { // probably an interface
             Index index = new Index();
             index.setClassName(klass.getClassName());
             index.setSimpleClassName(klass.getSimpleClassName());
             index.setSuperClass(klass.getSuperClass());
             index.setInterfaces(interfaces);
-            index.setMethodModifier(method.getModifier());
-            index.setMethodName(method.getName());
-            index.setMethodParameters( getMethodParameters(method));
-            index.setMethodParametersVariables(getMethodParametersVariables(method));
-            index.setMethodParametersTypes(getMethodParametersTypes(method));
-            index.setMethodReturnType(method.getReturnType());
-            index.setMethodSimpleReturnType(method.getSimpleReturnType());
+            index.setMethodModifier("");
+            index.setMethodName("");
+            index.setMethodParameters("");
+            index.setMethodParametersVariables("");
+            index.setMethodParametersTypes("");
+            index.setMethodReturnType("");
+            index.setMethodSimpleReturnType("");
             index.setFilePath(klass.getFilePath());
-            index.setLineNumber(String.valueOf(method.getLineNumber()));
+            index.setLineNumber(String.valueOf(""));
             indexes.add(index);
+        } else {
+            for (Method method : methods) {
+                Index index = new Index();
+                index.setClassName(klass.getClassName());
+                index.setSimpleClassName(klass.getSimpleClassName());
+                index.setSuperClass(klass.getSuperClass());
+                index.setInterfaces(interfaces);
+                index.setMethodModifier(method.getModifier());
+                index.setMethodName(method.getName());
+                index.setMethodParameters( getMethodParameters(method));
+                index.setMethodParametersVariables(getMethodParametersVariables(method));
+                index.setMethodParametersTypes(getMethodParametersTypes(method));
+                index.setMethodReturnType(method.getReturnType());
+                index.setMethodSimpleReturnType(method.getSimpleReturnType());
+                index.setFilePath(klass.getFilePath());
+                index.setLineNumber(String.valueOf(method.getLineNumber()));
+                indexes.add(index);
+            }
         }
     }
     
