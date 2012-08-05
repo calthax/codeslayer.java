@@ -22,6 +22,8 @@ import com.sun.source.util.SimpleTreeVisitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.codeslayer.usage.domain.*;
 
 /**
@@ -30,6 +32,9 @@ import org.codeslayer.usage.domain.*;
  */
 public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
     
+    private final static String PARENTHESIZED_REGEX = "\\(?\\(([0-9a-zA-Z]*)\\)[0-9a-zA-Z]*\\)?";
+    private final static Pattern PARENTHESIZED_PATTERN = Pattern.compile(PARENTHESIZED_REGEX);
+
     public Symbol visitNewClass(NewClassTree newClassTree, Void p) {
         
         super.visitNewClass(newClassTree, p);
@@ -76,6 +81,24 @@ public class SymbolScanner extends SimpleTreeVisitor<Symbol, Void> {
         addArgs(result, methodInvocationTree.getArguments());
         
         return result;
+    }
+    
+    /**
+     * ((FilterMatcherRegistrySupport)obj)
+     */
+    @Override
+    public Symbol visitParenthesized(ParenthesizedTree parenthesizedTree, Void p) {
+        
+        super.visitParenthesized(parenthesizedTree, p);
+        
+        Matcher matcher = PARENTHESIZED_PATTERN.matcher(parenthesizedTree.toString());
+        if (matcher.find()) {
+            String name = matcher.group(1);
+            Symbol result = new Symbol(name);
+            return result;
+        }        
+
+        return null;
     }
     
     private void addArgs(Symbol symbol, List<? extends ExpressionTree> arguments) {

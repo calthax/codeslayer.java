@@ -124,10 +124,16 @@ public class MethodUsageScanner {
                 
                 // assume this is a method of this class
                 
+                String className = SourceUtils.getClassName(compilationUnitTree);
+
+                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+                    System.out.println("*** class end no match ***");
+                    return scopeTree;
+                }
+                
                 Method method = new Method();
                 method.setName(methodMatch.getName());
                 Klass klass = new Klass();
-                String className = SourceUtils.getClassName(compilationUnitTree);
                 klass.setClassName(className);
                 klass.setSimpleClassName(SourceUtils.getSimpleType(className));
                 method.setKlass(klass);
@@ -158,6 +164,8 @@ public class MethodUsageScanner {
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
+                //memberSelectTree.getExpression().accept(new DebugScanner(), null);
+                
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
                 Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
