@@ -49,7 +49,8 @@ public class SymbolHandler {
             String className = getClassName(symbol, scopeTree);
             
             if (className == null) {
-                throw new IllegalStateException("Not able to get the type for symbol " + symbol);
+                System.out.println("Not able to get the type for symbol " + symbol);
+                return null;
             }
             
             symbol.setType(className);
@@ -65,7 +66,8 @@ public class SymbolHandler {
             String returnType = getReturnType(method);
             
             if (returnType == null) {
-                throw new IllegalStateException("Not able to get the return type for symbol " + symbol);
+                System.out.println("Not able to get the return type for symbol " + symbol);
+                return null;
             }
             
             symbol.setType(returnType);
@@ -121,7 +123,7 @@ public class SymbolHandler {
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(method.getKlass().getClassName())) {
             List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), method.getName());
             for (Method classMethod : classMethods) {
-                if (SourceUtils.methodsEqual(classMethod, method)) {
+                if (SourceUtils.methodsEqual(hierarchyManager, classMethod, method)) {
                     return classMethod.getReturnType();
                 }
             }

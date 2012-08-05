@@ -25,6 +25,8 @@ import org.codeslayer.usage.scanner.MethodUsageScanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.codeslayer.indexer.IndexerUtils;
+import org.codeslayer.source.HierarchyManager;
 
 public class Main {
 
@@ -37,7 +39,7 @@ public class Main {
 //            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/component/Column.java", "-methodusage", "getProperty", "-linenumber", "59"};
 //            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/html/component/HtmlColumn.java", "-methodusage", "title", "-linenumber", "86"};
 //            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/html/component/HtmlColumn.java", "-methodusage", "setSortOrder", "-linenumber", "212"};
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/service/PresidentServiceImpl.java", "-methodusage", "getPresidentsWithFilterAndSort", "-linenumber", "68"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/core/CoreContext.java", "-methodusage", "setAttribute", "-linenumber", "112"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
@@ -50,9 +52,12 @@ public class Main {
                 throw new IllegalStateException("the input scanner did not find the method");
             }
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(methodMatch, input);
+            File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
+            HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
+            
+            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(hierarchyManager, methodMatch, input);
             List<Usage> usages = methodUsageScanner.scan();
-            usages = UsageUtils.filterUsages(methodMatch, usages);
+            usages = UsageUtils.filterUsages(hierarchyManager, methodMatch, usages);
             
             System.out.println("************ Usage Search Results ************");
 

@@ -34,11 +34,13 @@ import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner {
     
+    private final HierarchyManager hierarchyManager;
     private final Method methodMatch;
     private final Input input;
 
-    public MethodUsageScanner(Method methodMatch, Input input) {
+    public MethodUsageScanner(HierarchyManager hierarchyManager, Method methodMatch, Input input) {
     
+        this.hierarchyManager = hierarchyManager;
         this.methodMatch = methodMatch;
         this.input = input;
     }
@@ -48,9 +50,6 @@ public class MethodUsageScanner {
         
         UsageManager usageManager = new UsageManager();
         
-        File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
-        HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
-
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(input.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
@@ -153,9 +152,9 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.LimitPresidentController")) {
-                    return null;
-                }
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesaweb.controller.LimitPresidentController")) {
+//                    return null;
+//                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 

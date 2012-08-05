@@ -193,6 +193,14 @@ public class SourceUtils {
         
         return type.substring(index + 1);
     }
+
+    public static String removeSpecialTypeCharacters(String simpleType) {
+        
+        String result;
+        result = removeGenerics(simpleType);
+        result = removeArray(result);        
+        return result;
+    }
     
     public static String removeGenerics(String simpleType) {
         
@@ -223,15 +231,14 @@ public class SourceUtils {
             return simpleType;
         }
         
-        String simpleName = removeGenerics(simpleType);
-        simpleName = removeArray(simpleType);
+        String simpleName = removeSpecialTypeCharacters(simpleType);
         
         if (simpleName.equals("String")) {
             return "java.lang.String";
         } else if (simpleName.equals("Object")) {
             return "java.lang.Object";
         } else if (simpleName.equals("Collection")) {
-            return "java.lang." + simpleType;
+            return "java.lang." + simpleName;
         }
         
         for (Import impt : scopeTree.getImports()) {
@@ -241,13 +248,13 @@ public class SourceUtils {
             }
         }
 
-        return scopeTree.getPackageName() + "." + simpleType;
+        return scopeTree.getPackageName() + "." + simpleName;
     }
     
-    public static Method findClassMethod(Klass klass, Method method) {
+    public static Method findClassMethod(HierarchyManager hierarchyManager, Klass klass, Method method) {
         
         for (Method klassMethod : klass.getMethods()) {
-            if (methodsEqual(klassMethod, method)) {
+            if (methodsEqual(hierarchyManager, klassMethod, method)) {
                 return klassMethod;
             }                        
         }
@@ -269,7 +276,7 @@ public class SourceUtils {
                     continue;
                 }
                 
-                if (SourceUtils.methodsEqual(classMethod, methodMatch)) {
+                if (SourceUtils.methodsEqual(hierarchyManager, classMethod, methodMatch)) {
                     return true;
                 }
             }
@@ -337,25 +344,25 @@ public class SourceUtils {
         return null;
     }
     
-    public static boolean classesEqual(Klass klass1, Method method1, Klass klass2, Method method2) {
+    public static boolean classesEqual(HierarchyManager hierarchyManager, Klass klass1, Method method1, Klass klass2, Method method2) {
         
         if (!klass1.getClassName().equals(klass2.getClassName())) {
             return false;
         }
         
-        return methodsEqual(method1, method2);
+        return methodsEqual(hierarchyManager, method1, method2);
     }
 
-    public static boolean methodsEqual(Method method1, Method method2) {
+    public static boolean methodsEqual(HierarchyManager hierarchyManager, Method method1, Method method2) {
         
         if (!method1.getName().equals(method2.getName())) {
             return false;
         }
         
-        return parametersEqual(method1.getParameters(), method2.getParameters());
+        return parametersEqual(hierarchyManager, method1.getParameters(), method2.getParameters());
     }
     
-    public static boolean parametersEqual(List<Parameter> parameters1, List<Parameter> parameters2) {
+    public static boolean parametersEqual(HierarchyManager hierarchyManager, List<Parameter> parameters1, List<Parameter> parameters2) {
         
         Iterator<Parameter> iteration1 = parameters1.iterator();
         Iterator<Parameter> iteration2 = parameters2.iterator();
@@ -363,8 +370,15 @@ public class SourceUtils {
         while (iteration1.hasNext() && iteration2.hasNext()) {
             Parameter usageParameter = iteration1.next();
             Parameter methodParameter = iteration2.next();
-            String type1 = SourceUtils.removeGenerics(usageParameter.getType());
-            String type2 = SourceUtils.removeGenerics(methodParameter.getType());
+            String type1 = SourceUtils.removeSpecialTypeCharacters(usageParameter.getType());
+            String type2 = SourceUtils.removeSpecialTypeCharacters(methodParameter.getType());
+            
+            if (isClass(getSimpleType(type1)) && isClass(getSimpleType(type2))) {
+                if (type1.equals("java.lang.Object") || type2.equals("java.lang.Object")) {
+                    return true;
+                }
+                return parametersEqual(hierarchyManager, type1, type2);
+            }
             
             if (!type1.equals(type2)) {
                 return false;
@@ -372,5 +386,20 @@ public class SourceUtils {
         }
 
         return true;
+    }
+    
+    private static boolean parametersEqual(HierarchyManager hierarchyManager, String type1, String type2) {
+        
+        List<Hierarchy> hierarchyList2 = hierarchyManager.getHierarchyList(type2);
+        
+        for (Hierarchy hierarchy1 : hierarchyManager.getHierarchyList(type1)) {
+            for (Hierarchy hierarchy2 : hierarchyList2) {
+                if (hierarchy1.getClassName().equals(hierarchy2.getClassName())) {
+                    return true;
+                }
+            }
+        }
+     
+        return false;
     }
 }

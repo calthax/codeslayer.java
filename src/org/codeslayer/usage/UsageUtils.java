@@ -82,7 +82,7 @@ public class UsageUtils {
         }
     }
     
-    public static List<Usage> filterUsages(Method methodMatch, List<Usage> usages) {
+    public static List<Usage> filterUsages(HierarchyManager hierarchyManager, Method methodMatch, List<Usage> usages) {
         
         List<Usage> results = new ArrayList<Usage>();
         
@@ -103,7 +103,7 @@ public class UsageUtils {
                 continue;
             }
             
-            if (SourceUtils.parametersEqual(usageParameters, methodParameters)) {
+            if (SourceUtils.parametersEqual(hierarchyManager, usageParameters, methodParameters)) {
                 results.add(usage);
             }            
         }            
