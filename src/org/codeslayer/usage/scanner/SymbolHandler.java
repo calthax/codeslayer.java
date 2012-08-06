@@ -66,6 +66,10 @@ public class SymbolHandler {
             String returnType = getReturnType(method);
             
             if (returnType == null) {
+                returnType = SourceUtils.getClassVariableType(hierarchyManager, symbol.getPrevSymbol().getType(), symbol.getValue());
+            }
+            
+            if (returnType == null) {
                 System.out.println("Not able to get the return type for symbol " + symbol);
                 return null;
             }

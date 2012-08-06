@@ -266,17 +266,16 @@ public class SourceUtils {
     
     public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
         
-        boolean superClass = isSuperClass(hierarchyManager, methodMatch, className);
-        boolean containsInterface = containsInterface(hierarchyManager, methodMatch);
-        boolean superClassContainsInterface = superClassContainsInterface(hierarchyManager, methodMatch, className);
+        boolean superClass = isSuperClass(hierarchyManager, methodMatch.getKlass().getClassName(), className);
+        boolean classContainsInterface = classContainsInterface(hierarchyManager, className, methodMatch.getKlass().getClassName());
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
             List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
             for (Method classMethod : classMethods) {
                 
-                if (!superClassContainsInterface && 
-                    !superClass && !containsInterface && 
+                if (!superClass && 
+                    !classContainsInterface && 
                     !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
                     continue;
                 }
@@ -289,45 +288,10 @@ public class SourceUtils {
 
         return false;
     }
-    
-    public static boolean containsInterface(HierarchyManager hierarchyManager, Method methodMatch) {
-        
-        List<String> methodMatchInterfaces = methodMatch.getKlass().getInterfaces();
-        
-        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
-            List<String> interfaces = hierarchy.getInterfaces();
-            
-            for (String iface : methodMatchInterfaces) {
-                if (interfaces.contains(iface)) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean containsInterface(HierarchyManager hierarchyManager, String interfaceName, String interfaceNameToFind) {
-        
-        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(interfaceName)) {
-            for (String iface : hierarchy.getInterfaces()) {
-                if (iface.contains(interfaceNameToFind)) {
-                    return true;
-                }
-                
-                if (containsInterface(hierarchyManager, iface, interfaceNameToFind)) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-    }
-    
-    public static boolean superClassContainsInterface(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+
+    public static boolean classContainsInterface(HierarchyManager hierarchyManager, String className, String interfaceName) {
         
         List<Hierarchy> hierarchyList = hierarchyManager.getHierarchyList(className);
-        String interfaceName = methodMatch.getKlass().getClassName();
         
         for (Hierarchy hierarchy : hierarchyList) {
             List<String> interfaces = hierarchy.getInterfaces();
@@ -349,14 +313,31 @@ public class SourceUtils {
         return false;
     }
     
-    public static boolean isSuperClass(HierarchyManager hierarchyManager, Method methodMatch, String className) {
+    private static boolean containsInterface(HierarchyManager hierarchyManager, String interfaceName, String interfaceNameToFind) {
         
-        if (methodMatch.getKlass().getClassName().equals(className)) {
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(interfaceName)) {
+            for (String iface : hierarchy.getInterfaces()) {
+                if (iface.contains(interfaceNameToFind)) {
+                    return true;
+                }
+                
+                if (containsInterface(hierarchyManager, iface, interfaceNameToFind)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    public static boolean isSuperClass(HierarchyManager hierarchyManager, String subClassName, String superClassName) {
+        
+        if (subClassName.equals(superClassName)) {
             return false;
         }
         
-        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(methodMatch.getKlass().getClassName())) {
-            if (hierarchy.getClassName().equals(className)) {
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(subClassName)) {
+            if (hierarchy.getClassName().equals(superClassName)) {
                 return true;
             }
         }
@@ -419,20 +400,23 @@ public class SourceUtils {
                 String[] split = importName.split("\\.");
                 String name = split[split.length - 1];
                 if (name.equals(variableName)) {
-                    
                     int index = importName.indexOf(variableName);
                     String className = importName.substring(0, index - 1);
-                    
-                    ClassVariableScanner scanner = new ClassVariableScanner(hierarchyManager, className);
-                    List<Variable> variables = scanner.scan();
-                    for (Variable variable : variables) {
-                        if (variable.getName().equals(name)) {
-                            return variable.getType();
-                        }
-                    }
-                    
-                    return null;
+                    return getClassVariableType(hierarchyManager, className, variableName);
                 }
+            }
+        }
+        
+        return null;
+    }
+    
+    public static String getClassVariableType(HierarchyManager hierarchyManager, String className, String variableName) {
+        
+        ClassVariableScanner scanner = new ClassVariableScanner(hierarchyManager, className);
+        List<Variable> variables = scanner.scan();
+        for (Variable variable : variables) {
+            if (variable.getName().equals(variableName)) {
+                return variable.getType();
             }
         }
         

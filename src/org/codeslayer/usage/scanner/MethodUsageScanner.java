@@ -115,7 +115,7 @@ public class MethodUsageScanner {
             
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.limit.state.SessionState")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.NumberCellEditor")) {
 //                    return null;
 //                }
                 
@@ -157,7 +157,7 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.limit.state.SessionState")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.NumberCellEditor")) {
 //                    return null;
 //                }
                 
