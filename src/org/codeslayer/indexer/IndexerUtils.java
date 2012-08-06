@@ -281,7 +281,7 @@ public class IndexerUtils {
         }
         
         for (String interfaceName : interfaces.split(",")) {
-            results.add(interfaceName);
+            results.add(interfaceName.trim());
         }
         
         return results;

@@ -88,7 +88,11 @@ public class SymbolHandler {
         
         if (value.equals("this")) {
             return SourceUtils.getClassName(compilationUnitTree);
-        } 
+        } else if (value.equals("super")) {
+            String className = SourceUtils.getClassName(compilationUnitTree);
+            Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
+            return hierarchy.getSuperClass();
+        }
         
         if (SourceUtils.isClass(value)) {
             String className = SourceUtils.getClassName(scopeTree, value);

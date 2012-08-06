@@ -115,9 +115,9 @@ public class MethodUsageScanner {
             
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.expression.BsfExpressionCellEditor")) {
-                    return null;
-                }
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.limit.state.SessionState")) {
+//                    return null;
+//                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree) + " ***");
                 
@@ -157,9 +157,9 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.expression.BsfExpressionCellEditor")) {
-                    return null;
-                }
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.limit.state.SessionState")) {
+//                    return null;
+//                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
 
