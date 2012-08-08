@@ -472,16 +472,22 @@ public class SourceUtils {
     
     private static boolean parametersEqual(HierarchyManager hierarchyManager, String type1, String type2) {
         
-        List<Hierarchy> hierarchyList2 = hierarchyManager.getHierarchyList(type2);
-        
-        for (Hierarchy hierarchy1 : hierarchyManager.getHierarchyList(type1)) {
-            for (Hierarchy hierarchy2 : hierarchyList2) {
-                if (hierarchy1.getClassName().equals(hierarchy2.getClassName())) {
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(type1)) {
+            if (hierarchy.getClassName().equals(type2)) {
+                return true;
+            }
+            
+            for (String iface : hierarchy.getInterfaces()) {
+                if (iface.equals(type2)) {
+                    return true;
+                }
+                
+                if (containsInterface(hierarchyManager, iface, type2)) {
                     return true;
                 }
             }
         }
-     
+
         return false;
     }
 }

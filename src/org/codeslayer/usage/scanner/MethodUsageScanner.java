@@ -115,30 +115,35 @@ public class MethodUsageScanner {
             
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.NumberCellEditor")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.facade.TableFacadeFactory")) {
 //                    return null;
 //                }
                 
                 System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree) + " ***");
                 
-                // assume this is a method of this class
-                
-                String className = SourceUtils.getClassName(compilationUnitTree);
+                Method staticMethod = SourceUtils.getStaticMethod(scopeTree, methodMatch.getName());
+                if (staticMethod != null) {
+                    usageManager.addUsage(createUsage(staticMethod, identifierTree));
+                } else {
+                    // assume this is a method of this class
+                    
+                    String className = SourceUtils.getClassName(compilationUnitTree);
 
-                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
-                    System.out.println("*** class end no match (identifier) ***");
-                    return scopeTree;
+                    if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+                        System.out.println("*** class end no match (identifier) ***");
+                        return scopeTree;
+                    }
+
+                    Method method = new Method();
+                    method.setName(methodMatch.getName());
+                    Klass klass = new Klass();
+                    klass.setClassName(className);
+                    klass.setSimpleClassName(SourceUtils.getSimpleType(className));
+                    method.setKlass(klass);
+
+                    usageManager.addUsage(createUsage(method, identifierTree));
                 }
-                
-                Method method = new Method();
-                method.setName(methodMatch.getName());
-                Klass klass = new Klass();
-                klass.setClassName(className);
-                klass.setSimpleClassName(SourceUtils.getSimpleType(className));
-                method.setKlass(klass);
-                
-                usageManager.addUsage(createUsage(method, identifierTree));
-                
+
                 System.out.println("*** class end (identifier) ***");
             }            
             
@@ -157,7 +162,7 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.editor.NumberCellEditor")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.facade.TableFacadeFactory")) {
 //                    return null;
 //                }
                 
@@ -166,6 +171,11 @@ public class MethodUsageScanner {
                 //memberSelectTree.getExpression().accept(new DebugScanner(), null);
                 
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
+                if (symbol == null) {
+                    System.out.println("*** class end no symbol ***");
+                    return scopeTree;
+                }
+                
                 Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
                 
                 SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                

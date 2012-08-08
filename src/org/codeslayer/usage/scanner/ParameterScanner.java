@@ -50,6 +50,10 @@ public class ParameterScanner {
                 parameter.setType(String.class.getName());
 
                 parameterMatches.add(parameter);
+            } else if (kind == Tree.Kind.NULL_LITERAL) {
+                Parameter parameter = new Parameter();
+
+                parameterMatches.add(parameter);
             } else if (kind == Tree.Kind.PLUS) { // todo: this needs to be much more flexible
                 Parameter parameter = new Parameter();
                 

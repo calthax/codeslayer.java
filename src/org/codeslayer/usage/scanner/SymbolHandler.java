@@ -143,6 +143,10 @@ public class SymbolHandler {
     private Method createMethod(Symbol symbol, ScopeTree scopeTree) {
         
         Symbol prevSymbol = symbol.getPrevSymbol();
+        if (prevSymbol.getType() == null) {
+            String className = getClassName(prevSymbol, scopeTree);
+            prevSymbol.setType(className);
+        }
         
         Method method = new Method();
         method.setName(symbol.getValue());
