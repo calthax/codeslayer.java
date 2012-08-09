@@ -76,6 +76,19 @@ public class ParameterScanner {
                 parameter.setType(className);
 
                 parameterMatches.add(parameter);
+            } else if (kind == Tree.Kind.ARRAY_ACCESS) { // items
+                Parameter parameter = new Parameter();
+
+                String simpleType = scopeTree.getSimpleType(SourceUtils.removeSpecialTypeCharacters(name));
+                if (simpleType == null) {
+                    simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
+                }
+                String className = SourceUtils.getClassName(scopeTree, simpleType);
+
+                parameter.setSimpleType(simpleType);
+                parameter.setType(className);
+
+                parameterMatches.add(parameter);
             } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
                 Parameter parameter = new Parameter();
                 

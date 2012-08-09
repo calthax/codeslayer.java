@@ -115,7 +115,7 @@ public class MethodUsageScanner {
             
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.facade.TableFacadeFactory")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.model.tag.TagUtils")) {
 //                    return null;
 //                }
                 
@@ -162,7 +162,7 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.facade.TableFacadeFactory")) {
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.model.tag.TagUtils")) {
 //                    return null;
 //                }
                 
