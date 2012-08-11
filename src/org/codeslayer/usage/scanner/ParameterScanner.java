@@ -27,7 +27,7 @@ public class ParameterScanner {
     
     private final CompilationUnitTree compilationUnitTree;
     private final HierarchyManager hierarchyManager;
-    private final List<Parameter> parameterMatches = new ArrayList<Parameter>();
+    private final List<Parameter> parameters = new ArrayList<Parameter>();
 
     public ParameterScanner(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
      
@@ -42,81 +42,78 @@ public class ParameterScanner {
 
             Tree.Kind kind = expressionTree.getKind();
             String name = expressionTree.toString();
+                    
+            Parameter parameter = new Parameter();
+            parameter.setVariable(name);
 
-            if (kind == Tree.Kind.STRING_LITERAL) {
-                Parameter parameter = new Parameter();
-                
-                parameter.setSimpleType(String.class.getSimpleName());
-                parameter.setType(String.class.getName());
+            
+            try {
+                if (kind == Tree.Kind.STRING_LITERAL) {
+                    parameter.setSimpleType(String.class.getSimpleName());
+                    parameter.setType(String.class.getName());
 
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.NULL_LITERAL) {
-                Parameter parameter = new Parameter();
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.NULL_LITERAL) {
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.PLUS) { // todo: this needs to be much more flexible
+                    expressionTree.accept(new DebugScanner(), null);
 
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.PLUS) { // todo: this needs to be much more flexible
-                Parameter parameter = new Parameter();
-                
-                expressionTree.accept(new DebugScanner(), null);
-                
-                parameter.setSimpleType(String.class.getSimpleName());
-                parameter.setType(String.class.getName());
+                    parameter.setSimpleType(String.class.getSimpleName());
+                    parameter.setType(String.class.getName());
 
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.IDENTIFIER) { // items
-                Parameter parameter = new Parameter();
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.IDENTIFIER) { // items
+                    String simpleType = scopeTree.getSimpleType(name);
+                    if (simpleType == null) {
+                        simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
+                    }
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
 
-                String simpleType = scopeTree.getSimpleType(name);
-                if (simpleType == null) {
-                    simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
+                    parameter.setSimpleType(simpleType);
+                    parameter.setType(className);
+
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.ARRAY_ACCESS) { // items
+                    String simpleType = scopeTree.getSimpleType(SourceUtils.removeSpecialTypeCharacters(name));
+                    if (simpleType == null) {
+                        simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
+                    }
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
+
+                    parameter.setSimpleType(simpleType);
+                    parameter.setType(className);
+
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
+                    Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
+
+                    SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
+                    String type = symbolHandler.getType(symbol, scopeTree);
+                    parameter.setSimpleType(SourceUtils.getSimpleType(type));
+                    parameter.setType(type);
+
+                    parameters.add(parameter);
+                } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
+                    NewClassTree newClassTree = (NewClassTree) expressionTree;
+                    String simpleType = newClassTree.getIdentifier().toString();
+                    String className = SourceUtils.getClassName(scopeTree, simpleType);
+
+                    parameter.setSimpleType(simpleType);
+                    parameter.setType(className);
+
+                    parameters.add(parameter);
                 }
-                String className = SourceUtils.getClassName(scopeTree, simpleType);
-
-                parameter.setSimpleType(simpleType);
-                parameter.setType(className);
-
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.ARRAY_ACCESS) { // items
-                Parameter parameter = new Parameter();
-
-                String simpleType = scopeTree.getSimpleType(SourceUtils.removeSpecialTypeCharacters(name));
-                if (simpleType == null) {
-                    simpleType = SourceUtils.getStaticImportType(hierarchyManager, scopeTree, name);
-                }
-                String className = SourceUtils.getClassName(scopeTree, simpleType);
-
-                parameter.setSimpleType(simpleType);
-                parameter.setType(className);
-
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
-                Parameter parameter = new Parameter();
-                
-                Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
-
-                SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
-                String type = symbolHandler.getType(symbol, scopeTree);
-                parameter.setSimpleType(SourceUtils.getSimpleType(type));
-                parameter.setType(type);
-
-                parameterMatches.add(parameter);
-            } else if (kind == Tree.Kind.NEW_CLASS) { // new AllItems()
-                Parameter parameter = new Parameter();
-
-                NewClassTree newClassTree = (NewClassTree) expressionTree;
-                String simpleType = newClassTree.getIdentifier().toString();
-                String className = SourceUtils.getClassName(scopeTree, simpleType);
-
-                parameter.setSimpleType(simpleType);
-                parameter.setType(className);
-
-                parameterMatches.add(parameter);
+            } catch (Exception e) {
+                parameter.setSimpleType(SourceUtils.UNDEFINED);
+                parameter.setType(SourceUtils.UNDEFINED);
+                parameters.add(parameter);
+                System.out.println("ERROR: Not able to figure out type of parameter for " + name);
             }
         }
     }
     
     public List<Parameter> getScanResults() {
         
-        return parameterMatches;
+        return parameters;
     }
 }

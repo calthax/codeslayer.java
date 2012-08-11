@@ -33,6 +33,8 @@ import org.codeslayer.usage.scanner.ClassVariableScanner;
 
 public class SourceUtils {
     
+    public static String UNDEFINED = "UNDEFINED";
+    
     private SourceUtils() {}
     
     public static JavacTask getJavacTask(File[] files)
@@ -451,6 +453,10 @@ public class SourceUtils {
             Parameter methodParameter = iteration2.next();
             String type1 = SourceUtils.removeSpecialTypeCharacters(usageParameter.getType());
             String type2 = SourceUtils.removeSpecialTypeCharacters(methodParameter.getType());
+            
+            if (type1.equals(UNDEFINED) || type2.equals(UNDEFINED)) {
+                return true;
+            }
             
             if (isClass(getSimpleType(type1)) && isClass(getSimpleType(type2))) {
                 if (type1.equals("java.lang.Object") || type2.equals("java.lang.Object")) {
