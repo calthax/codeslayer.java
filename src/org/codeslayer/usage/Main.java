@@ -35,7 +35,7 @@ public class Main {
         System.out.println("usage file");
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/ExportType.java", "-methodusage", "valueOfParam", "-linenumber", "42"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitFactory.java", "-methodusage", "createRowSelect", "-linenumber", "164"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
