@@ -60,7 +60,7 @@ public class InputScanner {
                     if (method.getLineNumber() == input.getLineNumber() ||
                             method.getLineNumber() + 1 == input.getLineNumber()) {
                         if (logger.isDebugEnabled()) {
-                            logger.debug("* input method * " + method);
+                            logger.debug(method);
                         }
                         return method;
                     }

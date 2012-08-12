@@ -122,7 +122,7 @@ public class Klass {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append(this.getClass().getSimpleName());
         sb.append("[className=").append(className);
         sb.append(", simpleClassName=").append(simpleClassName);
         sb.append(", superClass=").append(superClass);        

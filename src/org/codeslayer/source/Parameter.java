@@ -57,7 +57,7 @@ public class Parameter {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append(this.getClass().getSimpleName());
         sb.append("[type=").append(type);
         sb.append(", simpleType=").append(simpleType);
         sb.append(", variable=").append(variable);

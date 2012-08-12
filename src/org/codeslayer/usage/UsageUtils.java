@@ -95,10 +95,6 @@ public class UsageUtils {
 
         List<Parameter> methodParameters = methodMatch.getParameters();
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("find method parameters " + methodParameters);            
-        }
-        
         if (methodParameters == null || methodParameters.isEmpty()) {
             return usages;
         }
@@ -107,7 +103,7 @@ public class UsageUtils {
             List<Parameter> usageParameters = usage.getMethod().getParameters();
             
             if (logger.isDebugEnabled()) {
-                logger.debug("potential usage parameters " + usageParameters);            
+                logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usageParameters);            
             }
 
             if (usageParameters.size() != methodParameters.size()) {

@@ -75,7 +75,7 @@ public class Hierarchy {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append(this.getClass().getSimpleName());
         sb.append("[className=").append(className);
         sb.append(", superClass=").append(superClass);        
         sb.append(", interfaces={");

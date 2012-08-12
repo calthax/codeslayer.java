@@ -63,7 +63,7 @@ public class Main {
             }
             
             for (Usage usage : usages) {
-                logger.debug(usage);
+                logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
             }
 
         } catch (Exception e) {

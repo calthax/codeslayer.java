@@ -118,7 +118,7 @@ public class Method {
     public String toString() {
         
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
+        sb.append(this.getClass().getSimpleName());
         sb.append("[name=").append(name);
         sb.append(", parameters={");
         for (Parameter parameter: getParameters()) {
