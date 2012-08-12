@@ -35,8 +35,6 @@ public class Main {
 
     public static void main(String[] args) {
         
-        System.out.println("usage file");
-        
         try {
             String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
@@ -91,20 +89,26 @@ public class Main {
         }
         
         String usageFile = modifiers.getUsageFile();
-        System.out.println("usageFile " + usageFile);
+        if (logger.isDebugEnabled()) {
+            logger.debug("usageFile " + usageFile);
+        }
         File file = new File(usageFile);
         intput.setUsageFile(file);
         
         String methodUsage = modifiers.getMethodUsage();
-        System.out.println("methodUsage " + methodUsage);
+        if (logger.isDebugEnabled()) {
+            logger.debug("methodUsage " + methodUsage);
+        }
         intput.setMethodUsage(methodUsage);
         
         String classUsage = modifiers.getClassUsage();
         intput.setClassUsage(classUsage);
         
         String lineNumber = modifiers.getLineNumber();
-        System.out.println("lineNumber " + lineNumber);
         if (lineNumber != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("lineNumber " + lineNumber);
+            }
             intput.setLineNumber(Integer.parseInt(lineNumber));
         }
         
@@ -117,7 +121,9 @@ public class Main {
 
         List<String> sourceFolders = modifiers.getSourceFolders();
         for (String sourceFolder : sourceFolders) {
-            System.out.println("sourceFolder " + sourceFolder);
+            if (logger.isDebugEnabled()) {
+                logger.debug("sourceFolder " + sourceFolder);
+            }
             List<File> files = UsageUtils.getFiles(sourceFolder);
             results.addAll(files);
         }
