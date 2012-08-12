@@ -19,14 +19,10 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.CompilationUnitTree;
 import java.util.List;
-import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class SymbolHandler {
-    
-    private static Logger logger = Logger.getLogger(SymbolHandler.class);
     
     private final CompilationUnitTree compilationUnitTree;
     private final HierarchyManager hierarchyManager;
@@ -117,16 +113,14 @@ public class SymbolHandler {
             method.setKlass(klass);
             return getReturnType(method);
         } else {
-            String className = SourceUtils.getClassName(scopeTree, simpleType);                   
-//            System.out.println("param identifier => " + simpleType);
-            return className;
+            return SourceUtils.getClassName(scopeTree, simpleType);
         }
     }
     
     private String getReturnType(Method method) {
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(method.getKlass().getClassName())) {
-            List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), method.getName());
+            List<Method> classMethods = SourceUtils.getClassMethodsByName(hierarchy.getFilePath(), method.getName());
             for (Method classMethod : classMethods) {
                 if (SourceUtils.methodsEqual(hierarchyManager, classMethod, method)) {
                     return classMethod.getReturnType();

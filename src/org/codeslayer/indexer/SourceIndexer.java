@@ -26,7 +26,6 @@ import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.*;
 import org.codeslayer.source.*;
-import org.codeslayer.source.ScopeTreeFactory;
 
 public class SourceIndexer implements Indexer {
     
@@ -52,8 +51,7 @@ public class SourceIndexer implements Indexer {
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(new ClassScanner(compilationUnitTree, sourcePositions, indexClasses), scopeTree);
             }
         } catch (Exception e) {

@@ -19,17 +19,18 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
-import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
-import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.Variable;
 
 public class ClassVariableScanner {
     
+    private static Logger logger = Logger.getLogger(ClassVariableScanner.class);
+
     private final HierarchyManager hierarchyManager;
     private final String className;
 
@@ -54,16 +55,13 @@ public class ClassVariableScanner {
             JavacTask javacTask = SourceUtils.getJavacTask(new File[]{file});
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
-
                 InternalScanner internalScanner = new InternalScanner(variables);
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(internalScanner, scopeTree);
                 return variables;
             }            
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("class variable scan error", e);
         }
         
         return null;

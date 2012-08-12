@@ -17,6 +17,7 @@
  */
 package org.codeslayer.source;
 
+import com.sun.source.tree.CompilationUnitTree;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,13 @@ public class ScopeTree {
     private String packageName;
     private Map<String, String> simpleTypes = new HashMap<String, String>();
     private List<Import> imports = new ArrayList<Import>();
+
+    public static ScopeTree newScopeTree(CompilationUnitTree compilationUnitTree) {
+        
+        ScopeTree scopeTree = new ScopeTree();
+        scopeTree.setPackageName(SourceUtils.getPackageName(compilationUnitTree));
+        return scopeTree;
+    }  
 
     public String getPackageName() {
         

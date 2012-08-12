@@ -29,7 +29,6 @@ import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner {
@@ -58,13 +57,11 @@ public class MethodUsageScanner {
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, hierarchyManager, usageManager);
-                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(scanner, scopeTree);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("method usage scan error", e);
         }
         
         return usageManager.getUsages();
@@ -182,7 +179,7 @@ public class MethodUsageScanner {
                     return scopeTree;
                 }
                 
-                Symbol firstSymbol = UsageUtils.findFirstSymbol(symbol);
+                Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
                 
                 SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
                 

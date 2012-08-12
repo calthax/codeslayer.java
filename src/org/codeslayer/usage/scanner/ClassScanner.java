@@ -24,9 +24,12 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 
 public class ClassScanner {
+    
+    private static Logger logger = Logger.getLogger(ClassScanner.class);
     
     private final HierarchyManager hierarchyManager;
     private final String className;
@@ -51,17 +54,14 @@ public class ClassScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
-
                 Klass klass = new Klass();
                 InternalScanner internalScanner = new InternalScanner(compilationUnitTree, sourcePositions, klass);
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(internalScanner, scopeTree);
                 return klass;
             }            
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("class scan error", e);
         }
         
         return null;

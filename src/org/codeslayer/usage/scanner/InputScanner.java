@@ -24,7 +24,6 @@ import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.codeslayer.source.ScopeTreeFactory;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Method;
@@ -49,10 +48,8 @@ public class InputScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                ScopeTreeFactory scopeTreeFactory = new ScopeTreeFactory(compilationUnitTree);
-                ScopeTree scopeTree = scopeTreeFactory.createScopeTree();
-
                 MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage());
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(methodScanner, scopeTree);
                 List<Method> methods = methodScanner.getScanResults();
                 

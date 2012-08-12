@@ -20,16 +20,15 @@ package org.codeslayer.source;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
+import com.sun.source.util.Trees;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.lang.model.element.Modifier;
 import javax.tools.*;
-import org.codeslayer.usage.UsageUtils;
+import org.codeslayer.usage.domain.Symbol;
 import org.codeslayer.usage.domain.Variable;
 import org.codeslayer.usage.scanner.ClassVariableScanner;
+import org.codeslayer.usage.scanner.MethodScanner;
 
 public class SourceUtils {
     
@@ -273,7 +272,7 @@ public class SourceUtils {
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
-            List<Method> classMethods = UsageUtils.getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
+            List<Method> classMethods = getClassMethodsByName(hierarchy.getFilePath(), methodMatch.getName());
             for (Method classMethod : classMethods) {
                 
                 if (!superClass && 
@@ -289,6 +288,27 @@ public class SourceUtils {
         }
 
         return false;
+    }
+    
+    public static List<Method> getClassMethodsByName(String filePath, String methodName) {
+        
+        try {
+            File file = new File(filePath);            
+            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{file});
+            SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
+            Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
+            for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, methodName);                
+                ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
+                compilationUnitTree.accept(methodScanner, scopeTree);
+                return methodScanner.getScanResults();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e);
+        }
+        
+        return Collections.emptyList();
     }
 
     public static boolean classContainsInterface(HierarchyManager hierarchyManager, String className, String interfaceName) {
@@ -500,6 +520,16 @@ public class SourceUtils {
         }
 
         return false;
+    }
+    
+    public static Symbol findFirstSymbol(Symbol symbol) {
+        
+        Symbol prevSymbol = symbol.getPrevSymbol();
+        if (prevSymbol != null) {
+            return findFirstSymbol(prevSymbol);
+        }
+        
+        return symbol;
     }
     
     public static String getClassLogInfo(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
