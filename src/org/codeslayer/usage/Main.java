@@ -38,7 +38,11 @@ public class Main {
         System.out.println("usage file");
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitUtils.java", "-methodusage", "getValue", "-linenumber", "36"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
+                                           "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
+                                           "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/util/SupportUtils.java", 
+                                           "-methodusage", "setWebContext", 
+                                           "-linenumber", "59"};
             
             Modifiers modifiers = new Modifiers(dummy);
             

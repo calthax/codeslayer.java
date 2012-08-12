@@ -90,7 +90,7 @@ public class ParameterScanner {
                     parameter.setType(className);
 
                     parameters.add(parameter);
-                } else if (kind == Tree.Kind.METHOD_INVOCATION) { // dao.getPresidents()
+                } else if (kind == Tree.Kind.METHOD_INVOCATION || kind == Tree.Kind.MEMBER_SELECT) { // dao.getPresidents()
                     Symbol symbol = expressionTree.accept(new SymbolScanner(), null);
 
                     SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
@@ -108,6 +108,14 @@ public class ParameterScanner {
                     parameter.setType(className);
 
                     parameters.add(parameter);
+                } else {
+                    parameter.setSimpleType(SourceUtils.UNDEFINED);
+                    parameter.setType(SourceUtils.UNDEFINED);
+                    parameters.add(parameter);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.error("Tree.Kind '" + kind + "' not implemented for: " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, expressionTree) + " - " + name);
+                    }
                 }
             } catch (Exception e) {
                 parameter.setSimpleType(SourceUtils.UNDEFINED);
@@ -115,7 +123,7 @@ public class ParameterScanner {
                 parameters.add(parameter);
                 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("type null for: " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, expressionTree) + " - " + name);
+                    logger.error("type null for: " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, expressionTree) + " - " + name);
                 }
             }
         }
