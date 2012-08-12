@@ -43,7 +43,7 @@ public class SourceIndexer implements Indexer {
     public List<Index> createIndexes() 
             throws Exception {
 
-        List<Klass> indexClasses = new ArrayList<Klass>();
+        List<Clazz> indexClasses = new ArrayList<Clazz>();
         
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(files);
@@ -66,11 +66,11 @@ public class SourceIndexer implements Indexer {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
-        private final List<Klass> indexClasses;
+        private final List<Clazz> indexClasses;
         private final String className;
         private final String simpleClassName;
 
-        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Klass> indexClasses) {
+        private ClassScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, List<Clazz> indexClasses) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
@@ -101,13 +101,13 @@ public class SourceIndexer implements Indexer {
             
             System.out.println("className " + className);
             
-            Klass klass = new Klass();
-            klass.setImports(SourceUtils.getImports(compilationUnitTree));
-            klass.setSimpleClassName(simpleClassName);
-            klass.setClassName(className);
-            klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
-            klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
-            klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+            Clazz clazz = new Clazz();
+            clazz.setImports(SourceUtils.getImports(compilationUnitTree));
+            clazz.setSimpleClassName(simpleClassName);
+            clazz.setClassName(className);
+            clazz.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+            clazz.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+            clazz.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
             
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
@@ -123,11 +123,11 @@ public class SourceIndexer implements Indexer {
                     method.setSimpleReturnType(simpleReturnType);
                     method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
 
-                    klass.addMethod(method);
+                    clazz.addMethod(method);
                 }
             }
             
-            indexClasses.add(klass);
+            indexClasses.add(clazz);
             
             return super.visitClass(classTree, scopeTree);
         }

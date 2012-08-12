@@ -197,9 +197,9 @@ public class IndexerUtils {
         file.delete();
     }
     
-    public static Klass findClassByIndexFile(File file, String className) {
+    public static Clazz findClassByIndexFile(File file, String className) {
 
-        Klass klass = null;
+        Clazz clazz = null;
 
         try{
             FileInputStream fstream = new FileInputStream(file);
@@ -214,10 +214,10 @@ public class IndexerUtils {
                 if (strLine.startsWith(className)) {
                     String[] split = strLine.split("\\t");
 
-                    if (klass == null) {
-                        klass = new Klass();
-                        klass.setClassName(split[0]);
-                        klass.setSimpleClassName(split[1]);
+                    if (clazz == null) {
+                        clazz = new Clazz();
+                        clazz.setClassName(split[0]);
+                        clazz.setSimpleClassName(split[1]);
                     }
                     
                     Method method = new Method();
@@ -227,8 +227,8 @@ public class IndexerUtils {
                     method.setReturnType(split[7]);
                     method.setSimpleReturnType(split[8]);
                     
-                    klass.addMethod(method);
-                } else if (klass != null) {
+                    clazz.addMethod(method);
+                } else if (clazz != null) {
                     break;
                 }
             }
@@ -238,7 +238,7 @@ public class IndexerUtils {
             System.err.println("not able to load the libs.indexes file.");
         }
 
-        return klass;
+        return clazz;
     }
     
     public static HierarchyManager loadHierarchyFile(File file) {

@@ -64,8 +64,7 @@ public class InputScanner {
                 }
             }            
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("input scan error", e);
         }
         
         return null;

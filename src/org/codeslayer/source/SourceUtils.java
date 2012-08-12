@@ -34,6 +34,25 @@ public class SourceUtils {
     
     public static String UNDEFINED = "UNDEFINED";
     
+    private static List<String> langPackage = new ArrayList<String>();
+    
+    {
+        langPackage.add("Object");
+        langPackage.add("String");
+        langPackage.add("StringBuilder");
+        langPackage.add("Collection");
+        langPackage.add("Boolean");
+        langPackage.add("Double");
+        langPackage.add("Intger");
+        langPackage.add("BigDecimal");
+        langPackage.add("List");
+        langPackage.add("ArrayList");
+        langPackage.add("Map");
+        langPackage.add("HashMap");
+        langPackage.add("Set");
+        langPackage.add("HashSet");
+    }
+    
     private SourceUtils() {}
     
     public static JavacTask getJavacTask(File[] files)
@@ -205,7 +224,7 @@ public class SourceUtils {
         return result;
     }
     
-    public static String removeGenerics(String simpleType) {
+    private static String removeGenerics(String simpleType) {
         
         int index = simpleType.indexOf("<");
         if (index < 0) {
@@ -215,7 +234,7 @@ public class SourceUtils {
         return simpleType.substring(0, index);
     }
     
-    public static String removeArray(String simpleType) {
+    private static String removeArray(String simpleType) {
         
         int index = simpleType.indexOf("[");
         if (index < 0) {
@@ -236,14 +255,10 @@ public class SourceUtils {
         
         String simpleName = removeSpecialTypeCharacters(simpleType);
         
-        if (simpleName.equals("String")) {
-            return "java.lang.String";
-        } else if (simpleName.equals("Object")) {
-            return "java.lang.Object";
-        } else if (simpleName.equals("Collection")) {
+        if (langPackage.contains(simpleName)) {
             return "java.lang." + simpleName;
         }
-        
+
         for (Import impt : scopeTree.getImports()) {
             String importName = impt.getName();
             if (importName.endsWith("." + simpleName)) {
@@ -254,7 +269,7 @@ public class SourceUtils {
         return scopeTree.getPackageName() + "." + simpleName;
     }
     
-    public static Method findClassMethod(HierarchyManager hierarchyManager, Klass klass, Method method) {
+    public static Method findClassMethod(HierarchyManager hierarchyManager, Clazz klass, Method method) {
         
         for (Method klassMethod : klass.getMethods()) {
             if (methodsEqual(hierarchyManager, klassMethod, method)) {
@@ -267,8 +282,8 @@ public class SourceUtils {
     
     public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
         
-        boolean superClass = isSuperClass(hierarchyManager, methodMatch.getKlass().getClassName(), className);
-        boolean classContainsInterface = classContainsInterface(hierarchyManager, className, methodMatch.getKlass().getClassName());
+        boolean superClass = isSuperClass(hierarchyManager, methodMatch.getClazz().getClassName(), className);
+        boolean classContainsInterface = classContainsInterface(hierarchyManager, className, methodMatch.getClazz().getClassName());
         
         for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
             
@@ -277,7 +292,7 @@ public class SourceUtils {
                 
                 if (!superClass && 
                     !classContainsInterface && 
-                    !classMethod.getKlass().getClassName().equals(methodMatch.getKlass().getClassName())) {
+                    !classMethod.getClazz().getClassName().equals(methodMatch.getClazz().getClassName())) {
                     continue;
                 }
                 
@@ -311,7 +326,7 @@ public class SourceUtils {
         return Collections.emptyList();
     }
 
-    public static boolean classContainsInterface(HierarchyManager hierarchyManager, String className, String interfaceName) {
+    private static boolean classContainsInterface(HierarchyManager hierarchyManager, String className, String interfaceName) {
         
         List<Hierarchy> hierarchyList = hierarchyManager.getHierarchyList(className);
         
@@ -352,7 +367,7 @@ public class SourceUtils {
         return false;
     }
     
-    public static boolean isSuperClass(HierarchyManager hierarchyManager, String subClassName, String superClassName) {
+    private static boolean isSuperClass(HierarchyManager hierarchyManager, String subClassName, String superClassName) {
         
         if (subClassName.equals(superClassName)) {
             return false;
@@ -386,9 +401,9 @@ public class SourceUtils {
                     int index = importName.indexOf(methodName);
                     String className = importName.substring(0, index - 1);
                     
-                    Klass klass = new Klass();
+                    Clazz klass = new Clazz();
                     klass.setClassName(className);
-                    method.setKlass(klass);
+                    method.setClazz(klass);
                    
                     return method;
                 }
@@ -450,7 +465,7 @@ public class SourceUtils {
         return null;
     }
         
-    public static boolean classesEqual(HierarchyManager hierarchyManager, Klass klass1, Method method1, Klass klass2, Method method2) {
+    public static boolean classesEqual(HierarchyManager hierarchyManager, Clazz klass1, Method method1, Clazz klass2, Method method2) {
         
         if (!klass1.getClassName().equals(klass2.getClassName())) {
             return false;

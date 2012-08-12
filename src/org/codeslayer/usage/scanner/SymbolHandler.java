@@ -108,9 +108,9 @@ public class SymbolHandler {
         if (simpleType == null) { // assume this is a method of this class
             Method method = new Method();
             method.setName(value);
-            Klass klass = new Klass();
-            klass.setClassName(SourceUtils.getClassName(compilationUnitTree));
-            method.setKlass(klass);
+            Clazz clazz = new Clazz();
+            clazz.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            clazz.addMethod(method);
             return getReturnType(method);
         } else {
             return SourceUtils.getClassName(scopeTree, simpleType);
@@ -119,7 +119,7 @@ public class SymbolHandler {
     
     private String getReturnType(Method method) {
         
-        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(method.getKlass().getClassName())) {
+        for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(method.getClazz().getClassName())) {
             List<Method> classMethods = SourceUtils.getClassMethodsByName(hierarchy.getFilePath(), method.getName());
             for (Method classMethod : classMethods) {
                 if (SourceUtils.methodsEqual(hierarchyManager, classMethod, method)) {
@@ -142,9 +142,9 @@ public class SymbolHandler {
         Method method = new Method();
         method.setName(symbol.getValue());
         
-        Klass klass = new Klass();
-        klass.setClassName(prevSymbol.getType());
-        method.setKlass(klass);
+        Clazz clazz = new Clazz();
+        clazz.setClassName(prevSymbol.getType());
+        method.setClazz(clazz);
         
         for (Arg arg : symbol.getArgs()) {
             Parameter parameter = new Parameter();

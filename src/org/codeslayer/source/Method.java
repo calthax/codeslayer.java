@@ -29,7 +29,7 @@ public class Method {
     private String simpleReturnType;
     private String returnType;
     private int lineNumber;
-    private Klass klass;
+    private Clazz clazz;
 
     public String getName() {
         
@@ -94,14 +94,14 @@ public class Method {
         this.simpleReturnType = simpleReturnType;
     }
 
-    public Klass getKlass() {
+    public Clazz getClazz() {
         
-        return klass;
+        return clazz;
     }
 
-    public void setKlass(Klass klass) {
+    public void setClazz(Clazz clazz) {
     
-        this.klass = klass;
+        this.clazz = clazz;
     }
     
     public int getLineNumber() {
@@ -129,8 +129,8 @@ public class Method {
         sb.append(", returnType=").append(returnType);
         sb.append(", simpleReturnType=").append(simpleReturnType);
         sb.append(", lineNumber=").append(lineNumber);
-        if (klass != null) {
-            sb.append(", ").append(klass);
+        if (clazz != null) {
+            sb.append(", ").append(clazz);
         }
         return sb.append("]").toString();
     }    

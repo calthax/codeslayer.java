@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Klass {
+public class Clazz {
     
     private String className;
     private String simpleClassName;
@@ -115,7 +115,7 @@ public class Klass {
         }
 
         this.methods.add(method);
-        method.setKlass(this);
+        method.setClazz(this);
     }
     
     @Override

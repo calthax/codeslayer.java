@@ -38,9 +38,9 @@ public class Main {
         try {
             String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
-                                           "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/csv/CsvViewExporter.java", 
-                                           "-methodusage", "export", 
-                                           "-linenumber", "41"};
+                                           "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/worksheet/WorksheetCallbackHandler.java", 
+                                           "-methodusage", "process", 
+                                           "-linenumber", "25"};
             
             Modifiers modifiers = new Modifiers(dummy);
             

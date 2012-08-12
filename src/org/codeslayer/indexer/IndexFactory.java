@@ -18,22 +18,22 @@
 package org.codeslayer.indexer;
 
 import java.util.*;
-import org.codeslayer.source.Klass;
+import org.codeslayer.source.Clazz;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.Parameter;
 
 public class IndexFactory {
     
-    public List<Index> createIndexes(List<Klass> klasses) {
+    public List<Index> createIndexes(List<Clazz> klasses) {
         
         List<Index> indexes = new ArrayList<Index>();
-        for (Klass klass : klasses) {
+        for (Clazz klass : klasses) {
             createIndexesForClass(indexes, klass);
         }
         return indexes;
     } 
 
-    private void createIndexesForClass(List<Index> indexes, Klass klass) {
+    private void createIndexesForClass(List<Index> indexes, Clazz klass) {
 
         String interfaces = getInterfaces(klass);
         
@@ -76,7 +76,7 @@ public class IndexFactory {
         }
     }
     
-    private String getInterfaces(Klass klass) {
+    private String getInterfaces(Clazz klass) {
         
         StringBuilder sb = new StringBuilder();
         

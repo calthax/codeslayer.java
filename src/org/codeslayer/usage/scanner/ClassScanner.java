@@ -40,7 +40,7 @@ public class ClassScanner {
         this.className = className;
     }
     
-    public Klass scan() {
+    public Clazz scan() {
         
         try {
             Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
@@ -54,11 +54,11 @@ public class ClassScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                Klass klass = new Klass();
-                InternalScanner internalScanner = new InternalScanner(compilationUnitTree, sourcePositions, klass);
+                Clazz clazz = new Clazz();
+                InternalScanner internalScanner = new InternalScanner(compilationUnitTree, sourcePositions, clazz);
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(internalScanner, scopeTree);
-                return klass;
+                return clazz;
             }            
         } catch (Exception e) {
             logger.error("class scan error", e);
@@ -71,13 +71,13 @@ public class ClassScanner {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
-        private final Klass klass;
+        private final Clazz clazz;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Klass klass) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Clazz clazz) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
-            this.klass = klass;
+            this.clazz = clazz;
         }
 
         @Override
@@ -111,12 +111,12 @@ public class ClassScanner {
 
             List<? extends Tree> members = classTree.getMembers();
 
-            klass.setImports(SourceUtils.getImports(compilationUnitTree));
-            klass.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-            klass.setClassName(SourceUtils.getClassName(compilationUnitTree));
-            klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
-            klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
-            klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+            clazz.setImports(SourceUtils.getImports(compilationUnitTree));
+            clazz.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+            clazz.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            clazz.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+            clazz.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+            clazz.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
 
             for (Tree memberTree : members) {
                 if (memberTree instanceof MethodTree) {
@@ -134,7 +134,7 @@ public class ClassScanner {
                         method.setSimpleReturnType(simpleReturnType);
                     }
                     
-                    klass.addMethod(method);
+                    clazz.addMethod(method);
                 }
             }
 

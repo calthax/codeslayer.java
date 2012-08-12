@@ -69,13 +69,13 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         List<? extends Tree> members = classTree.getMembers();
 
-        Klass klass = new Klass();
-        klass.setImports(SourceUtils.getImports(compilationUnitTree));
-        klass.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-        klass.setClassName(SourceUtils.getClassName(compilationUnitTree));
-        klass.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
-        klass.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
-        klass.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
+        Clazz clazz = new Clazz();
+        clazz.setImports(SourceUtils.getImports(compilationUnitTree));
+        clazz.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+        clazz.setClassName(SourceUtils.getClassName(compilationUnitTree));
+        clazz.setFilePath(SourceUtils.getSourceFilePath(compilationUnitTree));
+        clazz.setSuperClass(SourceUtils.getSuperClass(classTree, scopeTree));
+        clazz.setInterfaces(SourceUtils.getInterfaces(classTree, scopeTree));
 
         for (Tree memberTree : members) {
             if (memberTree instanceof MethodTree) {
@@ -84,8 +84,6 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
                 if (methodName.equals(methodTree.getName().toString())) {
                     Method method = new Method();
                     
-                    method.setKlass(klass);
-
                     method.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, methodTree));
                     method.setName(methodTree.getName().toString());
                     method.setParameters(SourceUtils.getParameters(methodTree, scopeTree));
@@ -93,6 +91,8 @@ public class MethodScanner extends TreeScanner<ScopeTree, ScopeTree> {
                     String simpleReturnType = methodTree.getReturnType().toString();
                     method.setReturnType(SourceUtils.getClassName(scopeTree, simpleReturnType));
                     method.setSimpleReturnType(simpleReturnType);
+                    
+                    clazz.addMethod(method);
 
                     methodMatches.add(method);
                 }

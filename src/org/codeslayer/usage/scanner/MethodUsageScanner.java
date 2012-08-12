@@ -56,6 +56,11 @@ public class MethodUsageScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
+                
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
+//                    return null;
+//                }
+                
                 TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, hierarchyManager, usageManager);
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(scanner, scopeTree);
@@ -113,38 +118,35 @@ public class MethodUsageScanner {
             
             super.visitIdentifier(identifierTree, scopeTree);
 
-            if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
+            if (!methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
+                return scopeTree;
+            }
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
-//                    return null;
-//                }
-                
-                if (logger.isDebugEnabled()) {
-                    logger.debug("** scan class (identifier)" + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, identifierTree) + " **");
+            if (logger.isDebugEnabled()) {
+                logger.debug("** scan class (identifier)" + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, identifierTree) + " **");
+            }
+
+            Method staticMethod = SourceUtils.getStaticMethod(scopeTree, methodMatch.getName());
+            if (staticMethod != null) {
+                usageManager.addUsage(createUsage(staticMethod, identifierTree));
+            } else {
+                // assume this is a method of this class
+
+                String className = SourceUtils.getClassName(compilationUnitTree);
+
+                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+                    return scopeTree;
                 }
-                
-                Method staticMethod = SourceUtils.getStaticMethod(scopeTree, methodMatch.getName());
-                if (staticMethod != null) {
-                    usageManager.addUsage(createUsage(staticMethod, identifierTree));
-                } else {
-                    // assume this is a method of this class
-                    
-                    String className = SourceUtils.getClassName(compilationUnitTree);
 
-                    if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
-                        return scopeTree;
-                    }
+                Method method = new Method();
+                method.setName(methodMatch.getName());
+                Clazz clazz = new Clazz();
+                clazz.setClassName(className);
+                clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
+                clazz.addMethod(method);
 
-                    Method method = new Method();
-                    method.setName(methodMatch.getName());
-                    Klass klass = new Klass();
-                    klass.setClassName(className);
-                    klass.setSimpleClassName(SourceUtils.getSimpleType(className));
-                    method.setKlass(klass);
-
-                    usageManager.addUsage(createUsage(method, identifierTree));
-                }
-            }            
+                usageManager.addUsage(createUsage(method, identifierTree));
+            }
             
             return scopeTree;
         }
@@ -159,48 +161,46 @@ public class MethodUsageScanner {
 
             super.visitMemberSelect(memberSelectTree, scopeTree);
 
-            if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
-                
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
-//                    return null;
-//                }
-                
-                if (logger.isDebugEnabled()) {
-                    logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, memberSelectTree) + " **");
-                }
-                
-                //memberSelectTree.getExpression().accept(new DebugScanner(), null);
-                
-                Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
-                if (symbol == null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.error("symbol is null");
-                    }
-                    return scopeTree;
-                }
-                
-                Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
-                
-                SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
-                
-                String type = symbolHandler.getType(firstSymbol, scopeTree);
-                if (type == null) {
-                    return scopeTree;
-                }
-
-                if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, type)) {
-                    return scopeTree;
-                }
-                
-                Method method = new Method();
-                method.setName(methodMatch.getName());
-                Klass klass = new Klass();
-                klass.setClassName(type);
-                klass.setSimpleClassName(SourceUtils.getSimpleType(type));
-                method.setKlass(klass);
-                
-                usageManager.addUsage(createUsage(method, memberSelectTree));
+            if (!methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
+                return scopeTree;
             }
+                
+            if (logger.isDebugEnabled()) {
+                logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, memberSelectTree) + " **");
+            }
+
+            Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
+            if (symbol == null) {
+                if (logger.isDebugEnabled()) {
+                    logger.error("symbol is null");
+                }
+                return scopeTree;
+            }
+
+            Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
+
+            SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
+
+            // assume this is a method of this class
+            
+            String className = symbolHandler.getType(firstSymbol, scopeTree);
+
+            if (className == null) {
+                return scopeTree;
+            }
+
+            if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+                return scopeTree;
+            }
+
+            Method method = new Method();
+            method.setName(methodMatch.getName());
+            Clazz clazz = new Clazz();
+            clazz.setClassName(className);
+            clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
+            clazz.addMethod(method);
+
+            usageManager.addUsage(createUsage(method, memberSelectTree));
 
             return scopeTree;
         }
