@@ -38,9 +38,9 @@ public class Main {
         try {
             String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
-                                           "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/util/SupportUtils.java", 
-                                           "-methodusage", "setWebContext", 
-                                           "-linenumber", "59"};
+                                           "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/ExportTypesSupport.java", 
+                                           "-methodusage", "setExportTypes", 
+                                           "-linenumber", "28"};
             
             Modifiers modifiers = new Modifiers(dummy);
             

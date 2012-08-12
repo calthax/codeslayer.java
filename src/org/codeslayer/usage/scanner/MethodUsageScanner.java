@@ -115,12 +115,12 @@ public class MethodUsageScanner {
         public ScopeTree visitIdentifier(IdentifierTree identifierTree, ScopeTree scopeTree) {
             
             super.visitIdentifier(identifierTree, scopeTree);
-            
+
             if (methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
-                    return null;
-                }
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
+//                    return null;
+//                }
                 
                 if (logger.isDebugEnabled()) {
                     logger.debug("** scan class (identifier)" + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, identifierTree) + " **");
@@ -164,9 +164,9 @@ public class MethodUsageScanner {
 
             if (methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
                 
-                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
-                    return null;
-                }
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
+//                    return null;
+//                }
                 
                 if (logger.isDebugEnabled()) {
                     logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, memberSelectTree) + " **");
