@@ -25,12 +25,15 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.Symbol;
 import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.MethodScanner;
 
 public class UsageUtils {
+    
+    private static Logger logger = Logger.getLogger(UsageUtils.class);
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
@@ -86,9 +89,15 @@ public class UsageUtils {
         
         List<Usage> results = new ArrayList<Usage>();
         
+        if (logger.isDebugEnabled()) {
+            logger.debug("************ Filter Usages ************");
+        }
+
         List<Parameter> methodParameters = methodMatch.getParameters();
         
-        System.out.println("methodParameters: " + methodParameters);
+        if (logger.isDebugEnabled()) {
+            logger.debug("find method parameters " + methodParameters);            
+        }
         
         if (methodParameters == null || methodParameters.isEmpty()) {
             return usages;
@@ -97,7 +106,9 @@ public class UsageUtils {
         for (Usage usage : usages) {
             List<Parameter> usageParameters = usage.getMethod().getParameters();
             
-            System.out.println("usageParameters: " + usageParameters);
+            if (logger.isDebugEnabled()) {
+                logger.debug("potential usage parameters " + usageParameters);            
+            }
 
             if (usageParameters.size() != methodParameters.size()) {
                 continue;

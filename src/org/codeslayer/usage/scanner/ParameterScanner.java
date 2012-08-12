@@ -18,20 +18,26 @@
 package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
+import com.sun.source.util.SourcePositions;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.*;
 
 public class ParameterScanner {
     
+    private static Logger logger = Logger.getLogger(ParameterScanner.class);
+    
     private final CompilationUnitTree compilationUnitTree;
+    private final SourcePositions sourcePositions;
     private final HierarchyManager hierarchyManager;
     private final List<Parameter> parameters = new ArrayList<Parameter>();
 
-    public ParameterScanner(CompilationUnitTree compilationUnitTree, HierarchyManager hierarchyManager) {
+    public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager) {
      
         this.compilationUnitTree = compilationUnitTree;
+        this.sourcePositions = sourcePositions;
         this.hierarchyManager = hierarchyManager;
     }    
     
@@ -107,7 +113,10 @@ public class ParameterScanner {
                 parameter.setSimpleType(SourceUtils.UNDEFINED);
                 parameter.setType(SourceUtils.UNDEFINED);
                 parameters.add(parameter);
-                System.out.println("ERROR: Not able to figure out type of parameter for " + name);
+                
+                if (logger.isDebugEnabled()) {
+                    logger.debug("type null for: " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, expressionTree) + " - " + name);
+                }
             }
         }
     }

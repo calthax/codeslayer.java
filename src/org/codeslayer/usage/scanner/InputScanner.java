@@ -23,6 +23,7 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.ScopeTreeFactory;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
@@ -30,6 +31,8 @@ import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.Input;
 
 public class InputScanner {
+    
+    private static Logger logger = Logger.getLogger(InputScanner.class);
     
     private final Input input;
 
@@ -56,9 +59,9 @@ public class InputScanner {
                 for (Method method : methods) {
                     if (method.getLineNumber() == input.getLineNumber() ||
                             method.getLineNumber() + 1 == input.getLineNumber()) {
-                        System.out.println("*** input begin ***");
-                        System.out.println(method);
-                        System.out.println("*** input end ***");
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("* input method * " + method);
+                        }
                         return method;
                     }
                 }

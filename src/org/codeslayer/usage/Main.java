@@ -25,17 +25,20 @@ import org.codeslayer.usage.scanner.MethodUsageScanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.HierarchyManager;
 
 public class Main {
+    
+    private static Logger logger = Logger.getLogger(Main.class);
 
     public static void main(String[] args) {
         
         System.out.println("usage file");
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitFactory.java", "-methodusage", "createRowSelect", "-linenumber", "164"};
+            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitUtils.java", "-methodusage", "getValue", "-linenumber", "36"};
             
             Modifiers modifiers = new Modifiers(dummy);
             
@@ -55,10 +58,12 @@ public class Main {
             List<Usage> usages = methodUsageScanner.scan();
             usages = UsageUtils.filterUsages(hierarchyManager, methodMatch, usages);
             
-            System.out.println("************ Usage Search Results ************");
-
+            if (logger.isDebugEnabled()) {
+                logger.debug("************ Usage Search Results ************");
+            }
+            
             for (Usage usage : usages) {
-                System.out.println(usage);
+                logger.debug(usage);
             }
 
         } catch (Exception e) {

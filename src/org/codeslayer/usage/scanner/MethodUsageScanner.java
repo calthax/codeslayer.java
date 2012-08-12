@@ -24,6 +24,7 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
@@ -32,6 +33,8 @@ import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner {
+    
+    private static Logger logger = Logger.getLogger(MethodUsageScanner.class);
     
     private final HierarchyManager hierarchyManager;
     private final Method methodMatch;
@@ -119,7 +122,9 @@ public class MethodUsageScanner {
 //                    return null;
 //                }
                 
-                System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree) + " ***");
+                if (logger.isDebugEnabled()) {
+                    logger.debug("** scan class (identifier)" + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, identifierTree) + " **");
+                }
                 
                 Method staticMethod = SourceUtils.getStaticMethod(scopeTree, methodMatch.getName());
                 if (staticMethod != null) {
@@ -130,7 +135,6 @@ public class MethodUsageScanner {
                     String className = SourceUtils.getClassName(compilationUnitTree);
 
                     if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
-                        System.out.println("*** class end no match (identifier) ***");
                         return scopeTree;
                     }
 
@@ -143,8 +147,6 @@ public class MethodUsageScanner {
 
                     usageManager.addUsage(createUsage(method, identifierTree));
                 }
-
-                System.out.println("*** class end (identifier) ***");
             }            
             
             return scopeTree;
@@ -166,13 +168,17 @@ public class MethodUsageScanner {
 //                    return null;
 //                }
                 
-                System.out.println("*** class " + SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree) + " ***");
-
+                if (logger.isDebugEnabled()) {
+                    logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, memberSelectTree) + " **");
+                }
+                
                 //memberSelectTree.getExpression().accept(new DebugScanner(), null);
                 
                 Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
                 if (symbol == null) {
-                    System.out.println("*** class end no symbol ***");
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("symbol is null");
+                    }
                     return scopeTree;
                 }
                 
@@ -182,12 +188,10 @@ public class MethodUsageScanner {
                 
                 String type = symbolHandler.getType(firstSymbol, scopeTree);
                 if (type == null) {
-                    System.out.println("*** class end no type ***");
                     return scopeTree;
                 }
 
                 if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, type)) {
-                    System.out.println("*** class end no match ***");
                     return scopeTree;
                 }
                 
@@ -199,8 +203,6 @@ public class MethodUsageScanner {
                 method.setKlass(klass);
                 
                 usageManager.addUsage(createUsage(method, memberSelectTree));
-
-                System.out.println("*** class end ***");
             }
 
             return scopeTree;
@@ -239,7 +241,7 @@ public class MethodUsageScanner {
                     continue;
                 }
                 
-                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, hierarchyManager);
+                ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, hierarchyManager);
                 parameterScanner.scan(methodInvocationTree, scopeTree);
                 List<Parameter> parameters = parameterScanner.getScanResults();
                          

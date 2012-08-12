@@ -19,11 +19,14 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.CompilationUnitTree;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.*;
 
 public class SymbolHandler {
+    
+    private static Logger logger = Logger.getLogger(SymbolHandler.class);
     
     private final CompilationUnitTree compilationUnitTree;
     private final HierarchyManager hierarchyManager;
@@ -48,15 +51,12 @@ public class SymbolHandler {
             
             String className = getClassName(symbol, scopeTree);
             
-            if (className == null) {
-                System.out.println("Not able to get the type for symbol " + symbol);
+            if (className == null) {                
                 return null;
             }
             
             symbol.setType(className);
             
-            System.out.println("SymbolHandler.getType() " + symbol);
-        
             if (nextSymbol != null) {
                 return getType(nextSymbol, scopeTree);                
             }
@@ -69,14 +69,11 @@ public class SymbolHandler {
                 returnType = SourceUtils.getClassVariableType(hierarchyManager, symbol.getPrevSymbol().getType(), symbol.getValue());
             }
             
-            if (returnType == null) {
-                System.out.println("Not able to get the return type for symbol " + symbol);
+            if (returnType == null) {                
                 return null;
             }
             
             symbol.setType(returnType);
-
-            System.out.println("SymbolHandler.getType() " + symbol);
 
             if (nextSymbol != null) {
                 return getType(nextSymbol, scopeTree);                

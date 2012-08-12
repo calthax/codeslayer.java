@@ -416,6 +416,11 @@ public class SourceUtils {
         
         ClassVariableScanner scanner = new ClassVariableScanner(hierarchyManager, className);
         List<Variable> variables = scanner.scan();
+        
+        if (variables == null) {
+            return null;
+        }
+        
         for (Variable variable : variables) {
             if (variable.getName().equals(variableName)) {
                 return variable.getType();
@@ -495,5 +500,10 @@ public class SourceUtils {
         }
 
         return false;
+    }
+    
+    public static String getClassLogInfo(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
+        
+        return SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree);
     }
 }
