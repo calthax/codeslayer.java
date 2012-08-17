@@ -1,0 +1,90 @@
+/*
+ * Copyright (C) 2010 - Jeff Johnston
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+package org.codeslayer.server;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import org.apache.log4j.Logger;
+
+public class Server implements Runnable {
+    
+    private static Logger logger = Logger.getLogger(Server.class);
+    
+    private ServerSocket serverSocket;
+    private boolean running = true;
+    
+    public void shutdown() {
+
+        running = false;
+        try {
+            serverSocket.close();            
+        } catch (Exception e) {
+            logger.error("could not close the server socket");
+        }
+    }
+
+    @Override
+    public void run() {
+        
+        while (running) {
+            
+            if (serverSocket == null) {
+                try {
+                    serverSocket = new ServerSocket(4444);
+                } catch (IOException e) {
+                    logger.error("could not listen on port 4444");
+                }
+            }
+
+            Socket clientSocket = null;
+            try {
+                clientSocket = serverSocket.accept();
+            } catch (IOException e) {
+                logger.error("could not accept client socket");
+            }
+            
+            try {
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String inputLine;
+
+                out.println("Hello World\n");
+
+                while ((inputLine = in.readLine()) != null) {
+                    out.println(inputLine);
+
+                    logger.debug(inputLine);
+
+                    if (inputLine.equals("quit")) {
+                        break;
+                    }
+                }
+                
+                out.close();
+                in.close();
+                clientSocket.close();
+            } catch (Exception e) {
+                logger.debug("could not read from the client socket");
+            }
+        }
+    }
+}
