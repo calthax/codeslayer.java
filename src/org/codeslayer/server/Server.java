@@ -23,11 +23,19 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import org.apache.log4j.Logger;
 
 public class Server implements Runnable {
     
     private static Logger logger = Logger.getLogger(Server.class);
+    
+    private final Map<String, Command> programs;
+
+    public Server(Map<String, Command> programs) {
+     
+        this.programs = programs;
+    }
     
     private ServerSocket serverSocket;
     private boolean running = true;
@@ -65,18 +73,18 @@ public class Server implements Runnable {
             try {
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String inputLine;
-
-                out.println("Hello World\n");
-
-                while ((inputLine = in.readLine()) != null) {
-                    out.println(inputLine);
-
-                    logger.debug(inputLine);
-
-                    if (inputLine.equals("quit")) {
+                String input;
+                
+                while ((input = in.readLine()) != null) {
+                    if (input.equals("quit")) {
                         break;
                     }
+                    
+                    String[] args = input.split("\\s");
+                    Command command =  getCommand(args);
+                    String output = command.execute(args);
+                    out.println(output + "\n");
+                    out.flush();
                 }
                 
                 out.close();
@@ -86,5 +94,23 @@ public class Server implements Runnable {
                 logger.debug("could not read from the client socket");
             }
         }
+    }
+    
+    private Command getCommand(String[] args) {
+        
+        for (int i = 0; i < args.length; i++) {
+            String input = args[i];            
+            if (input.equals("-program")) {
+                String cmd = args[i+1];
+                
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Program command is '" + cmd + "'");
+                }
+                
+                return programs.get(cmd);
+            }
+        }
+        
+        throw new IllegalArgumentException("There is not a program argument defined");
     }
 }

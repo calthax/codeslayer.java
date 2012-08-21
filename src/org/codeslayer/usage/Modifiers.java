@@ -90,6 +90,7 @@ public class Modifiers {
 
     private enum Modifier {
 
+        PROGRAM("-program"),
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
         USAGEFILE("-usagefile"),

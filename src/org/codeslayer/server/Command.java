@@ -15,21 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer.server;
 
-public class Main {
+public interface Command {
     
-    public static void main(String[] args) {
-        
-        String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
-                                       "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
-                                       "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/worksheet/WorksheetCallbackHandler.java", 
-                                       "-methodusage", "process", 
-                                       "-linenumber", "25"};
-
-        UsageCommand usageCommand = new UsageCommand();
-        usageCommand.execute(dummy);
-
-        System.exit(1);
-    }
+    public String execute(String[] args);
 }
