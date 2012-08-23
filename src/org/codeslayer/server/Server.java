@@ -83,7 +83,7 @@ public class Server implements Runnable {
                     String[] args = input.split("\\s");
                     Command command =  getCommand(args);
                     String output = command.execute(args);
-                    out.println(output + "\n");
+                    out.println(output);
                     out.flush();
                 }
                 

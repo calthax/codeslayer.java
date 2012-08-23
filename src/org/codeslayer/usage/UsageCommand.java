@@ -36,8 +36,6 @@ public class UsageCommand implements Command {
 
     public String execute(String[] args) {
         
-        List<Usage> results = new ArrayList<Usage>();
-        
         try {
             Modifiers modifiers = new Modifiers(args);
             
@@ -64,7 +62,8 @@ public class UsageCommand implements Command {
             for (Usage usage : usages) {
                 logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
             }
-
+            
+            return getOutput(usages);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
@@ -126,5 +125,16 @@ public class UsageCommand implements Command {
         }
         
         return results.toArray(new File[results.size()]);
-    }   
+    }
+    
+    private String getOutput(List<Usage> usages) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        for (Usage usage : usages) {
+            sb.append(usage.getClassName()).append("\t").append(usage.getFile().getPath()).append("\t").append(usage.getLineNumber()).append("\n");
+        }
+        
+        return sb.toString();
+    }
 }
