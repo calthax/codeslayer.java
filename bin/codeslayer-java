@@ -1,0 +1,1 @@
+java -XX:MaxPermSize=256m -cp .:$CODESLAYER_JAVA_HOME/lib/tools.jar:$CODESLAYER_JAVA_HOME/dist/codeslayer.java.jar org.codeslayer.Executor $@
