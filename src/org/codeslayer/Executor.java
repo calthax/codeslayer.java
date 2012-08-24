@@ -15,21 +15,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage;
+package org.codeslayer;
 
-public class Main {
+import java.io.IOException;
+import java.util.Map;
+
+public class Executor {
     
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+            throws IOException {
         
-        String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
-                                       "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
-                                       "-usagefile", "/home/jeff/workspace/jmesa/src/org/jmesa/worksheet/WorksheetCallbackHandler.java", 
-                                       "-methodusage", "process", 
-                                       "-linenumber", "25"};
-
-        UsageCommand usageCommand = new UsageCommand();
-        usageCommand.execute(dummy);
-
+        Map<String, Command> programs = CodeSlayerUtils.getPrograms();
+        
+        Command command = CodeSlayerUtils.getCommand(args, programs);
+        
+        String output = command.execute(args);
+        
+        System.out.println(output);
+        
         System.exit(1);
-    }
+    }    
 }

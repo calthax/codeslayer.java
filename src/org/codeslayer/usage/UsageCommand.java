@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
-import org.codeslayer.server.Command;
+import org.codeslayer.Command;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.Method;
 import org.codeslayer.usage.domain.Input;

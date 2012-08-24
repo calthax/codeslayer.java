@@ -19,14 +19,16 @@ package org.codeslayer.indexer;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.codeslayer.Command;
 
-public class Main {
+public class IndexerCommand implements Command {
 
-    public static void main(String[] args) {
+    @Override
+    public String execute(String[] args) {
         
         try {
-            String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-type", "projects"};
-            Modifiers modifiers = new Modifiers(dummy);
+            //String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-type", "projects"};
+            Modifiers modifiers = new Modifiers(args);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
             IndexFactory indexFactory = new IndexFactory();
@@ -68,7 +70,7 @@ public class Main {
             e.printStackTrace();
             System.err.println(e);
         }
-
-        System.exit(1);
-    }
+        
+        return "success";
+    }    
 }

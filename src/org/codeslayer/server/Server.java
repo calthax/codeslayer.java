@@ -17,6 +17,7 @@
  */
 package org.codeslayer.server;
 
+import org.codeslayer.Command;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,18 +26,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.codeslayer.CodeSlayerUtils;
 
 public class Server implements Runnable {
     
     private static Logger logger = Logger.getLogger(Server.class);
     
-    private final Map<String, Command> programs;
+    private final Map<String, Command> programs = CodeSlayerUtils.getPrograms();
 
-    public Server(Map<String, Command> programs) {
-     
-        this.programs = programs;
-    }
-    
     private ServerSocket serverSocket;
     private boolean running = true;
     
@@ -81,7 +78,7 @@ public class Server implements Runnable {
                     }
                     
                     String[] args = input.split("\\s");
-                    Command command =  getCommand(args);
+                    Command command =  CodeSlayerUtils.getCommand(args, programs);
                     String output = command.execute(args);
                     out.println(output);
                     out.flush();
@@ -94,23 +91,5 @@ public class Server implements Runnable {
                 logger.debug("could not read from the client socket");
             }
         }
-    }
-    
-    private Command getCommand(String[] args) {
-        
-        for (int i = 0; i < args.length; i++) {
-            String input = args[i];            
-            if (input.equals("-program")) {
-                String cmd = args[i+1];
-                
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Program command is '" + cmd + "'");
-                }
-                
-                return programs.get(cmd);
-            }
-        }
-        
-        throw new IllegalArgumentException("There is not a program argument defined");
     }
 }

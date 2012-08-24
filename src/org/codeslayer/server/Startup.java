@@ -18,19 +18,13 @@
 package org.codeslayer.server;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import org.codeslayer.usage.UsageCommand;
 
 public class Startup {
     
     public static void main(String[] args) 
             throws IOException {
-        
-        Map<String, Command> programs = new HashMap<String, Command>();
-        programs.put("usage", new UsageCommand());
 
-        Server server = new Server(programs);
+        Server server = new Server();
         Thread thread = new Thread(server);
         thread.start();
     }    
