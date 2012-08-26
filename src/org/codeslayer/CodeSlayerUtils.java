@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerCommand;
+import org.codeslayer.navigate.NavigateCommand;
 import org.codeslayer.usage.UsageCommand;
 
 public class CodeSlayerUtils {
@@ -31,11 +32,9 @@ public class CodeSlayerUtils {
         
         Map<String, Command> programs = new HashMap<String, Command>();
         
-        UsageCommand usageCommand = new UsageCommand();
-        IndexerCommand indexerCommand = new IndexerCommand();
-        
-        programs.put("usage", usageCommand);
-        programs.put("indexer", indexerCommand);
+        programs.put("usage", new UsageCommand());
+        programs.put("indexer", new IndexerCommand());
+        programs.put("navigate", new NavigateCommand());
         
         return programs;
     }

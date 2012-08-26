@@ -26,7 +26,14 @@ public class Executor {
             throws IOException {
         
         Map<String, Command> programs = CodeSlayerUtils.getPrograms();
-        
+
+//        String[] dummy = {"-program", "navigate", 
+//                            "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
+//                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
+//                            "-sourcefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/html/editor/HtmlFilterEditor.java",
+//                            "-symbol", "getFilter",
+//                            "-linenumber", "46"};
+
         Command command = CodeSlayerUtils.getCommand(args, programs);
         
         String output = command.execute(args);

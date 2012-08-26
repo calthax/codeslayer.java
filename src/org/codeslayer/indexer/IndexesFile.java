@@ -64,8 +64,8 @@ public class IndexesFile {
                 sb.append(filePath);
             }
             
-            String lineNumber = index.getLineNumber();
-            if (lineNumber != null) {
+            int lineNumber = index.getLineNumber();
+            if (lineNumber != 0) {
                 sb.append("\t");
                 sb.append(lineNumber);                
             }

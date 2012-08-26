@@ -53,7 +53,7 @@ public class IndexFactory {
             index.setMethodReturnType("");
             index.setMethodSimpleReturnType("");
             index.setFilePath(klass.getFilePath());
-            index.setLineNumber(String.valueOf(""));
+            index.setLineNumber(0);
             indexes.add(index);
         } else {
             for (Method method : methods) {
@@ -70,7 +70,7 @@ public class IndexFactory {
                 index.setMethodReturnType(method.getReturnType());
                 index.setMethodSimpleReturnType(method.getSimpleReturnType());
                 index.setFilePath(klass.getFilePath());
-                index.setLineNumber(String.valueOf(method.getLineNumber()));
+                index.setLineNumber(method.getLineNumber());
                 indexes.add(index);
             }
         }

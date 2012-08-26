@@ -31,7 +31,7 @@ public class Index {
     private String methodReturnType;
     private String methodSimpleReturnType;
     private String filePath;
-    private String lineNumber;
+    private int lineNumber;
 
     public String getClassName() {
 
@@ -153,12 +153,12 @@ public class Index {
         this.filePath = filePath;
     }
     
-    public String getLineNumber() {
+    public int getLineNumber() {
 
         return lineNumber;
     }
 
-    public void setLineNumber(String lineNumber) {
+    public void setLineNumber(int lineNumber) {
 
         this.lineNumber = lineNumber;
     }
