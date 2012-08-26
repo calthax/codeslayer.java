@@ -40,14 +40,14 @@ import org.codeslayer.usage.domain.UsageManager;
 import org.codeslayer.usage.scanner.SymbolHandler;
 import org.codeslayer.usage.scanner.SymbolScanner;
 
-public class MethodUsageScanner {
+public class MethodNavigationScanner {
     
-    private static Logger logger = Logger.getLogger(MethodUsageScanner.class);
+    private static Logger logger = Logger.getLogger(MethodNavigationScanner.class);
     
     private final HierarchyManager hierarchyManager;
     private final Input input;
 
-    public MethodUsageScanner(HierarchyManager hierarchyManager, Input input) {
+    public MethodNavigationScanner(HierarchyManager hierarchyManager, Input input) {
     
         this.hierarchyManager = hierarchyManager;
         this.input = input;
@@ -141,7 +141,7 @@ public class MethodUsageScanner {
 
             Method staticMethod = SourceUtils.getStaticMethod(scopeTree, identifierTree.getName().toString());
             if (staticMethod != null) {
-                usageManager.addUsage(createUsage(staticMethod, identifierTree));
+                usageManager.addUsage(createUsage(staticMethod));
             } else {
                 SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
                 
@@ -156,7 +156,7 @@ public class MethodUsageScanner {
                 clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
                 clazz.addMethod(method);
 
-                usageManager.addUsage(createUsage(method, identifierTree));
+                usageManager.addUsage(createUsage(method));
             }
             
             return scopeTree;
@@ -216,12 +216,12 @@ public class MethodUsageScanner {
             clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
             clazz.addMethod(method);
 
-            usageManager.addUsage(createUsage(method, memberSelectTree));
+            usageManager.addUsage(createUsage(method));
 
             return scopeTree;
         }
         
-        private Usage createUsage(Method method, Tree tree) {
+        private Usage createUsage(Method method) {
             
             Usage usage = new Usage();
             usage.setMethod(method);

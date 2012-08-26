@@ -23,8 +23,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.navigate.scanner.MethodUsageScanner;
+import org.codeslayer.navigate.scanner.ClassNavigationScanner;
+import org.codeslayer.navigate.scanner.MethodNavigationScanner;
 import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.SourceUtils;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.Usage;
 
@@ -42,8 +44,15 @@ public class NavigateCommand implements Command {
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            MethodUsageScanner methodUsageScanner = new MethodUsageScanner(hierarchyManager, input);
-            Usage usage = methodUsageScanner.scan();
+            Usage usage = null;
+            
+            if (SourceUtils.isClass(input.getSymbol())) {
+                ClassNavigationScanner classNavigationScanner = new ClassNavigationScanner(hierarchyManager, input);
+                usage = classNavigationScanner.scan();
+            } else {
+                MethodNavigationScanner methodNavigationScanner = new MethodNavigationScanner(hierarchyManager, input);
+                usage = methodNavigationScanner.scan();
+            }
             
             if (logger.isDebugEnabled()) {
                 logger.debug("************ Navigate Search Results ************");
