@@ -59,20 +59,20 @@ public class ClassNavigationScanner {
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(internalScanner, scopeTree);
                 
-                String className = SourceUtils.getClassName(scopeTree, input.getSymbol());
-                Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
-                if (hierarchy == null) {
-                    return null;
-                }
+//                String className = SourceUtils.getClassName(scopeTree, input.getSymbol());
+//                Hierarchy hierarchy = hierarchyManager.getHierarchy(clSassName);
+//                if (hierarchy == null) {
+//                    return null;
+//                }
+//                
+//                String filePath = hierarchy.getFilePath();
+//        
+//                Usage usage = new Usage();
+//                usage.setClassName(className);
+//                usage.setFile(new File(filePath));
+//                usage.setLineNumber(0);
                 
-                String filePath = hierarchy.getFilePath();
-        
-                Usage usage = new Usage();
-                usage.setClassName(className);
-                usage.setFile(new File(filePath));
-                usage.setLineNumber(0);
-                
-                return usage;
+//                return usage;
             }            
         } catch (Exception e) {
             logger.error("class variable scan error", e);

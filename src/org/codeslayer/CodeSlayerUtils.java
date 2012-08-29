@@ -20,6 +20,7 @@ package org.codeslayer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.codeslayer.completion.CompletionCommand;
 import org.codeslayer.indexer.IndexerCommand;
 import org.codeslayer.navigate.NavigateCommand;
 import org.codeslayer.usage.UsageCommand;
@@ -35,6 +36,7 @@ public class CodeSlayerUtils {
         programs.put("usage", new UsageCommand());
         programs.put("indexer", new IndexerCommand());
         programs.put("navigate", new NavigateCommand());
+        programs.put("completion", new CompletionCommand());
         
         return programs;
     }

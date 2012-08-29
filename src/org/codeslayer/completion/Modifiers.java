@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate;
+package org.codeslayer.completion;
 
 import java.util.*;
 
@@ -67,9 +67,14 @@ public class Modifiers {
         return modifiers.get(Modifier.SOURCEFILE);
     }
 
-    public String getPosition() {
+    public String getStartPosition() {
 
-        return modifiers.get(Modifier.POSITION);
+        return modifiers.get(Modifier.STARTPOSITION);
+    }
+
+    public String getEndPosition() {
+
+        return modifiers.get(Modifier.ENDPOSITION);
     }
 
     public String getLineNumber() {
@@ -89,8 +94,9 @@ public class Modifiers {
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
         LINENUMBER("-linenumber"),
-        SOURCEFILE("-sourcefile"),
-        POSITION("-position");
+        STARTPOSITION("-startposition"),
+        ENDPOSITION("-endposition"),
+        SOURCEFILE("-sourcefile");
 
         private final String key;
 

@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate;
+package org.codeslayer.completion;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,15 +23,14 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.navigate.scanner.PositionResult;
-import org.codeslayer.navigate.scanner.PositionScanner;
+import org.codeslayer.completion.scanner.MethodCompletionScanner;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.Usage;
 
-public class NavigateCommand implements Command {
+public class CompletionCommand implements Command {
     
-    private static Logger logger = Logger.getLogger(NavigateCommand.class);
+    private static Logger logger = Logger.getLogger(CompletionCommand.class);
 
     public String execute(String[] args) {
         
@@ -43,10 +42,14 @@ public class NavigateCommand implements Command {
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
-            PositionResult positionResult = positionScanner.scan();
+            Usage usage = null;
+
+            MethodCompletionScanner methodCompletionScanner = new MethodCompletionScanner(hierarchyManager, input);
+            usage = methodCompletionScanner.scan();
             
-            Usage usage = NavigateUtils.getUsage(positionResult);
+            if (logger.isDebugEnabled()) {
+                logger.debug("************ Completion Search Results ************");
+            }
             
             if (usage != null) {
                 logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
@@ -79,12 +82,20 @@ public class NavigateCommand implements Command {
         File file = new File(sourceFile);
         intput.setSourceFile(file);
         
-        String position = modifiers.getPosition();
+        String startPosition = modifiers.getStartPosition();
         if (logger.isDebugEnabled()) {
-            logger.debug("position " + position);
+            logger.debug("startPosition " + startPosition);
         }
-        if (position != null) {
-            intput.setPosition(Integer.parseInt(position));
+        if (startPosition != null) {
+            intput.setStartPosition(Integer.parseInt(startPosition));
+        }
+        
+        String endPosition = modifiers.getEndPosition();
+        if (logger.isDebugEnabled()) {
+            logger.debug("endPosition " + endPosition);
+        }
+        if (endPosition != null) {
+            intput.setEndPosition(Integer.parseInt(endPosition));
         }
         
         String lineNumber = modifiers.getLineNumber();

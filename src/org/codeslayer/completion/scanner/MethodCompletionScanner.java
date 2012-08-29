@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate.scanner;
+package org.codeslayer.completion.scanner;
 
 import java.io.File;
 import com.sun.source.util.JavacTask;
@@ -27,27 +27,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.codeslayer.completion.Input;
 import org.codeslayer.indexer.Index;
 import org.codeslayer.indexer.IndexFactory;
 import org.codeslayer.indexer.SourceIndexer;
-import org.codeslayer.navigate.Input;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.Symbol;
 import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.domain.UsageManager;
-import org.codeslayer.usage.scanner.SymbolHandler;
-import org.codeslayer.usage.scanner.SymbolScanner;
 
-public class MethodNavigationScanner {
+public class MethodCompletionScanner {
     
-    private static Logger logger = Logger.getLogger(MethodNavigationScanner.class);
+    private static Logger logger = Logger.getLogger(MethodCompletionScanner.class);
     
     private final HierarchyManager hierarchyManager;
     private final Input input;
 
-    public MethodNavigationScanner(HierarchyManager hierarchyManager, Input input) {
+    public MethodCompletionScanner(HierarchyManager hierarchyManager, Input input) {
     
         this.hierarchyManager = hierarchyManager;
         this.input = input;
@@ -121,47 +118,6 @@ public class MethodNavigationScanner {
             return scopeTree;                    
         }
 
-        @Override
-        public ScopeTree visitIdentifier(IdentifierTree identifierTree, ScopeTree scopeTree) {
-            
-            super.visitIdentifier(identifierTree, scopeTree);
-            
-            if (!input.getSymbol().toString().equals(identifierTree.getName().toString())) {
-                return scopeTree;
-            }
-            
-            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree);
-            if (lineNumber != input.getLineNumber() && lineNumber+1 != input.getLineNumber()) {
-                return scopeTree;
-            }
-                
-            if (logger.isDebugEnabled()) {
-                logger.debug("** scan class (identifier)" + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, identifierTree) + " **");
-            }
-
-            Method staticMethod = SourceUtils.getStaticMethod(scopeTree, identifierTree.getName().toString());
-            if (staticMethod != null) {
-                usageManager.addUsage(createUsage(staticMethod));
-            } else {
-                SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
-                
-                Symbol firstSymbol = new Symbol(input.getSymbol());
-                
-                String className = symbolHandler.getType(firstSymbol, scopeTree);
-                
-                Method method = new Method();
-                method.setName(identifierTree.getName().toString());
-                Clazz clazz = new Clazz();
-                clazz.setClassName(className);
-                clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
-                clazz.addMethod(method);
-
-                usageManager.addUsage(createUsage(method));
-            }
-            
-            return scopeTree;
-        }
-
         /**
          * Find all occurrences of the method that we are trying to find. This will get most of the information
          * that we are interested in. However we will still need to go through the visitMethodInvocation() to 
@@ -172,51 +128,60 @@ public class MethodNavigationScanner {
 
             super.visitMemberSelect(memberSelectTree, scopeTree);
 
-            if (!input.getSymbol().toString().equals(memberSelectTree.getIdentifier().toString())) {
+//            if (!input.getSymbol().toString().equals(memberSelectTree.getIdentifier().toString())) {
+//                return scopeTree;
+//            }
+            
+            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree);
+            if (lineNumber != input.getLineNumber()) {
                 return scopeTree;
             }
             
-            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, memberSelectTree);
-            if (lineNumber != input.getLineNumber() && lineNumber+1 != input.getLineNumber()) {
-                return scopeTree;
-            }
+            int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, memberSelectTree);
+            int endPosition = SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, memberSelectTree);
+            
+            logger.debug("** startPosition: " + startPosition + " endPosition: " + endPosition + " **");
+            
+            
+            //filterSet.addFilter(filter);
+            
                 
             if (logger.isDebugEnabled()) {
                 logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, memberSelectTree) + " **");
             }
             
-            Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
-            if (symbol == null) {
-                if (logger.isDebugEnabled()) {
-                    logger.error("symbol is null");
-                }
-                return scopeTree;
-            }
-
-            Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
-
-            SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
-
-            // assume this is a method of this class
-            
-            String className = symbolHandler.getType(firstSymbol, scopeTree);
-
-            if (className == null) {
-                return scopeTree;
-            }
-
-//            if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+//            Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
+//            if (symbol == null) {
+//                if (logger.isDebugEnabled()) {
+//                    logger.error("symbol is null");
+//                }
 //                return scopeTree;
 //            }
-
-            Method method = new Method();
-            method.setName(input.getSymbol().toString());
-            Clazz clazz = new Clazz();
-            clazz.setClassName(className);
-            clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
-            clazz.addMethod(method);
-
-            usageManager.addUsage(createUsage(method));
+//
+//            Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
+//
+//            SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
+//
+//            // assume this is a method of this class
+//            
+//            String className = symbolHandler.getType(firstSymbol, scopeTree);
+//
+//            if (className == null) {
+//                return scopeTree;
+//            }
+//
+////            if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+////                return scopeTree;
+////            }
+//
+//            Method method = new Method();
+//            method.setName(input.getSymbol().toString());
+//            Clazz clazz = new Clazz();
+//            clazz.setClassName(className);
+//            clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
+//            clazz.addMethod(method);
+//
+//            usageManager.addUsage(createUsage(method));
 
             return scopeTree;
         }

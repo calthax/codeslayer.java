@@ -31,8 +31,8 @@ public class Executor {
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
                             "-sourcefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitActionFactory.java",
-                            "-symbol", "Filter",
-                            "-linenumber", "107"};
+                            "-position", "3383",
+                            "-linenumber", "108"};
 
         Command command = CodeSlayerUtils.getCommand(dummy, programs);
         

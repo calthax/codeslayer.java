@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate;
+package org.codeslayer.completion;
 
 import java.io.File;
 
@@ -25,7 +25,8 @@ public class Input {
     private File indexesFolder;
     private int lineNumber;
     private File sourceFile;
-    private int position;
+    private int startPosition;
+    private int endPosition;
 
     public File[] getSourceFolders() {
         
@@ -67,13 +68,23 @@ public class Input {
         this.sourceFile = sourceFile;
     }
 
-    public int getPosition() {
+    public int getStartPosition() {
         
-        return position;
+        return startPosition;
     }
 
-    public void setPosition(int position) {
+    public void setStartPosition(int startPosition) {
      
-        this.position = position;
+        this.startPosition = startPosition;
+    }
+
+    public int getEndPosition() {
+        
+        return endPosition;
+    }
+
+    public void setEndPosition(int endPosition) {
+        
+        this.endPosition = endPosition;
     }
 }
