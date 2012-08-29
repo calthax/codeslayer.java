@@ -30,9 +30,9 @@ public class Executor {
         String[] dummy = {"-program", "navigate", 
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
-                            "-sourcefile", "/home/jeff/workspace/jmesa/src/org/jmesa/limit/LimitActionFactory.java",
-                            "-position", "3383",
-                            "-linenumber", "108"};
+                            "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
+                            "-position", "2230",
+                            "-linenumber", "62"};
 
         Command command = CodeSlayerUtils.getCommand(dummy, programs);
         

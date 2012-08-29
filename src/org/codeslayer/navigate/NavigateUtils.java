@@ -46,16 +46,33 @@ public class NavigateUtils {
         
         if (tree instanceof IdentifierTree) {
             return getUsageByIdentifierTree(positionResult, (IdentifierTree)tree);
+        } else if (tree instanceof MemberSelectTree) {
+            return getUsageByMemberSelectTree(positionResult, (MemberSelectTree)tree);            
         }
         
-        return getUsageByMemberSelectTree(positionResult, (MemberSelectTree)tree);
+        return null;
     }
-    
+
     private static Usage getUsageByIdentifierTree(PositionResult positionResult, IdentifierTree identifierTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
         HierarchyManager hierarchyManager = positionResult.getHierarchyManager();
+        
+        if (SourceUtils.isClass(identifierTree.getName().toString())) {
+            String className = SourceUtils.getClassName(scopeTree, identifierTree.getName().toString());
+            Hierarchy hierarchy = positionResult.getHierarchyManager().getHierarchy(className);
+            if (hierarchy == null) {
+                return null;
+            }
+            String filePath = hierarchy.getFilePath();
+
+            Usage usage = new Usage();
+            usage.setClassName(className);
+            usage.setFile(new File(filePath));
+            usage.setLineNumber(0);
+            return usage;
+        }
         
         Method staticMethod = SourceUtils.getStaticMethod(scopeTree, identifierTree.getName().toString());
         if (staticMethod != null) {

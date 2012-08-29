@@ -112,7 +112,7 @@ public class PositionScanner {
             configureResult(identifierTree, scopeTree);
             return scopeTree;
         }
-
+        
         @Override
         public ScopeTree visitMemberSelect(MemberSelectTree memberSelectTree, ScopeTree scopeTree) {
 
