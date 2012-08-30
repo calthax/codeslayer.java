@@ -25,7 +25,6 @@ import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.Method;
-import org.codeslayer.usage.domain.Input;
 import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.InputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;
@@ -37,9 +36,9 @@ public class UsageCommand implements Command {
     public String execute(String[] args) {
         
         try {
-            Modifiers modifiers = new Modifiers(args);
+            UsageModifiers modifiers = new UsageModifiers(args);
             
-            Input input = getInput(modifiers);
+            UsageInput input = getInput(modifiers);
             
             InputScanner inputScanner = new InputScanner(input);
             Method methodMatch = inputScanner.scan();
@@ -72,9 +71,9 @@ public class UsageCommand implements Command {
         return "";
     }
     
-    private static Input getInput(Modifiers modifiers) {
+    private static UsageInput getInput(UsageModifiers modifiers) {
         
-        Input intput = new Input();
+        UsageInput intput = new UsageInput();
         
         File[] sourceFiles = getSourceFiles(modifiers);
         intput.setSourceFolders(sourceFiles);
@@ -111,7 +110,7 @@ public class UsageCommand implements Command {
         return intput;
     }
     
-    private static File[] getSourceFiles(Modifiers modifiers) {
+    private static File[] getSourceFiles(UsageModifiers modifiers) {
         
         List<File> results = new ArrayList<File>();
 

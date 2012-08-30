@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate;
+package org.codeslayer.usage;
 
 import java.util.*;
 
-public class Modifiers {
+public class UsageModifiers {
 
     private Map<Modifier, String> modifiers = new HashMap<Modifier, String>();
 
-    public Modifiers(String args[]) {
+    public UsageModifiers(String args[]) {
 
         Modifier lastModifier = null;
 
@@ -62,14 +62,19 @@ public class Modifiers {
         return modifiers.get(Modifier.INDEXESFOLDER);
     }
 
-    public String getSourceFile() {
+    public String getUsageFile() {
 
-        return modifiers.get(Modifier.SOURCEFILE);
+        return modifiers.get(Modifier.USAGEFILE);
     }
 
-    public String getPosition() {
+    public String getMethodUsage() {
 
-        return modifiers.get(Modifier.POSITION);
+        return modifiers.get(Modifier.METHODUSAGE);
+    }
+
+    public String getClassUsage() {
+
+        return modifiers.get(Modifier.CLASSUSAGE);
     }
 
     public String getLineNumber() {
@@ -88,9 +93,10 @@ public class Modifiers {
         PROGRAM("-program"),
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
-        LINENUMBER("-linenumber"),
-        SOURCEFILE("-sourcefile"),
-        POSITION("-position");
+        USAGEFILE("-usagefile"),
+        METHODUSAGE("-methodusage"),
+        CLASSUSAGE("-classusage"),
+        LINENUMBER("-linenumber");
 
         private final String key;
 

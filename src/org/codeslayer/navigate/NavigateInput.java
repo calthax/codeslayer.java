@@ -20,7 +20,7 @@ package org.codeslayer.navigate;
 import java.io.File;
 import org.codeslayer.source.scanner.PositionInput;
 
-public class Input implements PositionInput {
+public class NavigateInput implements PositionInput {
     
     private File[] sourceFolders;
     private File indexesFolder;

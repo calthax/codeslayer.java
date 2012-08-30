@@ -15,18 +15,48 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.completion;
+package org.codeslayer.usage;
 
 import java.io.File;
-import org.codeslayer.source.scanner.PositionInput;
 
-public class Input implements PositionInput {
+public class UsageInput {
     
     private File[] sourceFolders;
     private File indexesFolder;
+    private File usageFile;
+    private String methodUsage;
+    private String classUsage;
     private int lineNumber;
-    private File sourceFile;
-    private int position;
+
+    public String getClassUsage() {
+        
+        return classUsage;
+    }
+
+    public void setClassUsage(String classUsage) {
+        
+        this.classUsage = classUsage;
+    }
+
+    public String getMethodUsage() {
+        
+        return methodUsage;
+    }
+
+    public void setMethodUsage(String methodUsage) {
+        
+        this.methodUsage = methodUsage;
+    }
+
+    public int getLineNumber() {
+        
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        
+        this.lineNumber = lineNumber;
+    }
 
     public File[] getSourceFolders() {
         
@@ -48,33 +78,13 @@ public class Input implements PositionInput {
         this.indexesFolder = indexesFolder;
     }
     
-    public int getLineNumber() {
+    public File getUsageFile() {
         
-        return lineNumber;
+        return usageFile;
     }
 
-    public void setLineNumber(int lineNumber) {
+    public void setUsageFile(File usageFile) {
         
-        this.lineNumber = lineNumber;
-    }
-
-    public File getSourceFile() {
-        
-        return sourceFile;
-    }
-
-    public void setSourceFile(File sourceFile) {
-        
-        this.sourceFile = sourceFile;
-    }
-
-    public int getPosition() {
-        
-        return position;
-    }
-
-    public void setPosition(int position) {
-     
-        this.position = position;
+        this.usageFile = usageFile;
     }
 }

@@ -17,6 +17,7 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.usage.UsageInput;
 import java.util.List;
 import java.io.File;
 import com.sun.source.util.JavacTask;
@@ -37,9 +38,9 @@ public class MethodUsageScanner {
     
     private final HierarchyManager hierarchyManager;
     private final Method methodMatch;
-    private final Input input;
+    private final UsageInput input;
 
-    public MethodUsageScanner(HierarchyManager hierarchyManager, Method methodMatch, Input input) {
+    public MethodUsageScanner(HierarchyManager hierarchyManager, Method methodMatch, UsageInput input) {
     
         this.hierarchyManager = hierarchyManager;
         this.methodMatch = methodMatch;

@@ -36,9 +36,9 @@ public class NavigateCommand implements Command {
     public String execute(String[] args) {
         
         try {
-            Modifiers modifiers = new Modifiers(args);
+            NavigateModifiers modifiers = new NavigateModifiers(args);
             
-            Input input = getInput(modifiers);
+            NavigateInput input = getInput(modifiers);
             
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
@@ -61,9 +61,9 @@ public class NavigateCommand implements Command {
         return "";
     }
     
-    private static Input getInput(Modifiers modifiers) {
+    private static NavigateInput getInput(NavigateModifiers modifiers) {
         
-        Input intput = new Input();
+        NavigateInput intput = new NavigateInput();
         
         File[] sourceFiles = getSourceFiles(modifiers);
         intput.setSourceFolders(sourceFiles);
@@ -99,7 +99,7 @@ public class NavigateCommand implements Command {
         return intput;
     }
     
-    private static File[] getSourceFiles(Modifiers modifiers) {
+    private static File[] getSourceFiles(NavigateModifiers modifiers) {
         
         List<File> results = new ArrayList<File>();
 

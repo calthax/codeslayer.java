@@ -36,15 +36,19 @@ public class CompletionCommand implements Command {
     public String execute(String[] args) {
         
         try {
-            Modifiers modifiers = new Modifiers(args);
+            CompletionModifiers modifiers = new CompletionModifiers(args);
             
-            Input input = getInput(modifiers);
+            CompletionInput input = getInput(modifiers);
             
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
             PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
             PositionResult positionResult = positionScanner.scan();
+            
+            CompletionHandler completionHandler = new CompletionHandler(positionResult);
+            completionHandler.getUsage();
+            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,9 +58,9 @@ public class CompletionCommand implements Command {
         return "";
     }
     
-    private static Input getInput(Modifiers modifiers) {
+    private static CompletionInput getInput(CompletionModifiers modifiers) {
         
-        Input intput = new Input();
+        CompletionInput intput = new CompletionInput();
         
         File[] sourceFiles = getSourceFiles(modifiers);
         intput.setSourceFolders(sourceFiles);
@@ -92,7 +96,7 @@ public class CompletionCommand implements Command {
         return intput;
     }
     
-    private static File[] getSourceFiles(Modifiers modifiers) {
+    private static File[] getSourceFiles(CompletionModifiers modifiers) {
         
         List<File> results = new ArrayList<File>();
 

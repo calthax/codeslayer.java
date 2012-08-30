@@ -17,8 +17,16 @@
  */
 package org.codeslayer.completion;
 
+import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.MemberSelectTree;
+import com.sun.source.tree.Tree;
 import org.apache.log4j.Logger;
+import org.codeslayer.source.*;
 import org.codeslayer.source.scanner.PositionResult;
+import org.codeslayer.usage.domain.Symbol;
+import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.scanner.SymbolHandler;
+import org.codeslayer.usage.scanner.SymbolScanner;
 
 public class CompletionHandler {
  
@@ -31,5 +39,47 @@ public class CompletionHandler {
         this.positionResult = positionResult;
     }
     
+    public Usage getUsage() {
+        
+        Tree tree = positionResult.getTree();
+        
+        if (tree instanceof MemberSelectTree) {
+            return getUsageByMemberSelectTree((MemberSelectTree)tree);            
+        }
+        
+        return null;
+    }
     
+    private Usage getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
+        
+        ScopeTree scopeTree = positionResult.getScopeTree();
+        CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
+        HierarchyManager hierarchyManager = positionResult.getHierarchyManager();
+
+        Symbol symbol = memberSelectTree.getExpression().accept(new SymbolScanner(), null);
+        if (symbol == null) {
+            if (logger.isDebugEnabled()) {
+                logger.error("symbol is null");
+            }
+            return null;
+        }
+
+        Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
+
+        SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
+
+        // assume this is a method of this class
+
+        String className = symbolHandler.getType(firstSymbol, scopeTree);
+
+        if (className == null) {
+            return null;
+        }
+
+    //            if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
+    //                return scopeTree;
+    //            }
+
+        return null;
+    }    
 }

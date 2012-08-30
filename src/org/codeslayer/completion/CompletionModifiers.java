@@ -19,11 +19,11 @@ package org.codeslayer.completion;
 
 import java.util.*;
 
-public class Modifiers {
+public class CompletionModifiers {
 
     private Map<Modifier, String> modifiers = new HashMap<Modifier, String>();
 
-    public Modifiers(String args[]) {
+    public CompletionModifiers(String args[]) {
 
         Modifier lastModifier = null;
 

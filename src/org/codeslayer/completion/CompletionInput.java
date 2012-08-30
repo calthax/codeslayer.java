@@ -15,48 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.completion;
 
 import java.io.File;
+import org.codeslayer.source.scanner.PositionInput;
 
-public class Input {
+public class CompletionInput implements PositionInput {
     
     private File[] sourceFolders;
     private File indexesFolder;
-    private File usageFile;
-    private String methodUsage;
-    private String classUsage;
     private int lineNumber;
-
-    public String getClassUsage() {
-        
-        return classUsage;
-    }
-
-    public void setClassUsage(String classUsage) {
-        
-        this.classUsage = classUsage;
-    }
-
-    public String getMethodUsage() {
-        
-        return methodUsage;
-    }
-
-    public void setMethodUsage(String methodUsage) {
-        
-        this.methodUsage = methodUsage;
-    }
-
-    public int getLineNumber() {
-        
-        return lineNumber;
-    }
-
-    public void setLineNumber(int lineNumber) {
-        
-        this.lineNumber = lineNumber;
-    }
+    private File sourceFile;
+    private int position;
 
     public File[] getSourceFolders() {
         
@@ -78,13 +48,33 @@ public class Input {
         this.indexesFolder = indexesFolder;
     }
     
-    public File getUsageFile() {
+    public int getLineNumber() {
         
-        return usageFile;
+        return lineNumber;
     }
 
-    public void setUsageFile(File usageFile) {
+    public void setLineNumber(int lineNumber) {
         
-        this.usageFile = usageFile;
+        this.lineNumber = lineNumber;
+    }
+
+    public File getSourceFile() {
+        
+        return sourceFile;
+    }
+
+    public void setSourceFile(File sourceFile) {
+        
+        this.sourceFile = sourceFile;
+    }
+
+    public int getPosition() {
+        
+        return position;
+    }
+
+    public void setPosition(int position) {
+     
+        this.position = position;
     }
 }

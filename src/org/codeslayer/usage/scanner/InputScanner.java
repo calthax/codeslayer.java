@@ -27,15 +27,15 @@ import org.apache.log4j.Logger;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Method;
-import org.codeslayer.usage.domain.Input;
+import org.codeslayer.usage.UsageInput;
 
 public class InputScanner {
     
     private static Logger logger = Logger.getLogger(InputScanner.class);
     
-    private final Input input;
+    private final UsageInput input;
 
-    public InputScanner(Input input) {
+    public InputScanner(UsageInput input) {
      
         this.input = input;
     }
