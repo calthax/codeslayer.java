@@ -27,7 +27,6 @@ import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.scanner.PositionScanner;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.usage.UsageUtils;
-import org.codeslayer.usage.domain.Usage;
 
 public class NavigateCommand implements Command {
     
@@ -46,12 +45,12 @@ public class NavigateCommand implements Command {
             PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
             PositionResult positionResult = positionScanner.scan();
             
-            NavigateHandler navigateHandler = new NavigateHandler(positionResult);
-            Usage usage = navigateHandler.getUsage();
+            NavigateHandler handler = new NavigateHandler(positionResult);
+            NavigateOutput output = handler.getOutput();
             
-            if (usage != null) {
-                logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
-                return getOutput(usage);
+            if (output != null) {
+                logger.debug(output.getFilePath() + ":" + output.getLineNumber());
+                return getOutput(output);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,11 +114,11 @@ public class NavigateCommand implements Command {
         return results.toArray(new File[results.size()]);
     }
     
-    private String getOutput(Usage usage) {
+    private String getOutput(NavigateOutput output) {
         
         StringBuilder sb = new StringBuilder();
         
-        sb.append(usage.getClassName()).append("\t").append(usage.getFile().getPath()).append("\t").append(usage.getLineNumber()).append("\n");
+        sb.append(output.getFilePath()).append("\t").append(output.getLineNumber()).append("\n");
         
         return sb.toString();
     }

@@ -32,7 +32,6 @@ import org.codeslayer.indexer.SourceIndexer;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.Symbol;
-import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.SymbolHandler;
 import org.codeslayer.usage.scanner.SymbolScanner;
 
@@ -47,7 +46,7 @@ public class NavigateHandler {
         this.positionResult = positionResult;
     }
 
-    public Usage getUsage() {
+    public NavigateOutput getOutput() {
         
         Tree tree = positionResult.getTree();
         
@@ -60,7 +59,7 @@ public class NavigateHandler {
         return null;
     }
 
-    private Usage getUsageByIdentifierTree(IdentifierTree identifierTree) {
+    private NavigateOutput getUsageByIdentifierTree(IdentifierTree identifierTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -74,16 +73,15 @@ public class NavigateHandler {
             }
             String filePath = hierarchy.getFilePath();
 
-            Usage usage = new Usage();
-            usage.setClassName(className);
-            usage.setFile(new File(filePath));
-            usage.setLineNumber(0);
-            return usage;
+            NavigateOutput navigateOutput = new NavigateOutput();
+            navigateOutput.setFilePath(filePath);
+            navigateOutput.setLineNumber(0);
+            return navigateOutput;
         }
         
         Method staticMethod = SourceUtils.getStaticMethod(scopeTree, identifierTree.getName().toString());
         if (staticMethod != null) {
-            createUsage(staticMethod);
+            createOutput(staticMethod);
         } 
         
         SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
@@ -99,10 +97,10 @@ public class NavigateHandler {
         clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
         clazz.addMethod(method);
 
-        return createUsage(method);
+        return createOutput(method);
     }
     
-    private Usage getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
+    private NavigateOutput getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -139,15 +137,12 @@ public class NavigateHandler {
         clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
         clazz.addMethod(method);
 
-        return createUsage(method);
+        return createOutput(method);
     }
     
-    private Usage createUsage(Method method) {
+    private NavigateOutput createOutput(Method method) {
 
-        Usage usage = new Usage();
-        usage.setMethod(method);
-        usage.setClassName(method.getClazz().getClassName());
-        usage.setSimpleClassName(method.getClazz().getSimpleClassName());            
+        NavigateOutput navigateOutput = new NavigateOutput();
 
         IndexFactory indexFactory = new IndexFactory();
         List<Hierarchy> hierarchyList = positionResult.getHierarchyManager().getHierarchyList(method.getClazz().getClassName());
@@ -161,15 +156,15 @@ public class NavigateHandler {
             for (Index index : Indexes) {
                 String methodName = index.getMethodName();
                 if (method.getName().equals(methodName)) {
-                    usage.setFile(new File(index.getFilePath()));
-                    usage.setLineNumber(index.getLineNumber());
+                    navigateOutput.setFilePath(index.getFilePath());
+                    navigateOutput.setLineNumber(index.getLineNumber());
                 }                    
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return usage;
+        return navigateOutput;
     }
 
     private File[] getHierarchyFiles(List<Hierarchy> hierarchyList) {
