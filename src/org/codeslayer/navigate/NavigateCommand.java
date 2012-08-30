@@ -23,8 +23,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.navigate.scanner.PositionResult;
-import org.codeslayer.navigate.scanner.PositionScanner;
+import org.codeslayer.source.scanner.PositionResult;
+import org.codeslayer.source.scanner.PositionScanner;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.Usage;
@@ -46,7 +46,8 @@ public class NavigateCommand implements Command {
             PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
             PositionResult positionResult = positionScanner.scan();
             
-            Usage usage = NavigateUtils.getUsage(positionResult);
+            NavigateHandler navigateHandler = new NavigateHandler(positionResult);
+            Usage usage = navigateHandler.getUsage();
             
             if (usage != null) {
                 logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());

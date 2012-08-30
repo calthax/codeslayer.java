@@ -27,12 +27,12 @@ public class Executor {
         
         Map<String, Command> programs = CodeSlayerUtils.getPrograms();
 
-        String[] dummy = {"-program", "navigate", 
+        String[] dummy = {"-program", "completion", 
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
                             "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
-                            "-position", "2230",
-                            "-linenumber", "62"};
+                            "-position", "2308",
+                            "-linenumber", "63"};
 
         Command command = CodeSlayerUtils.getCommand(dummy, programs);
         

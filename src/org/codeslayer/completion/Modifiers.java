@@ -67,14 +67,9 @@ public class Modifiers {
         return modifiers.get(Modifier.SOURCEFILE);
     }
 
-    public String getStartPosition() {
+    public String getPosition() {
 
-        return modifiers.get(Modifier.STARTPOSITION);
-    }
-
-    public String getEndPosition() {
-
-        return modifiers.get(Modifier.ENDPOSITION);
+        return modifiers.get(Modifier.POSITION);
     }
 
     public String getLineNumber() {
@@ -94,9 +89,8 @@ public class Modifiers {
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
         LINENUMBER("-linenumber"),
-        STARTPOSITION("-startposition"),
-        ENDPOSITION("-endposition"),
-        SOURCEFILE("-sourcefile");
+        SOURCEFILE("-sourcefile"),
+        POSITION("-position");
 
         private final String key;
 

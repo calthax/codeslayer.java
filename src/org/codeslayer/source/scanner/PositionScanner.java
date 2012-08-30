@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.navigate.scanner;
+package org.codeslayer.source.scanner;
 
 import java.io.File;
 import com.sun.source.util.JavacTask;
@@ -24,7 +24,6 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
 import org.apache.log4j.Logger;
-import org.codeslayer.navigate.Input;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.*;
@@ -34,12 +33,12 @@ public class PositionScanner {
     private static Logger logger = Logger.getLogger(PositionScanner.class);
     
     private final HierarchyManager hierarchyManager;
-    private final Input input;
+    private final PositionInput positionInput;
 
-    public PositionScanner(HierarchyManager hierarchyManager, Input input) {
+    public PositionScanner(HierarchyManager hierarchyManager, PositionInput positionInput) {
     
         this.hierarchyManager = hierarchyManager;
-        this.input = input;
+        this.positionInput = positionInput;
     }
     
     public PositionResult scan() 
@@ -49,7 +48,7 @@ public class PositionScanner {
         positionResult.setHierarchyManager(hierarchyManager);
         
         try {
-            File sourceFile = input.getSourceFile();
+            File sourceFile = positionInput.getSourceFile();
             JavacTask javacTask = SourceUtils.getJavacTask(new File[]{sourceFile});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
@@ -124,7 +123,7 @@ public class PositionScanner {
         private void configureResult(Tree tree, ScopeTree scopeTree) {
             
             int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree);
-            if (lineNumber != input.getLineNumber()) {
+            if (lineNumber != positionInput.getLineNumber()) {
                 return;
             }
                 
@@ -135,7 +134,7 @@ public class PositionScanner {
                 logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, tree) + " **");
             }
             
-            int position = input.getPosition();
+            int position = positionInput.getPosition();
             if (position >= startPosition && position <= endPosition) {
                 positionResult.setScopeTree(scopeTree);
                 positionResult.setTree(tree);

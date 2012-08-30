@@ -29,31 +29,38 @@ import org.apache.log4j.Logger;
 import org.codeslayer.indexer.Index;
 import org.codeslayer.indexer.IndexFactory;
 import org.codeslayer.indexer.SourceIndexer;
-import org.codeslayer.navigate.scanner.PositionResult;
+import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.*;
 import org.codeslayer.usage.domain.Symbol;
 import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.SymbolHandler;
 import org.codeslayer.usage.scanner.SymbolScanner;
 
-public class NavigateUtils {
+public class NavigateHandler {
     
-    private static Logger logger = Logger.getLogger(NavigateUtils.class);
+    private static Logger logger = Logger.getLogger(NavigateHandler.class);
+    
+    private final PositionResult positionResult;
 
-    public static Usage getUsage(PositionResult positionResult) {
+    public NavigateHandler(PositionResult positionResult) {
+     
+        this.positionResult = positionResult;
+    }
+
+    public Usage getUsage() {
         
         Tree tree = positionResult.getTree();
         
         if (tree instanceof IdentifierTree) {
-            return getUsageByIdentifierTree(positionResult, (IdentifierTree)tree);
+            return getUsageByIdentifierTree((IdentifierTree)tree);
         } else if (tree instanceof MemberSelectTree) {
-            return getUsageByMemberSelectTree(positionResult, (MemberSelectTree)tree);            
+            return getUsageByMemberSelectTree((MemberSelectTree)tree);            
         }
         
         return null;
     }
 
-    private static Usage getUsageByIdentifierTree(PositionResult positionResult, IdentifierTree identifierTree) {
+    private Usage getUsageByIdentifierTree(IdentifierTree identifierTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -76,7 +83,7 @@ public class NavigateUtils {
         
         Method staticMethod = SourceUtils.getStaticMethod(scopeTree, identifierTree.getName().toString());
         if (staticMethod != null) {
-            createUsage(staticMethod, positionResult);
+            createUsage(staticMethod);
         } 
         
         SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
@@ -92,10 +99,10 @@ public class NavigateUtils {
         clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
         clazz.addMethod(method);
 
-        return createUsage(method, positionResult);
+        return createUsage(method);
     }
     
-    private static Usage getUsageByMemberSelectTree(PositionResult positionResult, MemberSelectTree memberSelectTree) {
+    private Usage getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -132,10 +139,10 @@ public class NavigateUtils {
         clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
         clazz.addMethod(method);
 
-        return createUsage(method, positionResult);
+        return createUsage(method);
     }
     
-    private static Usage createUsage(Method method, PositionResult positionResult) {
+    private Usage createUsage(Method method) {
 
         Usage usage = new Usage();
         usage.setMethod(method);
@@ -165,7 +172,7 @@ public class NavigateUtils {
         return usage;
     }
 
-    private static File[] getHierarchyFiles(List<Hierarchy> hierarchyList) {
+    private File[] getHierarchyFiles(List<Hierarchy> hierarchyList) {
 
         List<File> files = new ArrayList<File>();
 

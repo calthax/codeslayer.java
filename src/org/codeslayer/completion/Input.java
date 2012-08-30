@@ -18,15 +18,15 @@
 package org.codeslayer.completion;
 
 import java.io.File;
+import org.codeslayer.source.scanner.PositionInput;
 
-public class Input {
+public class Input implements PositionInput {
     
     private File[] sourceFolders;
     private File indexesFolder;
     private int lineNumber;
     private File sourceFile;
-    private int startPosition;
-    private int endPosition;
+    private int position;
 
     public File[] getSourceFolders() {
         
@@ -68,23 +68,13 @@ public class Input {
         this.sourceFile = sourceFile;
     }
 
-    public int getStartPosition() {
+    public int getPosition() {
         
-        return startPosition;
+        return position;
     }
 
-    public void setStartPosition(int startPosition) {
+    public void setPosition(int position) {
      
-        this.startPosition = startPosition;
-    }
-
-    public int getEndPosition() {
-        
-        return endPosition;
-    }
-
-    public void setEndPosition(int endPosition) {
-        
-        this.endPosition = endPosition;
+        this.position = position;
     }
 }

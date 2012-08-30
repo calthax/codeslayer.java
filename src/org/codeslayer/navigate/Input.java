@@ -18,8 +18,9 @@
 package org.codeslayer.navigate;
 
 import java.io.File;
+import org.codeslayer.source.scanner.PositionInput;
 
-public class Input {
+public class Input implements PositionInput {
     
     private File[] sourceFolders;
     private File indexesFolder;

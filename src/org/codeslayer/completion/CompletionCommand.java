@@ -23,8 +23,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.completion.scanner.MethodCompletionScanner;
 import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.scanner.PositionResult;
+import org.codeslayer.source.scanner.PositionScanner;
 import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.Usage;
 
@@ -42,19 +43,9 @@ public class CompletionCommand implements Command {
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            Usage usage = null;
+            PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
+            PositionResult positionResult = positionScanner.scan();
 
-            MethodCompletionScanner methodCompletionScanner = new MethodCompletionScanner(hierarchyManager, input);
-            usage = methodCompletionScanner.scan();
-            
-            if (logger.isDebugEnabled()) {
-                logger.debug("************ Completion Search Results ************");
-            }
-            
-            if (usage != null) {
-                logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
-                return getOutput(usage);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e);
@@ -82,20 +73,12 @@ public class CompletionCommand implements Command {
         File file = new File(sourceFile);
         intput.setSourceFile(file);
         
-        String startPosition = modifiers.getStartPosition();
+        String position = modifiers.getPosition();
         if (logger.isDebugEnabled()) {
-            logger.debug("startPosition " + startPosition);
+            logger.debug("position " + position);
         }
-        if (startPosition != null) {
-            intput.setStartPosition(Integer.parseInt(startPosition));
-        }
-        
-        String endPosition = modifiers.getEndPosition();
-        if (logger.isDebugEnabled()) {
-            logger.debug("endPosition " + endPosition);
-        }
-        if (endPosition != null) {
-            intput.setEndPosition(Integer.parseInt(endPosition));
+        if (position != null) {
+            intput.setPosition(Integer.parseInt(position));
         }
         
         String lineNumber = modifiers.getLineNumber();
