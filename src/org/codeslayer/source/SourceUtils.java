@@ -26,7 +26,7 @@ import java.io.FileFilter;
 import java.util.*;
 import javax.lang.model.element.Modifier;
 import javax.tools.*;
-import org.codeslayer.usage.scanner.ClassVariableScanner;
+import org.codeslayer.source.scanner.ClassVariableScanner;
 import org.codeslayer.source.scanner.MethodScanner;
 
 public class SourceUtils {
@@ -34,23 +34,6 @@ public class SourceUtils {
     public static String UNDEFINED = "UNDEFINED";
     
     private static List<String> langPackage = new ArrayList<String>();
-    
-    {
-        langPackage.add("Object");
-        langPackage.add("String");
-        langPackage.add("StringBuilder");
-        langPackage.add("Collection");
-        langPackage.add("Boolean");
-        langPackage.add("Double");
-        langPackage.add("Intger");
-        langPackage.add("BigDecimal");
-        langPackage.add("List");
-        langPackage.add("ArrayList");
-        langPackage.add("Map");
-        langPackage.add("HashMap");
-        langPackage.add("Set");
-        langPackage.add("HashSet");
-    }
     
     private SourceUtils() {}
     
@@ -254,6 +237,23 @@ public class SourceUtils {
         
         String simpleName = removeSpecialTypeCharacters(simpleType);
         
+        if (langPackage.isEmpty()) {
+            langPackage.add("Object");
+            langPackage.add("String");
+            langPackage.add("StringBuilder");
+            langPackage.add("Collection");
+            langPackage.add("Boolean");
+            langPackage.add("Double");
+            langPackage.add("Intger");
+            langPackage.add("BigDecimal");
+            langPackage.add("List");
+            langPackage.add("ArrayList");
+            langPackage.add("Map");
+            langPackage.add("HashMap");
+            langPackage.add("Set");
+            langPackage.add("HashSet");
+        }
+
         if (langPackage.contains(simpleName)) {
             return "java.lang." + simpleName;
         }
@@ -266,17 +266,6 @@ public class SourceUtils {
         }
 
         return scopeTree.getPackageName() + "." + simpleName;
-    }
-    
-    public static Method findClassMethod(HierarchyManager hierarchyManager, Clazz klass, Method method) {
-        
-        for (Method klassMethod : klass.getMethods()) {
-            if (methodsEqual(hierarchyManager, klassMethod, method)) {
-                return klassMethod;
-            }                        
-        }
-
-        throw new IllegalStateException("Class method not found for " + klass.getClassName() + "." + method.getName());
     }
     
     public static boolean hasMethodMatch(HierarchyManager hierarchyManager, Method methodMatch, String className) {
@@ -464,15 +453,6 @@ public class SourceUtils {
         return null;
     }
         
-    public static boolean classesEqual(HierarchyManager hierarchyManager, Clazz klass1, Method method1, Clazz klass2, Method method2) {
-        
-        if (!klass1.getClassName().equals(klass2.getClassName())) {
-            return false;
-        }
-        
-        return methodsEqual(hierarchyManager, method1, method2);
-    }
-
     public static boolean methodsEqual(HierarchyManager hierarchyManager, Method method1, Method method2) {
         
         if (!method1.getName().equals(method2.getName())) {

@@ -22,7 +22,6 @@ import org.codeslayer.source.Symbol;
 import com.sun.source.tree.CompilationUnitTree;
 import java.util.List;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.*;
 
 public class SymbolHandler {
     

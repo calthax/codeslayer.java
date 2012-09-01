@@ -41,13 +41,13 @@ public class MethodUsageScanner {
     
     private final HierarchyManager hierarchyManager;
     private final Method methodMatch;
-    private final UsageInput input;
+    private final UsageInput usageInput;
 
-    public MethodUsageScanner(HierarchyManager hierarchyManager, Method methodMatch, UsageInput input) {
+    public MethodUsageScanner(HierarchyManager hierarchyManager, Method methodMatch, UsageInput usageInput) {
     
         this.hierarchyManager = hierarchyManager;
         this.methodMatch = methodMatch;
-        this.input = input;
+        this.usageInput = usageInput;
     }
     
     public List<Usage> scan() 
@@ -56,16 +56,16 @@ public class MethodUsageScanner {
         UsageManager usageManager = new UsageManager();
         
         try {
-            JavacTask javacTask = SourceUtils.getJavacTask(input.getSourceFolders());
+            JavacTask javacTask = SourceUtils.getJavacTask(usageInput.getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
                 
-//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.view.html.AbstractHtmlView")) {
-//                    return null;
+//                if (!SourceUtils.getClassName(compilationUnitTree).equals("org.jmesa.worksheet.editor.AbstractWorksheetEditor")) {
+//                    continue;
 //                }
                 
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, hierarchyManager, usageManager);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, usageManager);
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(scanner, scopeTree);
             }
@@ -80,15 +80,13 @@ public class MethodUsageScanner {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
-        private final HierarchyManager hierarchyManager;
         private final UsageManager usageManager;
         private final File sourceFile;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager, UsageManager usageManager) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, UsageManager usageManager) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
-            this.hierarchyManager = hierarchyManager;
             this.usageManager = usageManager;
             this.sourceFile = SourceUtils.getSourceFile(compilationUnitTree);
         }
@@ -122,7 +120,7 @@ public class MethodUsageScanner {
             
             super.visitIdentifier(identifierTree, scopeTree);
 
-            if (!methodMatch.getName().toString().equals(identifierTree.getName().toString())) {
+            if (!methodMatch.getName().equals(identifierTree.getName().toString())) {
                 return scopeTree;
             }
                 
@@ -165,7 +163,7 @@ public class MethodUsageScanner {
 
             super.visitMemberSelect(memberSelectTree, scopeTree);
 
-            if (!methodMatch.getName().toString().equals(memberSelectTree.getIdentifier().toString())) {
+            if (!methodMatch.getName().equals(memberSelectTree.getIdentifier().toString())) {
                 return scopeTree;
             }
                 
@@ -183,7 +181,7 @@ public class MethodUsageScanner {
 
             Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
 
-            SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);                
+            SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
 
             // assume this is a method of this class
             
@@ -209,19 +207,6 @@ public class MethodUsageScanner {
             return scopeTree;
         }
         
-        private Usage createUsage(Method method, Tree tree) {
-            
-            Usage usage = new Usage();
-            usage.setMethod(method);
-            usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
-            usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
-            usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
-            usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree));
-            usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, tree));
-            usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, tree));
-            return usage;
-        }
-        
         /**
          * At this point we have the method usages figured out, but now we need the method parameters.
          */
@@ -243,8 +228,7 @@ public class MethodUsageScanner {
                 }
                 
                 ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, hierarchyManager);
-                parameterScanner.scan(methodInvocationTree, scopeTree);
-                List<Parameter> parameters = parameterScanner.getScanResults();
+                List<Parameter> parameters = parameterScanner.scan(methodInvocationTree, scopeTree);
                          
                 for (Parameter parameter : parameters) {
                     usage.getMethod().addParameter(parameter);
@@ -252,6 +236,19 @@ public class MethodUsageScanner {
             }
 
             return scopeTree;
+        }
+        
+        private Usage createUsage(Method method, Tree tree) {
+            
+            Usage usage = new Usage();
+            usage.setMethod(method);
+            usage.setClassName(SourceUtils.getClassName(compilationUnitTree));
+            usage.setSimpleClassName(SourceUtils.getSimpleClassName(compilationUnitTree));
+            usage.setFile(new File(compilationUnitTree.getSourceFile().toUri().toString()));                
+            usage.setLineNumber(SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree));
+            usage.setStartPosition(SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, tree));
+            usage.setEndPosition(SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, tree));
+            return usage;
         }
     }
 }

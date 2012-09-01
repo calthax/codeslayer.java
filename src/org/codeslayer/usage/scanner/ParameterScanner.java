@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.*;
 
 public class ParameterScanner {
     
@@ -35,7 +34,6 @@ public class ParameterScanner {
     private final CompilationUnitTree compilationUnitTree;
     private final SourcePositions sourcePositions;
     private final HierarchyManager hierarchyManager;
-    private final List<Parameter> parameters = new ArrayList<Parameter>();
 
     public ParameterScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, HierarchyManager hierarchyManager) {
      
@@ -44,7 +42,9 @@ public class ParameterScanner {
         this.hierarchyManager = hierarchyManager;
     }    
     
-    public void scan(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
+    public List<Parameter> scan(MethodInvocationTree methodInvocationTree, ScopeTree scopeTree) {
+
+        List<Parameter> parameters = new ArrayList<Parameter>();
         
         List<? extends ExpressionTree> expressionTrees = methodInvocationTree.getArguments();
         for (ExpressionTree expressionTree : expressionTrees) {
@@ -55,7 +55,6 @@ public class ParameterScanner {
             Parameter parameter = new Parameter();
             parameter.setVariable(name);
 
-            
             try {
                 if (kind == Tree.Kind.STRING_LITERAL) {
                     parameter.setSimpleType(String.class.getSimpleName());
@@ -128,9 +127,6 @@ public class ParameterScanner {
                 }
             }
         }
-    }
-    
-    public List<Parameter> getScanResults() {
         
         return parameters;
     }

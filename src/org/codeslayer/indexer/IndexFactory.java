@@ -20,7 +20,6 @@ package org.codeslayer.indexer;
 import java.util.*;
 import org.codeslayer.source.Clazz;
 import org.codeslayer.source.Method;
-import org.codeslayer.source.Parameter;
 
 public class IndexFactory {
     
@@ -45,13 +44,6 @@ public class IndexFactory {
             index.setSimpleClassName(klass.getSimpleClassName());
             index.setSuperClass(klass.getSuperClass());
             index.setInterfaces(interfaces);
-            index.setMethodModifier("");
-            index.setMethodName("");
-            index.setMethodParameters("");
-            index.setMethodParametersVariables("");
-            index.setMethodParametersTypes("");
-            index.setMethodReturnType("");
-            index.setMethodSimpleReturnType("");
             index.setFilePath(klass.getFilePath());
             index.setLineNumber(0);
             indexes.add(index);
@@ -62,13 +54,7 @@ public class IndexFactory {
                 index.setSimpleClassName(klass.getSimpleClassName());
                 index.setSuperClass(klass.getSuperClass());
                 index.setInterfaces(interfaces);
-                index.setMethodModifier(method.getModifier());
                 index.setMethodName(method.getName());
-                index.setMethodParameters( getMethodParameters(method));
-                index.setMethodParametersVariables(getMethodParametersVariables(method));
-                index.setMethodParametersTypes(getMethodParametersTypes(method));
-                index.setMethodReturnType(method.getReturnType());
-                index.setMethodSimpleReturnType(method.getSimpleReturnType());
                 index.setFilePath(klass.getFilePath());
                 index.setLineNumber(method.getLineNumber());
                 indexes.add(index);
@@ -83,55 +69,6 @@ public class IndexFactory {
         Iterator<String> iterator = klass.getInterfaces().iterator();
         while (iterator.hasNext()) {
             sb.append(iterator.next());
-            if (iterator.hasNext()) {
-                sb.append(", ");
-            }
-        }
-        
-        return sb.toString();
-    }
-    
-    private String getMethodParameters(Method method) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        Iterator<Parameter> iterator = method.getParameters().iterator();
-        while (iterator.hasNext()) {
-            Parameter parameter = iterator.next();
-            String simpleType = parameter.getSimpleType();
-            sb.append(simpleType).append(" ").append(parameter.getVariable());
-            if (iterator.hasNext()) {
-                sb.append(", ");
-            }
-        }
-        
-        return sb.toString();
-    }
-    
-    private String getMethodParametersVariables(Method method) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        Iterator<Parameter> iterator = method.getParameters().iterator();
-        while (iterator.hasNext()) {
-            Parameter parameter = iterator.next();
-            sb.append(parameter.getVariable());
-            if (iterator.hasNext()) {
-                sb.append(", ");
-            }
-        }
-        
-        return sb.toString();
-    }
-        
-    private String getMethodParametersTypes(Method method) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        Iterator<Parameter> iterator = method.getParameters().iterator();
-        while (iterator.hasNext()) {
-            Parameter parameter = iterator.next();
-            sb.append(parameter.getType());
             if (iterator.hasNext()) {
                 sb.append(", ");
             }

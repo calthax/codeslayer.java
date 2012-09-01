@@ -19,7 +19,6 @@ package org.codeslayer.indexer;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -101,74 +100,11 @@ public class JarIndexer implements Indexer {
             index.setClassName(packageName + "." + simpleClassName);
             index.setSimpleClassName(simpleClassName);
             index.setSuperClass(superClassName);
-
             index.setMethodName(method.getName());
-            index.setMethodModifier(getModifier(method));
-
-            String parameters = getParameters(method);
-            index.setMethodParameters(parameters);
-            index.setMethodParametersVariables(parameters);
-            index.setMethodParametersTypes(getParametersTypes(method));
-
-            index.setMethodReturnType(method.getReturnType().getName());
-            index.setMethodSimpleReturnType(method.getReturnType().getSimpleName());
 
             results.add(index);
         }
 
         return results;
-    }
-    
-    private String getParameters(Method method) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        Class<?>[] parameters = method.getParameterTypes();
-        int length = parameters.length;
-        
-        for (int i = 0; i < length; i++) {
-            Class parameter = parameters[i];
-            sb.append(parameter.getSimpleName());
-            
-            if (i+1 < length) {
-                sb.append(", ");
-            }
-        }
-
-        return sb.toString();
-    }
-    
-    private String getParametersTypes(Method method) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        Class<?>[] parameters = method.getParameterTypes();
-        int length = parameters.length;
-        
-        for (int i = 0; i < length; i++) {
-            Class parameter = parameters[i];
-            sb.append(parameter.getName());
-            
-            if (i+1 < length) {
-                sb.append(", ");
-            }
-        }
-
-        return sb.toString();
-    }
-    
-    private String getModifier(Method method) {
-        
-        int modifiers = method.getModifiers();
-        
-        if (Modifier.isPublic(modifiers)) {
-            return "public";
-        }
-        
-        if (Modifier.isProtected(modifiers)) {
-            return "protected";
-        }
-        
-        return "package";
     }
 }

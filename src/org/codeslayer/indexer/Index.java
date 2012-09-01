@@ -24,12 +24,6 @@ public class Index {
     private String superClass;
     private String interfaces;
     private String methodName;
-    private String methodModifier;
-    private String methodParameters;
-    private String methodParametersVariables;
-    private String methodParametersTypes;
-    private String methodReturnType;
-    private String methodSimpleReturnType;
     private String filePath;
     private int lineNumber;
 
@@ -81,66 +75,6 @@ public class Index {
     public void setMethodName(String methodName) {
 
         this.methodName = methodName;
-    }
-
-    public String getMethodModifier() {
-
-        return methodModifier;
-    }
-
-    public void setMethodModifier(String methodModifier) {
-
-        this.methodModifier = methodModifier;
-    }
-
-    public String getMethodParameters() {
-
-        return methodParameters;
-    }
-
-    public void setMethodParameters(String methodParameters) {
-
-        this.methodParameters = methodParameters;
-    }
-
-    public String getMethodParametersVariables() {
-        
-        return methodParametersVariables;
-    }
-
-    public void setMethodParametersVariables(String methodParametersVariables) {
-     
-        this.methodParametersVariables = methodParametersVariables;
-    }
-
-    public String getMethodParametersTypes() {
-        
-        return methodParametersTypes;
-    }
-
-    public void setMethodParametersTypes(String methodParametersTypes) {
-     
-        this.methodParametersTypes = methodParametersTypes;
-    }
-
-    public String getMethodSimpleReturnType() {
-        
-        return methodSimpleReturnType;
-    }
-
-    public void setMethodSimpleReturnType(String methodSimpleReturnType) {
-     
-        this.methodSimpleReturnType = methodSimpleReturnType;
-    }
-
-    public String getMethodReturnType() {
-        
-        return methodReturnType;
-    }
-
-    public void setMethodReturnType(String methodReturnType) {
-     
-        this.methodReturnType = methodReturnType;
     }
 
     public String getFilePath() {

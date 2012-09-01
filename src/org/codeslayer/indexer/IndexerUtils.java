@@ -19,7 +19,6 @@ package org.codeslayer.indexer;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.codeslayer.source.*;
@@ -27,10 +26,6 @@ import org.codeslayer.source.*;
 public class IndexerUtils {
 
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
-    
-    private static final String REGEX = "import\\s+(.*?);";
-    private static final Pattern PATTERN = Pattern.compile(REGEX);
-    
 
     public static List<String> getSuppressions(String path) {
 
