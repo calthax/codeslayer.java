@@ -83,21 +83,18 @@ public class UsageCommand implements Command {
             intput.setIndexesFolder(new File(indexesFolder));
         }
         
-        String usageFile = modifiers.getUsageFile();
+        String sourceFile = modifiers.getSourceFile();
         if (logger.isDebugEnabled()) {
-            logger.debug("usageFile " + usageFile);
+            logger.debug("sourceFile " + sourceFile);
         }
-        File file = new File(usageFile);
-        intput.setUsageFile(file);
+        File file = new File(sourceFile);
+        intput.setSourceFile(file);
         
         String methodUsage = modifiers.getMethodUsage();
         if (logger.isDebugEnabled()) {
             logger.debug("methodUsage " + methodUsage);
         }
         intput.setMethodUsage(methodUsage);
-        
-        String classUsage = modifiers.getClassUsage();
-        intput.setClassUsage(classUsage);
         
         String lineNumber = modifiers.getLineNumber();
         if (lineNumber != null) {

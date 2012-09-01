@@ -23,20 +23,9 @@ public class UsageInput {
     
     private File[] sourceFolders;
     private File indexesFolder;
-    private File usageFile;
-    private String methodUsage;
-    private String classUsage;
+    private File sourceFile;
     private int lineNumber;
-
-    public String getClassUsage() {
-        
-        return classUsage;
-    }
-
-    public void setClassUsage(String classUsage) {
-        
-        this.classUsage = classUsage;
-    }
+    private String methodUsage;
 
     public String getMethodUsage() {
         
@@ -78,13 +67,13 @@ public class UsageInput {
         this.indexesFolder = indexesFolder;
     }
     
-    public File getUsageFile() {
+    public File getSourceFile() {
         
-        return usageFile;
+        return sourceFile;
     }
 
-    public void setUsageFile(File usageFile) {
+    public void setSourceFile(File sourceFile) {
         
-        this.usageFile = usageFile;
+        this.sourceFile = sourceFile;
     }
 }

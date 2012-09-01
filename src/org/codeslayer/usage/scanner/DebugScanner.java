@@ -19,382 +19,396 @@ package org.codeslayer.usage.scanner;
 
 import com.sun.source.tree.*;
 import com.sun.source.util.SimpleTreeVisitor;
+import com.sun.source.util.SourcePositions;
+import org.apache.log4j.Logger;
+import org.codeslayer.source.SourceUtils;
 
 public class DebugScanner extends SimpleTreeVisitor<Void, Void> {
+    
+    private static Logger logger = Logger.getLogger(DebugScanner.class);
+    
+    private final CompilationUnitTree compilationUnitTree;
+    private final SourcePositions sourcePositions;
+
+    public DebugScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions) {
+     
+        this.compilationUnitTree = compilationUnitTree;
+        this.sourcePositions = sourcePositions;
+    }
 
     @Override
-    public Void visitAnnotation(AnnotationTree at, Void p) {
+    public Void visitAnnotation(AnnotationTree tree, Void p) {
         
-        super.visitAnnotation(at, p);
-        System.out.println("** visitAnnotation " + at.toString() + " **");
+        super.visitAnnotation(tree, p);
+        print(tree, "visitAnnotation", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitMethodInvocation(MethodInvocationTree mit, Void p) {
+    public Void visitMethodInvocation(MethodInvocationTree tree, Void p) {
         
-        super.visitMethodInvocation(mit, p);
-        System.out.println("** visitMethodInvocation " + mit.toString() + " **");
+        super.visitMethodInvocation(tree, p);
+        print(tree, "visitMethodInvocation", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitAssert(AssertTree at, Void p) {
+    public Void visitAssert(AssertTree tree, Void p) {
         
-        super.visitAssert(at, p);
-        System.out.println("** visitAssert " + at.toString() + " **");
+        super.visitAssert(tree, p);
+        print(tree, "visitAssert", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitAssignment(AssignmentTree at, Void p) {
+    public Void visitAssignment(AssignmentTree tree, Void p) {
         
-        super.visitAssignment(at, p);
-        System.out.println("** visitAssignment " + at.toString() + " **");
+        super.visitAssignment(tree, p);
+        print(tree, "visitAssignment", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitCompoundAssignment(CompoundAssignmentTree cat, Void p) {
+    public Void visitCompoundAssignment(CompoundAssignmentTree tree, Void p) {
         
-        super.visitCompoundAssignment(cat, p);
-        System.out.println("** visitCompoundAssignment " + cat.toString() + " **");
+        super.visitCompoundAssignment(tree, p);
+        print(tree, "visitCompoundAssignment", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitBinary(BinaryTree bt, Void p) {
+    public Void visitBinary(BinaryTree tree, Void p) {
         
-        super.visitBinary(bt, p);
-        System.out.println("** visitBinary " + bt.toString() + " **");
+        super.visitBinary(tree, p);
+        print(tree, "visitBinary", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitBlock(BlockTree bt, Void p) {
+    public Void visitBlock(BlockTree tree, Void p) {
         
-        super.visitBlock(bt, p);
-        System.out.println("** visitBlock " + bt.toString() + " **");
+        super.visitBlock(tree, p);
+        print(tree, "visitBlock", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitBreak(BreakTree bt, Void p) {
+    public Void visitBreak(BreakTree tree, Void p) {
         
-        super.visitBreak(bt, p);
-        System.out.println("** visitBreak " + bt.toString() + " **");
+        super.visitBreak(tree, p);
+        print(tree, "visitBreak", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitCase(CaseTree ct, Void p) {
+    public Void visitCase(CaseTree tree, Void p) {
         
-        super.visitCase(ct, p);
-        System.out.println("** visitCase " + ct.toString() + " **");
+        super.visitCase(tree, p);
+        print(tree, "visitCase", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitCatch(CatchTree ct, Void p) {
+    public Void visitCatch(CatchTree tree, Void p) {
         
-        super.visitCatch(ct, p);
-        System.out.println("** visitCatch " + ct.toString() + " **");
+        super.visitCatch(tree, p);
+        print(tree, "visitCatch", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitClass(ClassTree ct, Void p) {
+    public Void visitClass(ClassTree tree, Void p) {
         
-        super.visitClass(ct, p);
-        System.out.println("** visitClass " + ct.toString() + " **");
+        super.visitClass(tree, p);
+        print(tree, "visitClass", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitConditionalExpression(ConditionalExpressionTree cet, Void p) {
+    public Void visitConditionalExpression(ConditionalExpressionTree tree, Void p) {
         
-        super.visitConditionalExpression(cet, p);
-        System.out.println("** visitConditionalExpression " + cet.toString() + " **");
+        super.visitConditionalExpression(tree, p);
+        print(tree, "visitConditionalExpression", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitContinue(ContinueTree ct, Void p) {
+    public Void visitContinue(ContinueTree tree, Void p) {
         
-        super.visitContinue(ct, p);
-        System.out.println("** visitContinue " + ct.toString() + " **");
+        super.visitContinue(tree, p);
+        print(tree, "visitContinue", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitDoWhileLoop(DoWhileLoopTree dwlt, Void p) {
+    public Void visitDoWhileLoop(DoWhileLoopTree tree, Void p) {
         
-        super.visitDoWhileLoop(dwlt, p);
-        System.out.println("** visitDoWhileLoop " + dwlt.toString() + " **");
+        super.visitDoWhileLoop(tree, p);
+        print(tree, "visitDoWhileLoop", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitErroneous(ErroneousTree et, Void p) {
+    public Void visitErroneous(ErroneousTree tree, Void p) {
         
-        super.visitErroneous(et, p);
-        System.out.println("** visitErroneous " + et.toString() + " **");
+        super.visitErroneous(tree, p);
+        print(tree, "visitErroneous", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitExpressionStatement(ExpressionStatementTree est, Void p) {
+    public Void visitExpressionStatement(ExpressionStatementTree tree, Void p) {
         
-        super.visitExpressionStatement(est, p);
-        System.out.println("** visitExpressionStatement " + est.toString() + " **");
+        super.visitExpressionStatement(tree, p);
+        print(tree, "visitExpressionStatement", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitEnhancedForLoop(EnhancedForLoopTree eflt, Void p) {
+    public Void visitEnhancedForLoop(EnhancedForLoopTree tree, Void p) {
         
-        super.visitEnhancedForLoop(eflt, p);
-        System.out.println("** visitEnhancedForLoop " + eflt.toString() + " **");
+        super.visitEnhancedForLoop(tree, p);
+        print(tree, "visitEnhancedForLoop", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitForLoop(ForLoopTree flt, Void p) {
+    public Void visitForLoop(ForLoopTree tree, Void p) {
         
-        super.visitForLoop(flt, p);
-        System.out.println("** visitForLoop " + flt.toString() + " **");
+        super.visitForLoop(tree, p);
+        print(tree, "visitForLoop", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitIdentifier(IdentifierTree it, Void p) {
+    public Void visitIdentifier(IdentifierTree tree, Void p) {
         
-        super.visitIdentifier(it, p);
-        System.out.println("** visitIdentifier " + it.toString() + " **");
+        super.visitIdentifier(tree, p);
+        print(tree, "visitIdentifier", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitIf(IfTree iftree, Void p) {
+    public Void visitIf(IfTree tree, Void p) {
         
-        super.visitIf(iftree, p);
-        System.out.println("** visitIf " + iftree.toString() + " **");
+        super.visitIf(tree, p);
+        print(tree, "visitIf", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitImport(ImportTree it, Void p) {
+    public Void visitImport(ImportTree tree, Void p) {
         
-        super.visitImport(it, p);
-        System.out.println("** visitImport " + it.toString() + " **");
+        super.visitImport(tree, p);
+        print(tree, "visitImport", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitArrayAccess(ArrayAccessTree aat, Void p) {
+    public Void visitArrayAccess(ArrayAccessTree tree, Void p) {
         
-        super.visitArrayAccess(aat, p);
-        System.out.println("** visitArrayAccess " + aat.toString() + " **");
+        super.visitArrayAccess(tree, p);
+        print(tree, "visitArrayAccess", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitLabeledStatement(LabeledStatementTree lst, Void p) {
+    public Void visitLabeledStatement(LabeledStatementTree tree, Void p) {
         
-        super.visitLabeledStatement(lst, p);
-        System.out.println("** visitLabeledStatement " + lst.toString() + " **");
+        super.visitLabeledStatement(tree, p);
+        print(tree, "visitLabeledStatement", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitLiteral(LiteralTree lt, Void p) {
+    public Void visitLiteral(LiteralTree tree, Void p) {
         
-        super.visitLiteral(lt, p);
-        System.out.println("** visitLiteral " + lt.toString() + " **");
+        super.visitLiteral(tree, p);
+        print(tree, "visitLiteral", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitMethod(MethodTree mt, Void p) {
+    public Void visitMethod(MethodTree tree, Void p) {
         
-        super.visitMethod(mt, p);
-        System.out.println("** visitMethod " + mt.toString() + " **");
+        super.visitMethod(tree, p);
+        print(tree, "visitMethod", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitModifiers(ModifiersTree mt, Void p) {
+    public Void visitModifiers(ModifiersTree tree, Void p) {
         
-        super.visitModifiers(mt, p);
-        System.out.println("** visitModifiers " + mt.toString() + " **");
+        super.visitModifiers(tree, p);
+        print(tree, "visitModifiers", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitNewArray(NewArrayTree nat, Void p) {
+    public Void visitNewArray(NewArrayTree tree, Void p) {
         
-        super.visitNewArray(nat, p);
-        System.out.println("** visitNewArray " + nat.toString() + " **");
+        super.visitNewArray(tree, p);
+        print(tree, "visitNewArray", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitNewClass(NewClassTree nct, Void p) {
+    public Void visitNewClass(NewClassTree tree, Void p) {
         
-        super.visitNewClass(nct, p);
-        System.out.println("** visitNewClass " + nct.toString() + " **");
+        super.visitNewClass(tree, p);
+        print(tree, "visitNewClass", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitParenthesized(ParenthesizedTree pt, Void p) {
+    public Void visitParenthesized(ParenthesizedTree tree, Void p) {
         
-        super.visitParenthesized(pt, p);
-        System.out.println("** visitParenthesized " + pt.toString() + " **");
+        super.visitParenthesized(tree, p);
+        print(tree, "visitParenthesized", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitReturn(ReturnTree rt, Void p) {
+    public Void visitReturn(ReturnTree tree, Void p) {
         
-        super.visitReturn(rt, p);
-        System.out.println("** visitReturn " + rt.toString() + " **");
+        super.visitReturn(tree, p);
+        print(tree, "visitReturn", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitMemberSelect(MemberSelectTree mst, Void p) {
+    public Void visitMemberSelect(MemberSelectTree tree, Void p) {
         
-        super.visitMemberSelect(mst, p);
-        System.out.println("** visitMemberSelect " + mst.toString() + " **");
+        super.visitMemberSelect(tree, p);
+        print(tree, "visitMemberSelect", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitEmptyStatement(EmptyStatementTree est, Void p) {
+    public Void visitEmptyStatement(EmptyStatementTree tree, Void p) {
         
-        super.visitEmptyStatement(est, p);
-        System.out.println("** visitEmptyStatement " + est.toString() + " **");
+        super.visitEmptyStatement(tree, p);
+        print(tree, "visitEmptyStatement", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitSwitch(SwitchTree st, Void p) {
+    public Void visitSwitch(SwitchTree tree, Void p) {
         
-        super.visitSwitch(st, p);
-        System.out.println("** visitSwitch " + st.toString() + " **");
+        super.visitSwitch(tree, p);
+        print(tree, "visitSwitch", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitSynchronized(SynchronizedTree st, Void p) {
+    public Void visitSynchronized(SynchronizedTree tree, Void p) {
         
-        super.visitSynchronized(st, p);
-        System.out.println("** visitSynchronized " + st.toString() + " **");
+        super.visitSynchronized(tree, p);
+        print(tree, "visitSynchronized", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitThrow(ThrowTree tt, Void p) {
+    public Void visitThrow(ThrowTree tree, Void p) {
         
-        super.visitThrow(tt, p);
-        System.out.println("** visitThrow " + tt.toString() + " **");
+        super.visitThrow(tree, p);
+        print(tree, "visitThrow", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitCompilationUnit(CompilationUnitTree cut, Void p) {
+    public Void visitCompilationUnit(CompilationUnitTree tree, Void p) {
         
-        super.visitCompilationUnit(cut, p);
-        System.out.println("** visitCompilationUnit " + cut.toString() + " **");
+        super.visitCompilationUnit(tree, p);
+        print(tree, "visitCompilationUnit", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitTry(TryTree tt, Void p) {
+    public Void visitTry(TryTree tree, Void p) {
         
-        super.visitTry(tt, p);
-        System.out.println("** visitTry " + tt.toString() + " **");
+        super.visitTry(tree, p);
+        print(tree, "visitTry", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitParameterizedType(ParameterizedTypeTree ptt, Void p) {
+    public Void visitParameterizedType(ParameterizedTypeTree tree, Void p) {
         
-        super.visitParameterizedType(ptt, p);
-        System.out.println("** visitParameterizedType " + ptt.toString() + " **");
+        super.visitParameterizedType(tree, p);
+        print(tree, "visitParameterizedType", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitArrayType(ArrayTypeTree att, Void p) {
+    public Void visitArrayType(ArrayTypeTree tree, Void p) {
         
-        super.visitArrayType(att, p);
-        System.out.println("** visitArrayType " + att.toString() + " **");
+        super.visitArrayType(tree, p);
+        print(tree, "visitArrayType", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitTypeCast(TypeCastTree tct, Void p) {
+    public Void visitTypeCast(TypeCastTree tree, Void p) {
         
-        super.visitTypeCast(tct, p);
-        System.out.println("** visitTypeCast " + tct.toString() + " **");
+        super.visitTypeCast(tree, p);
+        print(tree, "visitTypeCast", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitPrimitiveType(PrimitiveTypeTree ptt, Void p) {
+    public Void visitPrimitiveType(PrimitiveTypeTree tree, Void p) {
         
-        super.visitPrimitiveType(ptt, p);
-        System.out.println("** visitPrimitiveType " + ptt.toString() + " **");
+        super.visitPrimitiveType(tree, p);
+        print(tree, "visitPrimitiveType", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitTypeParameter(TypeParameterTree tpt, Void p) {
+    public Void visitTypeParameter(TypeParameterTree tree, Void p) {
         
-        super.visitTypeParameter(tpt, p);
-        System.out.println("** visitTypeParameter " + tpt.toString() + " **");
+        super.visitTypeParameter(tree, p);
+        print(tree, "visitTypeParameter", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitInstanceOf(InstanceOfTree iot, Void p) {
+    public Void visitInstanceOf(InstanceOfTree tree, Void p) {
         
-        super.visitInstanceOf(iot, p);
-        System.out.println("** visitInstanceOf " + iot.toString() + " **");
+        super.visitInstanceOf(tree, p);
+        print(tree, "visitInstanceOf", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitUnary(UnaryTree ut, Void p) {
+    public Void visitUnary(UnaryTree tree, Void p) {
         
-        super.visitUnary(ut, p);
-        System.out.println("** visitUnary " + ut.toString() + " **");
+        super.visitUnary(tree, p);
+        print(tree, "visitUnary", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitVariable(VariableTree vt, Void p) {
+    public Void visitVariable(VariableTree tree, Void p) {
         
-        super.visitVariable(vt, p);
-        System.out.println("** visitVariable " + vt.toString() + " **");
+        super.visitVariable(tree, p);
+        print(tree, "visitVariable", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitWhileLoop(WhileLoopTree wlt, Void p) {
+    public Void visitWhileLoop(WhileLoopTree tree, Void p) {
         
-        super.visitWhileLoop(wlt, p);
-        System.out.println("** visitWhileLoop " + wlt.toString() + " **");
+        super.visitWhileLoop(tree, p);
+        print(tree, "visitWhileLoop", tree.toString());
         return p;
     }
 
     @Override
-    public Void visitWildcard(WildcardTree wt, Void p) {
+    public Void visitWildcard(WildcardTree tree, Void p) {
         
-        super.visitWildcard(wt, p);
-        System.out.println("** visitWildcard " + wt.toString() + " **");
+        super.visitWildcard(tree, p);
+        print(tree, "visitWildcard", tree.toString());
         return p;
     }
 
@@ -402,7 +416,20 @@ public class DebugScanner extends SimpleTreeVisitor<Void, Void> {
     public Void visitOther(Tree tree, Void p) {
         
         super.visitOther(tree, p);
-        System.out.println("** visitOther " + tree.toString() + " **");
+        print(tree, "visitOther", tree.toString());
         return p;
     }
+    
+    private void print(Tree tree, String name, String value) {
+
+        int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree);
+        int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, tree);
+        int endPosition = SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, tree);
+
+        logger.debug("** " + name  + " - " + value + " **");
+        logger.debug("lineNumber: " + lineNumber);
+        logger.debug("startPosition: " + startPosition);
+        logger.debug("endPosition: " + endPosition);
+    }
+    
 }

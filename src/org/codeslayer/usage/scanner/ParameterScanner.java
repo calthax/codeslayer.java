@@ -62,8 +62,6 @@ public class ParameterScanner {
                 } else if (kind == Tree.Kind.NULL_LITERAL) {
                     parameters.add(parameter);
                 } else if (kind == Tree.Kind.PLUS) { // todo: this needs to be much more flexible
-                    expressionTree.accept(new DebugScanner(), null);
-
                     parameter.setSimpleType(String.class.getSimpleName());
                     parameter.setType(String.class.getName());
 

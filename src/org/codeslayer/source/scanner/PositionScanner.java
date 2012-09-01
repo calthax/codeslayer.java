@@ -130,16 +130,18 @@ public class PositionScanner {
             int startPosition = SourceUtils.getStartPosition(compilationUnitTree, sourcePositions, tree);
             int endPosition = SourceUtils.getEndPosition(compilationUnitTree, sourcePositions, tree);
                 
+            int position = positionInput.getPosition();
+            if (position < startPosition || position > endPosition) {
+                return;
+            }
+
             if (logger.isDebugEnabled()) {
                 logger.debug("** scan class " + SourceUtils.getClassLogInfo(compilationUnitTree, sourcePositions, tree) + " **");
             }
             
-            int position = positionInput.getPosition();
-            if (position >= startPosition && position <= endPosition) {
-                positionResult.setScopeTree(scopeTree);
-                positionResult.setTree(tree);
-            }
-
+            positionResult.setScopeTree(scopeTree);
+            positionResult.setTree(tree);
+            
             logger.debug("tree: " + tree);
             logger.debug("startPosition: " + startPosition);
             logger.debug("endPosition: " + endPosition);

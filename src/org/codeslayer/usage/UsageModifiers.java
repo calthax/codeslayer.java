@@ -62,19 +62,14 @@ public class UsageModifiers {
         return modifiers.get(Modifier.INDEXESFOLDER);
     }
 
-    public String getUsageFile() {
+    public String getSourceFile() {
 
-        return modifiers.get(Modifier.USAGEFILE);
+        return modifiers.get(Modifier.SOURCEFILE);
     }
 
     public String getMethodUsage() {
 
         return modifiers.get(Modifier.METHODUSAGE);
-    }
-
-    public String getClassUsage() {
-
-        return modifiers.get(Modifier.CLASSUSAGE);
     }
 
     public String getLineNumber() {
@@ -93,10 +88,9 @@ public class UsageModifiers {
         PROGRAM("-program"),
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
-        USAGEFILE("-usagefile"),
+        LINENUMBER("-linenumber"),
         METHODUSAGE("-methodusage"),
-        CLASSUSAGE("-classusage"),
-        LINENUMBER("-linenumber");
+        SOURCEFILE("-sourcefile");
 
         private final String key;
 
