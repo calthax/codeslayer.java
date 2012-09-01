@@ -66,7 +66,7 @@ public class SymbolHandler {
                 returnType = SourceUtils.getClassVariableType(hierarchyManager, symbol.getPrevSymbol().getType(), symbol.getValue());
             }
             
-            if (returnType == null) {                
+            if (returnType == null) {
                 return null;
             }
             

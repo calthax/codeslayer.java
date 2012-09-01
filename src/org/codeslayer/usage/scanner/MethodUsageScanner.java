@@ -17,6 +17,8 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.usage.Usage;
+import org.codeslayer.usage.UsageManager;
 import org.codeslayer.source.Symbol;
 import org.codeslayer.source.scanner.SymbolHandler;
 import org.codeslayer.source.scanner.SymbolScanner;
@@ -33,7 +35,6 @@ import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.*;
 
 public class MethodUsageScanner {
     
@@ -140,13 +141,7 @@ public class MethodUsageScanner {
                     return scopeTree;
                 }
 
-                Method method = new Method();
-                method.setName(methodMatch.getName());
-                Clazz clazz = new Clazz();
-                clazz.setClassName(className);
-                clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
-                clazz.addMethod(method);
-
+                Method method = createMethod(className);
                 usageManager.addUsage(createUsage(method, identifierTree));
             }
             
@@ -183,8 +178,6 @@ public class MethodUsageScanner {
 
             SymbolHandler symbolHandler = new SymbolHandler(compilationUnitTree, hierarchyManager);
 
-            // assume this is a method of this class
-            
             String className = symbolHandler.getType(firstSymbol, scopeTree);
 
             if (className == null) {
@@ -195,13 +188,7 @@ public class MethodUsageScanner {
                 return scopeTree;
             }
 
-            Method method = new Method();
-            method.setName(methodMatch.getName());
-            Clazz clazz = new Clazz();
-            clazz.setClassName(className);
-            clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
-            clazz.addMethod(method);
-
+            Method method = createMethod(className);
             usageManager.addUsage(createUsage(method, memberSelectTree));
 
             return scopeTree;
@@ -229,13 +216,24 @@ public class MethodUsageScanner {
                 
                 ParameterScanner parameterScanner = new ParameterScanner(compilationUnitTree, sourcePositions, hierarchyManager);
                 List<Parameter> parameters = parameterScanner.scan(methodInvocationTree, scopeTree);
-                         
+                
                 for (Parameter parameter : parameters) {
                     usage.getMethod().addParameter(parameter);
                 }
             }
 
             return scopeTree;
+        }
+        
+        private Method createMethod(String className) {
+            
+            Method method = new Method();
+            method.setName(methodMatch.getName());
+            Clazz clazz = new Clazz();
+            clazz.setClassName(className);
+            clazz.setSimpleClassName(SourceUtils.getSimpleType(className));
+            clazz.addMethod(method);
+            return method;
         }
         
         private Usage createUsage(Method method, Tree tree) {

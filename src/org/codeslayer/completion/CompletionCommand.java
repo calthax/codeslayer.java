@@ -27,7 +27,7 @@ import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.scanner.PositionScanner;
-import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.Usage;
 
 public class CompletionCommand implements Command {
     

@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.Symbol;
-import org.codeslayer.usage.domain.Usage;
+import org.codeslayer.usage.Usage;
 import org.codeslayer.source.scanner.SymbolHandler;
 import org.codeslayer.source.scanner.SymbolScanner;
 

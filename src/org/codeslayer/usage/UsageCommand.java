@@ -27,7 +27,6 @@ import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.source.SourceUtils;
-import org.codeslayer.usage.domain.Usage;
 import org.codeslayer.usage.scanner.UsageInputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;
 

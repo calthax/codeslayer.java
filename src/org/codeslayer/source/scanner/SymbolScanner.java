@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.codeslayer.usage.domain.*;
 
 /**
  * Walk a code path and identify what each part of the path contains. For instance given the path 
