@@ -17,6 +17,7 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.source.scanner.MethodScanner;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
@@ -29,13 +30,13 @@ import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Method;
 import org.codeslayer.usage.UsageInput;
 
-public class InputScanner {
+public class UsageInputScanner {
     
-    private static Logger logger = Logger.getLogger(InputScanner.class);
+    private static Logger logger = Logger.getLogger(UsageInputScanner.class);
     
     private final UsageInput input;
 
-    public InputScanner(UsageInput input) {
+    public UsageInputScanner(UsageInput input) {
      
         this.input = input;
     }

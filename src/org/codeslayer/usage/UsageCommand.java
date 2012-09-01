@@ -25,8 +25,10 @@ import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.Method;
+import org.codeslayer.source.Parameter;
+import org.codeslayer.source.SourceUtils;
 import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.scanner.InputScanner;
+import org.codeslayer.usage.scanner.UsageInputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;
 
 public class UsageCommand implements Command {
@@ -40,8 +42,8 @@ public class UsageCommand implements Command {
             
             UsageInput input = getInput(modifiers);
             
-            InputScanner inputScanner = new InputScanner(input);
-            Method methodMatch = inputScanner.scan();
+            UsageInputScanner usageInputScanner = new UsageInputScanner(input);
+            Method methodMatch = usageInputScanner.scan();
             
             if (methodMatch == null) {
                 throw new IllegalStateException("the input scanner did not find the method");
@@ -52,7 +54,7 @@ public class UsageCommand implements Command {
             
             MethodUsageScanner methodUsageScanner = new MethodUsageScanner(hierarchyManager, methodMatch, input);
             List<Usage> usages = methodUsageScanner.scan();
-            usages = UsageUtils.filterUsages(hierarchyManager, methodMatch, usages);
+            usages = filterUsages(hierarchyManager, methodMatch, usages);
             
             if (logger.isDebugEnabled()) {
                 logger.debug("************ Usage Search Results ************");
@@ -116,11 +118,44 @@ public class UsageCommand implements Command {
             if (logger.isDebugEnabled()) {
                 logger.debug("sourceFolder " + sourceFolder);
             }
-            List<File> files = UsageUtils.getFiles(sourceFolder);
+            List<File> files = SourceUtils.getFiles(sourceFolder);
             results.addAll(files);
         }
         
         return results.toArray(new File[results.size()]);
+    }
+    
+    public static List<Usage> filterUsages(HierarchyManager hierarchyManager, Method methodMatch, List<Usage> usages) {
+        
+        List<Usage> results = new ArrayList<Usage>();
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug("************ Filter Usages ************");
+        }
+
+        List<Parameter> methodParameters = methodMatch.getParameters();
+        
+        if (methodParameters == null || methodParameters.isEmpty()) {
+            return usages;
+        }
+
+        for (Usage usage : usages) {
+            List<Parameter> usageParameters = usage.getMethod().getParameters();
+            
+            if (logger.isDebugEnabled()) {
+                logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usageParameters);            
+            }
+
+            if (usageParameters.size() != methodParameters.size()) {
+                continue;
+            }
+            
+            if (SourceUtils.parametersEqual(hierarchyManager, usageParameters, methodParameters)) {
+                results.add(usage);
+            }            
+        }            
+        
+        return results;
     }
     
     private String getOutput(List<Usage> usages) {

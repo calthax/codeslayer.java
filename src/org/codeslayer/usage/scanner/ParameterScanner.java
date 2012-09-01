@@ -17,6 +17,9 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.source.Symbol;
+import org.codeslayer.source.scanner.SymbolHandler;
+import org.codeslayer.source.scanner.SymbolScanner;
 import com.sun.source.tree.*;
 import com.sun.source.util.SourcePositions;
 import java.util.ArrayList;

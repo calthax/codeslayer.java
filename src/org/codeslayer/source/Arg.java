@@ -15,33 +15,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.usage.domain;
+package org.codeslayer.source;
 
-public class Variable {
+public class Arg {
     
-    private final String name;
-    private final String type;
-    private final String simpleType;
+    private final Symbol symbol;
 
-    public Variable(String name, String type, String simpleType) {
+    public Arg(Symbol symbol) {
      
-        this.name = name;
-        this.type = type;
-        this.simpleType = simpleType;
+        this.symbol = symbol;
     }
 
-    public String getName() {
+    public Symbol getSymbol() {
+     
+        return symbol;
+    }
+
+    @Override
+    public String toString() {
         
-        return name;
-    }
-
-    public String getType() {
-     
-        return type;
-    }
-
-    public String getSimpleType() {
-     
-        return simpleType;
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        if (symbol != null) {
+            sb.append("symbol=").append(symbol);            
+        }
+        return sb.append("]").toString();
     }
 }

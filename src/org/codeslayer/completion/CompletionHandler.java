@@ -23,10 +23,10 @@ import com.sun.source.tree.Tree;
 import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.source.scanner.PositionResult;
-import org.codeslayer.usage.domain.Symbol;
+import org.codeslayer.source.Symbol;
 import org.codeslayer.usage.domain.Usage;
-import org.codeslayer.usage.scanner.SymbolHandler;
-import org.codeslayer.usage.scanner.SymbolScanner;
+import org.codeslayer.source.scanner.SymbolHandler;
+import org.codeslayer.source.scanner.SymbolScanner;
 
 public class CompletionHandler {
  

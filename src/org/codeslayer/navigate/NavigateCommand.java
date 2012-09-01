@@ -26,7 +26,7 @@ import org.codeslayer.Command;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.scanner.PositionScanner;
 import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.usage.UsageUtils;
+import org.codeslayer.source.SourceUtils;
 
 public class NavigateCommand implements Command {
     
@@ -107,7 +107,7 @@ public class NavigateCommand implements Command {
             if (logger.isDebugEnabled()) {
                 logger.debug("sourceFolder " + sourceFolder);
             }
-            List<File> files = UsageUtils.getFiles(sourceFolder);
+            List<File> files = SourceUtils.getFiles(sourceFolder);
             results.addAll(files);
         }
         

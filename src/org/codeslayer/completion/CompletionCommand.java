@@ -24,9 +24,9 @@ import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.scanner.PositionScanner;
-import org.codeslayer.usage.UsageUtils;
 import org.codeslayer.usage.domain.Usage;
 
 public class CompletionCommand implements Command {
@@ -105,7 +105,7 @@ public class CompletionCommand implements Command {
             if (logger.isDebugEnabled()) {
                 logger.debug("sourceFolder " + sourceFolder);
             }
-            List<File> files = UsageUtils.getFiles(sourceFolder);
+            List<File> files = SourceUtils.getFiles(sourceFolder);
             results.addAll(files);
         }
         

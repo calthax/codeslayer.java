@@ -17,6 +17,9 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.source.Symbol;
+import org.codeslayer.source.scanner.SymbolHandler;
+import org.codeslayer.source.scanner.SymbolScanner;
 import org.codeslayer.usage.UsageInput;
 import java.util.List;
 import java.io.File;

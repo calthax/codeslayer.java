@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
-import org.codeslayer.usage.domain.Variable;
+import org.codeslayer.source.Variable;
 
 public class ClassVariableScanner {
     
