@@ -17,7 +17,7 @@
  */
 package org.codeslayer.navigate;
 
-public class NavigateOutput {
+public class Navigate {
     
     private String filePath;
     private int lineNumber;

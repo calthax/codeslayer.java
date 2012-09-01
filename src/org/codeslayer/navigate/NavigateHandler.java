@@ -46,7 +46,7 @@ public class NavigateHandler {
         this.positionResult = positionResult;
     }
 
-    public NavigateOutput getOutput() {
+    public Navigate getOutput() {
         
         Tree tree = positionResult.getTree();
         
@@ -59,7 +59,7 @@ public class NavigateHandler {
         return null;
     }
 
-    private NavigateOutput getUsageByIdentifierTree(IdentifierTree identifierTree) {
+    private Navigate getUsageByIdentifierTree(IdentifierTree identifierTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -73,7 +73,7 @@ public class NavigateHandler {
             }
             String filePath = hierarchy.getFilePath();
 
-            NavigateOutput navigateOutput = new NavigateOutput();
+            Navigate navigateOutput = new Navigate();
             navigateOutput.setFilePath(filePath);
             navigateOutput.setLineNumber(0);
             return navigateOutput;
@@ -100,7 +100,7 @@ public class NavigateHandler {
         return createOutput(method);
     }
     
-    private NavigateOutput getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
+    private Navigate getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -140,9 +140,9 @@ public class NavigateHandler {
         return createOutput(method);
     }
     
-    private NavigateOutput createOutput(Method method) {
+    private Navigate createOutput(Method method) {
 
-        NavigateOutput navigateOutput = new NavigateOutput();
+        Navigate navigateOutput = new Navigate();
 
         IndexFactory indexFactory = new IndexFactory();
         List<Hierarchy> hierarchyList = positionResult.getHierarchyManager().getHierarchyList(method.getClazz().getClassName());

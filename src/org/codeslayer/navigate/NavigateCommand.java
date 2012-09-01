@@ -46,7 +46,7 @@ public class NavigateCommand implements Command {
             PositionResult positionResult = positionScanner.scan();
             
             NavigateHandler handler = new NavigateHandler(positionResult);
-            NavigateOutput output = handler.getOutput();
+            Navigate output = handler.getOutput();
             
             if (output != null) {
                 logger.debug(output.getFilePath() + ":" + output.getLineNumber());
@@ -114,7 +114,7 @@ public class NavigateCommand implements Command {
         return results.toArray(new File[results.size()]);
     }
     
-    private String getOutput(NavigateOutput output) {
+    private String getOutput(Navigate output) {
         
         StringBuilder sb = new StringBuilder();
         
