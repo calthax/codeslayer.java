@@ -28,7 +28,7 @@ public class IndexerCommand implements Command {
         
         try {
             //String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-type", "projects"};
-            Modifiers modifiers = new Modifiers(args);
+            IndexerModifiers modifiers = new IndexerModifiers(args);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
             IndexFactory indexFactory = new IndexFactory();
@@ -62,6 +62,8 @@ public class IndexerCommand implements Command {
             }
             
             if (indexes != null && !indexes.isEmpty()) {
+                new IndexesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
+                new ClassesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
                 new HierarchyFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
             }
         } catch (Exception e) {

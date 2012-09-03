@@ -27,14 +27,17 @@ public class Executor {
         
         Map<String, Command> programs = CodeSlayerUtils.getPrograms();
 
-        String[] dummy = {"-program", "usage", 
-                            "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
+//        String[] dummy = {"-program", "usage", 
+//                            "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
+//                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
+//                            "-sourcefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/editor/CellEditor.java",
+//                            "-methodusage", "getValue",
+//                            "-linenumber", "28"};
+        
+        String[] dummy = {"-program", "indexer", 
+                            "-libfolder", "/home/jeff/workspace/jmesaWeb/web/WEB-INF/lib:/home/jeff/workspace/jmesa/lib", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
-                            "-sourcefile", "/home/jeff/workspace/jmesa/src/org/jmesa/view/editor/CellEditor.java",
-                            "-methodusage", "getValue",
-                            "-linenumber", "28"};
-
-        //input -program usage -sourcefile /home/jeff/workspace/jmesa/src/org/jmesa/view/editor/CellEditor.java -position 964 -linenumber 28 -sourcefolder /home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesa/test: -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes
+                            "-type", "libs"};
         
         Command command = CodeSlayerUtils.getCommand(dummy, programs);
         

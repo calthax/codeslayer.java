@@ -19,11 +19,11 @@ package org.codeslayer.indexer;
 
 import java.util.*;
 
-public class Modifiers {
+public class IndexerModifiers {
 
     private Map<Modifier, String> modifiers = new HashMap<Modifier, String>();
 
-    public Modifiers(String args[]) {
+    public IndexerModifiers(String args[]) {
 
         Modifier lastModifier = null;
 
@@ -118,6 +118,7 @@ public class Modifiers {
 
     private enum Modifier {
 
+        PROGRAM("-program"),
         SOURCEFOLDER("-sourcefolder"),
         LIBFOLDER("-libfolder"),
         ZIPFILE("-zipfile"),
