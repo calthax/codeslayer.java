@@ -192,50 +192,6 @@ public class IndexerUtils {
         file.delete();
     }
     
-    public static Clazz findClassByIndexFile(File file, String className) {
-
-        Clazz clazz = null;
-
-        try{
-            FileInputStream fstream = new FileInputStream(file);
-            DataInputStream in = new DataInputStream(fstream);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String strLine;
-            while ((strLine = br.readLine()) != null) {
-                if (strLine == null || strLine.trim().length() == 0) {
-                    continue;
-                }
-                
-                if (strLine.startsWith(className)) {
-                    String[] split = strLine.split("\\t");
-
-                    if (clazz == null) {
-                        clazz = new Clazz();
-                        clazz.setClassName(split[0]);
-                        clazz.setSimpleClassName(split[1]);
-                    }
-                    
-                    Method method = new Method();
-                    method.setModifier(split[2]);
-                    method.setName(split[3]);
-                    method.setParameters(getParameters(split));
-                    method.setReturnType(split[7]);
-                    method.setSimpleReturnType(split[8]);
-                    
-                    clazz.addMethod(method);
-                } else if (clazz != null) {
-                    break;
-                }
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("not able to load the libs.indexes file.");
-        }
-
-        return clazz;
-    }
-    
     public static HierarchyManager loadHierarchyFile(File file) {
 
         HierarchyManager hierarchyManager = new HierarchyManager();
@@ -277,47 +233,6 @@ public class IndexerUtils {
         
         for (String interfaceName : interfaces.split(",")) {
             results.add(interfaceName.trim());
-        }
-        
-        return results;
-    }
-    
-    private static List<Parameter> getParameters(String[] split) {
-        
-        List<Parameter> results = new ArrayList<Parameter>();
-        
-        if (split[4] == null || split[4].length() == 0) {
-            return results;
-        }
-        
-        String[] parameters = split[4].split(",");
-        String[] parametersTypes = split[6].split(",");
-        
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter result = new Parameter();
-            
-            String parameter = parameters[i];
-            String[] args = parameter.split("\\s");
-            
-            String simpleType;
-            String variable;
-
-            if (args.length == 1) {
-                simpleType = args[0];
-                variable = args[0];
-            } else {
-                simpleType = args[0];
-                variable = args[1];                
-            }            
-            
-            result.setVariable(variable);
-            result.setSimpleType(simpleType);
-            
-            if (SourceUtils.isPrimative(simpleType)) {
-                result.setType(simpleType);
-            } else {
-                result.setType(parametersTypes[i]);
-            }
         }
         
         return results;

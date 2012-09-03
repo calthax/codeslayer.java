@@ -20,11 +20,14 @@ package org.codeslayer.completion;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.Tree;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.source.*;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.Symbol;
-import org.codeslayer.usage.Usage;
 import org.codeslayer.source.scanner.SymbolHandler;
 import org.codeslayer.source.scanner.SymbolScanner;
 
@@ -33,13 +36,15 @@ public class CompletionHandler {
     private static Logger logger = Logger.getLogger(CompletionHandler.class);
     
     private final PositionResult positionResult;
+    private final CompletionInput input;
 
-    public CompletionHandler(PositionResult positionResult) {
+    public CompletionHandler(PositionResult positionResult, CompletionInput input) {
      
         this.positionResult = positionResult;
+        this.input = input;
     }
     
-    public Usage getUsage() {
+    public List<Completion> getCompletions() {
         
         Tree tree = positionResult.getTree();
         
@@ -47,10 +52,10 @@ public class CompletionHandler {
             return getUsageByMemberSelectTree((MemberSelectTree)tree);            
         }
         
-        return null;
+        return Collections.emptyList();
     }
     
-    private Usage getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
+    private List<Completion> getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -61,7 +66,7 @@ public class CompletionHandler {
             if (logger.isDebugEnabled()) {
                 logger.error("symbol is null");
             }
-            return null;
+            return Collections.emptyList();
         }
 
         Symbol firstSymbol = SourceUtils.findFirstSymbol(symbol);
@@ -73,13 +78,49 @@ public class CompletionHandler {
         String className = symbolHandler.getType(firstSymbol, scopeTree);
 
         if (className == null) {
-            return null;
+            return Collections.emptyList();
+        }
+        
+        File indexesFile = new File(input.getIndexesFolder(), "projects.indexes");
+
+        return getCompletions(indexesFile, className);
+    }
+    
+    private List<Completion> getCompletions(File file, String className) {
+
+        List<Completion> completions = new ArrayList<Completion>();
+
+        try{
+            FileInputStream fstream = new FileInputStream(file);
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                if (strLine == null || strLine.trim().length() == 0) {
+                    continue;
+                }
+                
+                if (strLine.startsWith(className)) {
+                    String[] split = strLine.split("\\t");
+
+                    if (split[0].equals(className)) {
+                        Completion completion = new Completion();
+                        completion.setMethodName(split[3]);
+                        completion.setMethodParameters(split[4]);
+                        completion.setMethodParameterVariables(split[5]);
+                        completion.setMethodReturnType(split[7]);
+                        completions.add(completion);
+                    }
+                } else if (!completions.isEmpty()) {
+                    break;
+                }
+            }
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("not able to load the libs.indexes file.");
         }
 
-    //            if (!SourceUtils.hasMethodMatch(hierarchyManager, methodMatch, className)) {
-    //                return scopeTree;
-    //            }
-
-        return null;
-    }    
+        return completions;
+    }
 }

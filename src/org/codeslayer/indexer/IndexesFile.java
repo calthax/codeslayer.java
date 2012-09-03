@@ -59,14 +59,14 @@ public class IndexesFile {
             sb.append(index.getMethodSimpleReturnType());
             
             String filePath = index.getFilePath();
+            sb.append("\t");
             if (filePath != null) {
-                sb.append("\t");
                 sb.append(filePath);
             }
             
             int lineNumber = index.getLineNumber();
+            sb.append("\t");
             if (lineNumber != 0) {
-                sb.append("\t");
                 sb.append(lineNumber);                
             }
             

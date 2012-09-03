@@ -19,37 +19,48 @@ package org.codeslayer.completion;
 
 public class Completion {
     
-    private String className;
-    private String simpleClassName;
-    private String filePath;
+    private String methodName;
+    private String methodParameters;
+    private String methodParameterVariables;
+    private String methodReturnType;
 
-    public String getClassName() {
+    public String getMethodName() {
         
-        return className;
+        return methodName;
     }
 
-    public void setClassName(String className) {
+    public void setMethodName(String methodName) {
         
-        this.className = className;
+        this.methodName = methodName;
     }
 
-    public String getSimpleClassName() {
+    public String getMethodParameters() {
         
-        return simpleClassName;
+        return methodParameters;
     }
 
-    public void setSimpleClassName(String simpleClassName) {
-     
-        this.simpleClassName = simpleClassName;
-    }
-
-    public String getFilePath() {
+    public void setMethodParameters(String methodParameters) {
         
-        return filePath;
+        this.methodParameters = methodParameters;
     }
 
-    public void setFilePath(String filePath) {
-     
-        this.filePath = filePath;
+    public String getMethodParameterVariables() {
+        
+        return methodParameterVariables;
+    }
+
+    public void setMethodParameterVariables(String methodParameterVariables) {
+        
+        this.methodParameterVariables = methodParameterVariables;
+    }
+
+    public String getMethodReturnType() {
+        
+        return methodReturnType;
+    }
+
+    public void setMethodReturnType(String methodReturnType) {
+    
+        this.methodReturnType = methodReturnType;
     }
 }

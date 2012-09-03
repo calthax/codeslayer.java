@@ -72,11 +72,6 @@ public class CompletionModifiers {
         return modifiers.get(Modifier.POSITION);
     }
 
-    public String getType() {
-
-        return modifiers.get(Modifier.TYPE);
-    }
-
     public String getLineNumber() {
 
         return modifiers.get(Modifier.LINENUMBER);
@@ -93,10 +88,9 @@ public class CompletionModifiers {
         PROGRAM("-program"),
         SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
-        LINENUMBER("-linenumber"),
         SOURCEFILE("-sourcefile"),
-        POSITION("-position"),
-        TYPE("-type");
+        LINENUMBER("-linenumber"),
+        POSITION("-position");
         
         private final String key;
 
