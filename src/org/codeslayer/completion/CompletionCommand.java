@@ -21,13 +21,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.scanner.PositionResult;
-import org.codeslayer.source.scanner.PositionScanner;
-import org.codeslayer.usage.Usage;
 
 public class CompletionCommand implements Command {
     
@@ -40,14 +35,14 @@ public class CompletionCommand implements Command {
             
             CompletionInput input = getInput(modifiers);
             
-            File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
-            HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
-            
-            PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
-            PositionResult positionResult = positionScanner.scan();
-            
-            CompletionHandler completionHandler = new CompletionHandler(positionResult);
-            completionHandler.getUsage();
+//            File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
+//            HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
+//            
+//            PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
+//            PositionResult positionResult = positionScanner.scan();
+//            
+//            CompletionHandler completionHandler = new CompletionHandler(positionResult);
+//            completionHandler.getUsage();
             
 
         } catch (Exception e) {
@@ -85,6 +80,12 @@ public class CompletionCommand implements Command {
             intput.setPosition(Integer.parseInt(position));
         }
         
+        String type = modifiers.getType();
+        if (logger.isDebugEnabled()) {
+            logger.debug("type " + type);
+        }
+        intput.setType(type);
+
         String lineNumber = modifiers.getLineNumber();
         if (lineNumber != null) {
             if (logger.isDebugEnabled()) {
@@ -112,11 +113,13 @@ public class CompletionCommand implements Command {
         return results.toArray(new File[results.size()]);
     }
     
-    private String getOutput(Usage usage) {
+    private String getClassOutput(List<Completion> completions) {
         
         StringBuilder sb = new StringBuilder();
         
-        sb.append(usage.getClassName()).append("\t").append(usage.getFile().getPath()).append("\t").append(usage.getLineNumber()).append("\n");
+        for (Completion completion : completions) {
+            sb.append(completion.getSimpleClassName()).append("\t").append(completion.getClassName()).append("\t").append(completion.getFilePath()).append("\n");
+        }
         
         return sb.toString();
     }

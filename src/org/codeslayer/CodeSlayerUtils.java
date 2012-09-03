@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.codeslayer.completion.CompletionCommand;
 import org.codeslayer.indexer.IndexerCommand;
 import org.codeslayer.navigate.NavigateCommand;
+import org.codeslayer.search.SearchCommand;
 import org.codeslayer.usage.UsageCommand;
 
 public class CodeSlayerUtils {
@@ -37,6 +38,7 @@ public class CodeSlayerUtils {
         programs.put("indexer", new IndexerCommand());
         programs.put("navigate", new NavigateCommand());
         programs.put("completion", new CompletionCommand());
+        programs.put("search", new SearchCommand());
         
         return programs;
     }

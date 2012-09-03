@@ -34,10 +34,14 @@ public class Executor {
 //                            "-methodusage", "getValue",
 //                            "-linenumber", "28"};
         
-        String[] dummy = {"-program", "indexer", 
-                            "-libfolder", "/home/jeff/workspace/jmesaWeb/web/WEB-INF/lib:/home/jeff/workspace/jmesa/lib", 
-                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
-                            "-type", "libs"};
+//        String[] dummy = {"-program", "indexer", 
+//                            "-libfolder", "/home/jeff/workspace/jmesaWeb/web/WEB-INF/lib:/home/jeff/workspace/jmesa/lib", 
+//                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
+//                            "-type", "libs"};
+        
+        String[] dummy = {"-program", "search", 
+                          "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
+                          "-name", "Core"};
         
         Command command = CodeSlayerUtils.getCommand(dummy, programs);
         

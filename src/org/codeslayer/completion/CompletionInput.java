@@ -27,6 +27,7 @@ public class CompletionInput implements PositionInput {
     private int lineNumber;
     private File sourceFile;
     private int position;
+    private String type;
 
     public File[] getSourceFolders() {
         
@@ -76,5 +77,15 @@ public class CompletionInput implements PositionInput {
     public void setPosition(int position) {
      
         this.position = position;
+    }
+
+    public String getType() {
+        
+        return type;
+    }
+
+    public void setType(String type) {
+     
+        this.type = type;
     }
 }

@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.completion;
+package org.codeslayer.search;
 
 import java.util.*;
 
-public class CompletionModifiers {
+public class SearchModifiers {
 
     private Map<Modifier, String> modifiers = new HashMap<Modifier, String>();
 
-    public CompletionModifiers(String args[]) {
+    public SearchModifiers(String args[]) {
 
         Modifier lastModifier = null;
 
@@ -46,40 +46,14 @@ public class CompletionModifiers {
         }
     }
 
-    public List<String> getSourceFolders() {
-
-        String sourceFolder = modifiers.get(Modifier.SOURCEFOLDER);
-        if (sourceFolder != null) {
-            String[] split = sourceFolder.split(":");
-            return Arrays.asList(split);
-        }
-
-        return Collections.emptyList();
-    }
-
     public String getIndexesFolder() {
 
         return modifiers.get(Modifier.INDEXESFOLDER);
     }
 
-    public String getSourceFile() {
+    public String getName() {
 
-        return modifiers.get(Modifier.SOURCEFILE);
-    }
-
-    public String getPosition() {
-
-        return modifiers.get(Modifier.POSITION);
-    }
-
-    public String getType() {
-
-        return modifiers.get(Modifier.TYPE);
-    }
-
-    public String getLineNumber() {
-
-        return modifiers.get(Modifier.LINENUMBER);
+        return modifiers.get(Modifier.NAME);
     }
 
     @Override
@@ -91,12 +65,8 @@ public class CompletionModifiers {
     private enum Modifier {
 
         PROGRAM("-program"),
-        SOURCEFOLDER("-sourcefolder"),
         INDEXESFOLDER("-indexesfolder"),
-        LINENUMBER("-linenumber"),
-        SOURCEFILE("-sourcefile"),
-        POSITION("-position"),
-        TYPE("-type");
+        NAME("-name");
         
         private final String key;
 

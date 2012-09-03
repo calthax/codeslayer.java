@@ -51,15 +51,15 @@ public class NavigateHandler {
         Tree tree = positionResult.getTree();
         
         if (tree instanceof IdentifierTree) {
-            return getUsageByIdentifierTree((IdentifierTree)tree);
+            return getByIdentifierTree((IdentifierTree)tree);
         } else if (tree instanceof MemberSelectTree) {
-            return getUsageByMemberSelectTree((MemberSelectTree)tree);            
+            return getByMemberSelectTree((MemberSelectTree)tree);            
         }
         
         return null;
     }
 
-    private Navigate getUsageByIdentifierTree(IdentifierTree identifierTree) {
+    private Navigate getByIdentifierTree(IdentifierTree identifierTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();
@@ -100,7 +100,7 @@ public class NavigateHandler {
         return createOutput(method);
     }
     
-    private Navigate getUsageByMemberSelectTree(MemberSelectTree memberSelectTree) {
+    private Navigate getByMemberSelectTree(MemberSelectTree memberSelectTree) {
         
         ScopeTree scopeTree = positionResult.getScopeTree();
         CompilationUnitTree compilationUnitTree = positionResult.getCompilationUnitTree();

@@ -27,7 +27,6 @@ public class IndexerCommand implements Command {
     public String execute(String[] args) {
         
         try {
-            //String[] dummy = new String[] {"-sourcefolder", "/home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src", "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", "-type", "projects"};
             IndexerModifiers modifiers = new IndexerModifiers(args);
             
             List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
