@@ -20,23 +20,55 @@ package org.codeslayer.search;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 public class SearchHandler {
  
-    private final SearchInput input;
+    private static Logger logger = Logger.getLogger(SearchHandler.class);
 
-    public SearchHandler(SearchInput input) {
+    private final SearchInput input;
+    private final SearchCache cache;
+    
+    public SearchHandler(SearchInput input, SearchCache cache) {
      
         this.input = input;
+        this.cache = cache;
     }
     
     public List<Search> getSearchResults() {
+        
+        if (cache.hasValues(input.getName())) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Using cached search results");
+            }
+            return getSearchResultsFromCache();
+        }
+
+        return getSearchResultsFromFile();
+    }
+
+    private List<Search> getSearchResultsFromCache() {
+        
+        List<Search> results = new ArrayList<Search>();
+        
+        for (Search search : cache.getValues()) {
+            if (search.getSimpleClassName().startsWith(input.getName())) {
+                results.add(search);
+            }
+        }
+        
+        return results;
+    }
+
+    private List<Search> getSearchResultsFromFile() {
         
         List<Search> results = new ArrayList<Search>();
         
         File file = new File(input.getIndexesFolder(), "projects.classes");
         
-        String search = input.getName();
+        String name = input.getName();
+        
+        cache.reset(name);
         
         try{
             FileInputStream fstream = new FileInputStream(file);
@@ -51,12 +83,14 @@ public class SearchHandler {
                 String[] split = strLine.split("\\t");
                 
                 String simpleClassName = split[0];
-                if (simpleClassName.startsWith(search)) {
-                    Search completion = new Search();
-                    completion.setSimpleClassName(simpleClassName);
-                    completion.setClassName(split[1]);
-                    completion.setFilePath(split[2]);
-                    results.add(completion);
+                if (simpleClassName.startsWith(name)) {
+                    Search search = new Search();
+                    search.setSimpleClassName(simpleClassName);
+                    search.setClassName(split[1]);
+                    search.setFilePath(split[2]);
+                    results.add(search);
+                    
+                    cache.addValue(search);
                 }
             }
             in.close();

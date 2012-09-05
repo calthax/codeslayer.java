@@ -23,12 +23,14 @@ import org.codeslayer.Command;
 
 public class SearchCommand implements Command {
     
+    SearchCache cache = new SearchCache();
+    
     public String execute(String[] args) {
         
         try {
             SearchModifiers modifiers = new SearchModifiers(args);
             SearchInput input = getInput(modifiers);
-            SearchHandler classHandler = new SearchHandler(input);
+            SearchHandler classHandler = new SearchHandler(input, cache);
             List<Search> completions = classHandler.getSearchResults();
             return getOutput(completions);
         } catch (Exception e) {
