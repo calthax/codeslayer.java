@@ -135,6 +135,11 @@ public class Modifiers {
         return modifiers.get(Modifier.METHODUSAGE);
     }    
 
+    public String getSymbol() {
+
+        return modifiers.get(Modifier.SYMBOL);
+    }    
+
     @Override
     public String toString() {
 
@@ -156,7 +161,8 @@ public class Modifiers {
         TMPFOLDER("-tmpfolder"),
         SUPPRESSIONSFILE("-suppressionsfile"),
         NAME("-name"),
-        METHODUSAGE("-methodusage")
+        METHODUSAGE("-methodusage"),
+        SYMBOL("-symbol")
         ;
 
         private final String key;

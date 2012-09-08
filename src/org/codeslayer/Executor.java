@@ -43,12 +43,14 @@ public class Executor {
 //                          "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
 //                          "-name", "Core"};
         
-        String[] dummy = {"-program", "completion", 
+        String[] dummy = {"-program", "navigate", 
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
                             "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
                             "-linenumber", "65", 
-                            "-position", "2478"};
+                            "-symbol", "setExportTypes"};
+        
+        //-program navigate -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java -symbol TableModel -linenumber 62 -sourcefolder /home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesa/test: -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes        
         
         Command<Modifiers, String> command = CodeSlayerUtils.getCommand(dummy, programs);
         
