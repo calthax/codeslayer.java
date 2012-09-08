@@ -29,11 +29,11 @@ import org.codeslayer.source.*;
 
 public class SourceIndexer implements Indexer {
     
-    private final File[] files;
+    private final List<File> files;
     private final IndexFactory indexFactory;
     private final List<String> suppressions;
 
-    public SourceIndexer(File[] files, IndexFactory indexFactory, List<String> suppressions) {
+    public SourceIndexer(List<File> files, IndexFactory indexFactory, List<String> suppressions) {
      
         this.files = files;
         this.indexFactory = indexFactory;
@@ -46,7 +46,7 @@ public class SourceIndexer implements Indexer {
         List<Clazz> indexClasses = new ArrayList<Clazz>();
         
         try {
-            JavacTask javacTask = SourceUtils.getJavacTask(files);
+            JavacTask javacTask = SourceUtils.getJavacTask(files.toArray(new File[files.size()]));
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             

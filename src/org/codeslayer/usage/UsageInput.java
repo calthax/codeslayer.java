@@ -17,13 +17,13 @@
  */
 package org.codeslayer.usage;
 
-import java.io.File;
+import java.util.List;
 
 public class UsageInput {
     
-    private File[] sourceFolders;
-    private File indexesFolder;
-    private File sourceFile;
+    private List<String> sourceFolders;
+    private String indexesFolder;
+    private String sourceFile;
     private int lineNumber;
     private String methodUsage;
 
@@ -47,32 +47,32 @@ public class UsageInput {
         this.lineNumber = lineNumber;
     }
 
-    public File[] getSourceFolders() {
+    public List<String> getSourceFolders() {
         
         return sourceFolders;
     }
 
-    public void setSourceFolders(File[] sourceFolders) {
+    public void setSourceFolders(List<String> sourceFolders) {
 
         this.sourceFolders = sourceFolders;
     }
 
-    public File getIndexesFolder() {
+    public String getIndexesFolder() {
         
         return indexesFolder;
     }
 
-    public void setIndexesFolder(File indexesFolder) {
+    public void setIndexesFolder(String indexesFolder) {
      
         this.indexesFolder = indexesFolder;
     }
     
-    public File getSourceFile() {
+    public String getSourceFile() {
         
         return sourceFile;
     }
 
-    public void setSourceFile(File sourceFile) {
+    public void setSourceFile(String sourceFile) {
         
         this.sourceFile = sourceFile;
     }

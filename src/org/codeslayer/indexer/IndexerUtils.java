@@ -25,8 +25,6 @@ import org.codeslayer.source.*;
 
 public class IndexerUtils {
 
-    private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
-
     public static List<String> getSuppressions(String path) {
 
         if (path == null || path.trim().length() == 0) {
@@ -65,55 +63,7 @@ public class IndexerUtils {
         return true;
     }
 
-    public static File[] getFiles(String path) {
-
-        List<File> files = new ArrayList<File>();
-
-        File file = new File(path);
-        walkFileTree(file, files);
-
-        return files.toArray(new File[files.size()]);
-    }
-
-    private static void walkFileTree(File file, List<File> files) {
-
-        if (file.isFile()) {
-            files.add(file);
-        }
-
-        File[] children = file.listFiles(JAVA_FILE_FILTER);
-        if (children != null) {
-            for (File child : children) {
-                walkFileTree(child, files);
-            }
-        }
-    }
-
-    private static class JavaFileFilter implements FileFilter {
-
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
-                return true;
-            }
-            
-            if (file.isHidden()) {
-                return false;
-            }
-
-            try {
-                if (!(file.getAbsolutePath().equals(file.getCanonicalPath()))) {
-                    return false;
-                }
-            } catch (Exception e) {
-                // cannot do anything
-            }
-            
-            String name = file.getName();
-            return name.endsWith(".java");
-        }
-    }
-    
-    public static File[] getJarFiles(String path, JarFilter jarFilter) {
+    public static List<File> getJarFiles(String path, JarFilter jarFilter) {
         
         List<File> files = new ArrayList<File>();
 
@@ -125,10 +75,10 @@ public class IndexerUtils {
             }
         }
 
-        return files.toArray(new File[files.size()]);
+        return files;
     }
 
-    public static File[] getZipFiles(String path, String tmpPath) {
+    public static List<File> getZipFiles(String path, String tmpPath) {
         
         List<File> files = new ArrayList<File>();
         
@@ -178,7 +128,7 @@ public class IndexerUtils {
             System.err.println(e);
         }
         
-        return files.toArray(new File[files.size()]);
+        return files;
     }
     
     private static void deleteTmpFolder(File file) {

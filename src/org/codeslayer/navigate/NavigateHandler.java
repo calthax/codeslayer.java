@@ -46,7 +46,7 @@ public class NavigateHandler {
         this.positionResult = positionResult;
     }
 
-    public Navigate getOutput() {
+    public Navigate getNavigateResult() {
         
         Tree tree = positionResult.getTree();
         
@@ -146,7 +146,7 @@ public class NavigateHandler {
 
         IndexFactory indexFactory = new IndexFactory();
         List<Hierarchy> hierarchyList = positionResult.getHierarchyManager().getHierarchyList(method.getClazz().getClassName());
-        File[] files = getHierarchyFiles(hierarchyList);
+        List<File> files = getHierarchyFiles(hierarchyList);
 
         List<String> suppressions = Collections.emptyList();
         SourceIndexer sourceIndexer = new SourceIndexer(files, indexFactory, suppressions);
@@ -167,7 +167,7 @@ public class NavigateHandler {
         return navigateOutput;
     }
 
-    private File[] getHierarchyFiles(List<Hierarchy> hierarchyList) {
+    private List<File> getHierarchyFiles(List<Hierarchy> hierarchyList) {
 
         List<File> files = new ArrayList<File>();
 
@@ -175,6 +175,6 @@ public class NavigateHandler {
             files.add(new File(hierarchy.getFilePath()));
         }
 
-        return files.toArray(new File[files.size()]);
+        return files;
     }
 }

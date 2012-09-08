@@ -50,9 +50,11 @@ public class Executor {
                             "-linenumber", "65", 
                             "-position", "2478"};
         
-        Command command = CodeSlayerUtils.getCommand(dummy, programs);
+        Command<Modifiers, String> command = CodeSlayerUtils.getCommand(dummy, programs);
         
-        String output = command.execute(dummy);
+        Modifiers modifiers = new Modifiers(dummy);
+        
+        String output = command.execute(modifiers);
         
         System.out.println(output);
         

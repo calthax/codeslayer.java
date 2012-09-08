@@ -45,7 +45,7 @@ public class UsageInputScanner {
             throws Exception {
         
         try {
-            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{input.getSourceFile()});
+            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{new File(input.getSourceFile())});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {

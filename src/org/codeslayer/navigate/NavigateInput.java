@@ -17,33 +17,33 @@
  */
 package org.codeslayer.navigate;
 
-import java.io.File;
+import java.util.List;
 import org.codeslayer.source.scanner.PositionInput;
 
 public class NavigateInput implements PositionInput {
     
-    private File[] sourceFolders;
-    private File indexesFolder;
+    private List<String> sourceFolders;
+    private String indexesFolder;
+    private String sourceFile;
     private int lineNumber;
-    private File sourceFile;
     private int position;
 
-    public File[] getSourceFolders() {
+    public List<String> getSourceFolders() {
         
         return sourceFolders;
     }
 
-    public void setSourceFolders(File[] sourceFolders) {
+    public void setSourceFolders(List<String> sourceFolders) {
 
         this.sourceFolders = sourceFolders;
     }
 
-    public File getIndexesFolder() {
+    public String getIndexesFolder() {
         
         return indexesFolder;
     }
 
-    public void setIndexesFolder(File indexesFolder) {
+    public void setIndexesFolder(String indexesFolder) {
      
         this.indexesFolder = indexesFolder;
     }
@@ -58,12 +58,12 @@ public class NavigateInput implements PositionInput {
         this.lineNumber = lineNumber;
     }
 
-    public File getSourceFile() {
+    public String getSourceFile() {
         
         return sourceFile;
     }
 
-    public void setSourceFile(File sourceFile) {
+    public void setSourceFile(String sourceFile) {
         
         this.sourceFile = sourceFile;
     }

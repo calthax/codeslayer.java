@@ -18,27 +18,23 @@
 package org.codeslayer.completion;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.Command;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.scanner.PositionResult;
 import org.codeslayer.source.scanner.PositionScanner;
 
-public class CompletionCommand implements Command {
+public class CompletionCommand implements Command<CompletionInput, List<Completion>> {
     
     private static Logger logger = Logger.getLogger(CompletionCommand.class);
-
-    public String execute(String[] args) {
+    
+    @Override
+    public List<Completion> execute(CompletionInput input) {
         
         try {
-            CompletionModifiers modifiers = new CompletionModifiers(args);
-            
-            CompletionInput input = getInput(modifiers);
-            
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
@@ -48,80 +44,11 @@ public class CompletionCommand implements Command {
             CompletionHandler completionHandler = new CompletionHandler(positionResult, input);
             List<Completion> completions = completionHandler.getCompletions();
             
-            return getOutput(completions);
+            return completions;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("Not able to execute completions command", e);
         }
         
-        return "";
-    }
-    
-    private static CompletionInput getInput(CompletionModifiers modifiers) {
-        
-        CompletionInput intput = new CompletionInput();
-        
-        File[] sourceFiles = getSourceFiles(modifiers);
-        intput.setSourceFolders(sourceFiles);
-        
-        String indexesFolder = modifiers.getIndexesFolder();
-        if (indexesFolder != null) {
-            intput.setIndexesFolder(new File(indexesFolder));
-        }
-        
-        String sourceFile = modifiers.getSourceFile();
-        if (logger.isDebugEnabled()) {
-            logger.debug("sourceFile " + sourceFile);
-        }
-        File file = new File(sourceFile);
-        intput.setSourceFile(file);
-        
-        String position = modifiers.getPosition();
-        if (logger.isDebugEnabled()) {
-            logger.debug("position " + position);
-        }
-        if (position != null) {
-            intput.setPosition(Integer.parseInt(position));
-        }
-        
-        String lineNumber = modifiers.getLineNumber();
-        if (lineNumber != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("lineNumber " + lineNumber);
-            }
-            intput.setLineNumber(Integer.parseInt(lineNumber));
-        }
-        
-        return intput;
-    }
-    
-    private static File[] getSourceFiles(CompletionModifiers modifiers) {
-        
-        List<File> results = new ArrayList<File>();
-
-        List<String> sourceFolders = modifiers.getSourceFolders();
-        for (String sourceFolder : sourceFolders) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("sourceFolder " + sourceFolder);
-            }
-            List<File> files = SourceUtils.getFiles(sourceFolder);
-            results.addAll(files);
-        }
-        
-        return results.toArray(new File[results.size()]);
-    }
-    
-    private String getOutput(List<Completion> completions) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        for (Completion completion : completions) {
-            sb.append(completion.getMethodName()).append("\t").
-               append(completion.getMethodParameters()).append("\t").
-               append(completion.getMethodParameterVariables()).append("\t").
-               append(completion.getMethodReturnType()).append("\n");
-        }
-        
-        return sb.toString();
+        return Collections.emptyList();
     }
 }

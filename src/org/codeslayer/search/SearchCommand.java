@@ -17,55 +17,26 @@
  */
 package org.codeslayer.search;
 
-import java.io.File;
+import java.util.Collections;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.codeslayer.Command;
 
-public class SearchCommand implements Command {
+public class SearchCommand implements Command<SearchInput, List<Search>> {
+    
+    private static Logger logger = Logger.getLogger(SearchCommand.class);
     
     SearchCache cache = new SearchCache();
     
-    public String execute(String[] args) {
+    public List<Search> execute(SearchInput input) {
         
         try {
-            SearchModifiers modifiers = new SearchModifiers(args);
-            SearchInput input = getInput(modifiers);
             SearchHandler classHandler = new SearchHandler(input, cache);
-            List<Search> completions = classHandler.getSearchResults();
-            return getOutput(completions);
+            return classHandler.getSearchResults();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.debug("Not able to execute search command", e);
         }
         
-        return "";
-    }
-    
-    private static SearchInput getInput(SearchModifiers modifiers) {
-        
-        SearchInput intput = new SearchInput();
-        
-        String indexesFolder = modifiers.getIndexesFolder();
-        if (indexesFolder != null) {
-            intput.setIndexesFolder(new File(indexesFolder));
-        }
-        
-        String className = modifiers.getName();
-        if (className != null) {
-            intput.setName(className);
-        }
-        
-        return intput;
-    }
-    
-    private String getOutput(List<Search> completions) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        for (Search completion : completions) {
-            sb.append(completion.getSimpleClassName()).append("\t").append(completion.getClassName()).append("\t").append(completion.getFilePath()).append("\n");
-        }
-        
-        return sb.toString();
+        return Collections.emptyList();
     }
 }

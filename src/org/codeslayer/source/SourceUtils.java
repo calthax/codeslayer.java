@@ -22,7 +22,6 @@ import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.Trees;
 import java.io.File;
-import java.io.FileFilter;
 import java.util.*;
 import javax.lang.model.element.Modifier;
 import javax.tools.*;
@@ -530,54 +529,4 @@ public class SourceUtils {
         
         return SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree);
     }
-    
-    private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
-
-    public static List<File> getFiles(String path) {
-
-        List<File> files = new ArrayList<File>();
-
-        File file = new File(path);
-        walkFileTree(file, files);
-
-        return files;
-    }
-
-    private static void walkFileTree(File file, List<File> files) {
-
-        if (file.isFile()) {
-            files.add(file);
-        }
-
-        File[] children = file.listFiles(JAVA_FILE_FILTER);
-        if (children != null) {
-            for (File child : children) {
-                walkFileTree(child, files);
-            }
-        }
-    }
-
-    private static class JavaFileFilter implements FileFilter {
-
-        public boolean accept(File file) {
-            if (file.isDirectory()) {
-                return true;
-            }
-            
-            if (file.isHidden()) {
-                return false;
-            }
-
-            try {
-                if (!(file.getAbsolutePath().equals(file.getCanonicalPath()))) {
-                    return false;
-                }
-            } catch (Exception e) {
-                // cannot do anything
-            }
-            
-            String name = file.getName();
-            return name.endsWith(".java");
-        }
-    }    
 }

@@ -19,6 +19,7 @@ package org.codeslayer.usage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
@@ -30,17 +31,13 @@ import org.codeslayer.source.SourceUtils;
 import org.codeslayer.usage.scanner.UsageInputScanner;
 import org.codeslayer.usage.scanner.MethodUsageScanner;
 
-public class UsageCommand implements Command {
+public class UsageCommand implements Command<UsageInput, List<Usage>> {
     
     private static Logger logger = Logger.getLogger(UsageCommand.class);
 
-    public String execute(String[] args) {
+    public List<Usage> execute(UsageInput input) {
         
         try {
-            UsageModifiers modifiers = new UsageModifiers(args);
-            
-            UsageInput input = getInput(modifiers);
-            
             UsageInputScanner usageInputScanner = new UsageInputScanner(input);
             Method methodMatch = usageInputScanner.scan();
             
@@ -63,68 +60,15 @@ public class UsageCommand implements Command {
                 logger.debug(usage.getClassName() + ":" + usage.getLineNumber() + " " + usage.getFile());
             }
             
-            return getOutput(usages);
+            return usages;
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.debug("Not able to execute usage command", e);
         }
         
-        return "";
+        return Collections.emptyList();
     }
-    
-    private static UsageInput getInput(UsageModifiers modifiers) {
-        
-        UsageInput intput = new UsageInput();
-        
-        File[] sourceFiles = getSourceFiles(modifiers);
-        intput.setSourceFolders(sourceFiles);
-        
-        String indexesFolder = modifiers.getIndexesFolder();
-        if (indexesFolder != null) {
-            intput.setIndexesFolder(new File(indexesFolder));
-        }
-        
-        String sourceFile = modifiers.getSourceFile();
-        if (logger.isDebugEnabled()) {
-            logger.debug("sourceFile " + sourceFile);
-        }
-        File file = new File(sourceFile);
-        intput.setSourceFile(file);
-        
-        String methodUsage = modifiers.getMethodUsage();
-        if (logger.isDebugEnabled()) {
-            logger.debug("methodUsage " + methodUsage);
-        }
-        intput.setMethodUsage(methodUsage);
-        
-        String lineNumber = modifiers.getLineNumber();
-        if (lineNumber != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("lineNumber " + lineNumber);
-            }
-            intput.setLineNumber(Integer.parseInt(lineNumber));
-        }
-        
-        return intput;
-    }
-    
-    private static File[] getSourceFiles(UsageModifiers modifiers) {
-        
-        List<File> results = new ArrayList<File>();
 
-        List<String> sourceFolders = modifiers.getSourceFolders();
-        for (String sourceFolder : sourceFolders) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("sourceFolder " + sourceFolder);
-            }
-            List<File> files = SourceUtils.getFiles(sourceFolder);
-            results.addAll(files);
-        }
-        
-        return results.toArray(new File[results.size()]);
-    }
-    
-    public static List<Usage> filterUsages(HierarchyManager hierarchyManager, Method methodMatch, List<Usage> usages) {
+    private static List<Usage> filterUsages(HierarchyManager hierarchyManager, Method methodMatch, List<Usage> usages) {
         
         List<Usage> results = new ArrayList<Usage>();
         
@@ -155,16 +99,5 @@ public class UsageCommand implements Command {
         }            
         
         return results;
-    }
-    
-    private String getOutput(List<Usage> usages) {
-        
-        StringBuilder sb = new StringBuilder();
-        
-        for (Usage usage : usages) {
-            sb.append(usage.getClassName()).append("\t").append(usage.getFile().getPath()).append("\t").append(usage.getLineNumber()).append("\n");
-        }
-        
-        return sb.toString();
     }
 }

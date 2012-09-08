@@ -17,7 +17,7 @@
  */
 package org.codeslayer;
 
-public interface Command {
+public interface Command<T, R> {
     
-    public String execute(String[] args);
+    public R execute(T t);
 }

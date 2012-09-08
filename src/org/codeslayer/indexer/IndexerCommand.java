@@ -19,57 +19,90 @@ package org.codeslayer.indexer;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
+import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.Command;
+import org.codeslayer.Modifiers;
 
-public class IndexerCommand implements Command {
+public class IndexerCommand implements Command<IndexerInput, Boolean> {
+    
+    private static Logger logger = Logger.getLogger(IndexerCommand.class);
 
     @Override
-    public String execute(String[] args) {
+    public Boolean execute(IndexerInput input) {
         
         try {
-            IndexerModifiers modifiers = new IndexerModifiers(args);
-            
-            List<String> suppressions = IndexerUtils.getSuppressions(modifiers.getSuppressionsFile());
+            List<String> suppressions = IndexerUtils.getSuppressions(input.getSuppressionsFile());
             IndexFactory indexFactory = new IndexFactory();
             
             List<Index> indexes = new ArrayList<Index>();
             
-            List<String> sourceFolders = modifiers.getSourceFolders();
+            List<String> sourceFolders = input.getSourceFolders();
             for (String sourceFolder : sourceFolders) {
-                Indexer indexer = new SourceIndexer(IndexerUtils.getFiles(sourceFolder), indexFactory, suppressions);
+                Indexer indexer = new SourceIndexer(CodeSlayerUtils.getFiles(sourceFolder), indexFactory, suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
             JarFilter jarFilter = new JarFilter();
-            List<String> libFolders = modifiers.getLibFolders();
+            List<String> libFolders = input.getLibFolders();
             for (String libFolder : libFolders) {
                 Indexer indexer = new JarIndexer(IndexerUtils.getJarFiles(libFolder, jarFilter), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
-            List<String> jarFiles = modifiers.getJarFiles();
+            List<String> jarFiles = input.getJarFiles();
             for (String jarFile : jarFiles) {
-                Indexer indexer = new JarIndexer(IndexerUtils.getFiles(jarFile), suppressions);
+                Indexer indexer = new JarIndexer(CodeSlayerUtils.getFiles(jarFile), suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
-            List<String> zipFiles = modifiers.getZipFiles();
+            List<String> zipFiles = input.getZipFiles();
             for (String zipFile : zipFiles) {
-                String tmpFile = modifiers.getTmpFolder();
+                String tmpFile = input.getTmpFolder();
                 Indexer indexer = new SourceIndexer(IndexerUtils.getZipFiles(zipFile, tmpFile), indexFactory, suppressions);
                 indexes.addAll(indexer.createIndexes());
             }
             
             if (indexes != null && !indexes.isEmpty()) {
-                new IndexesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
-                new ClassesFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
-                new HierarchyFile(modifiers.getIndexesFolder(), modifiers.getType()).write(indexes);
+                new IndexesFile(input.getIndexesFolder(), input.getType()).write(indexes);
+                new ClassesFile(input.getIndexesFolder(), input.getType()).write(indexes);
+                new HierarchyFile(input.getIndexesFolder(), input.getType()).write(indexes);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("Not able to execute indexer command", e);
         }
         
-        return "success";
-    }    
+        return Boolean.TRUE;
+    }
+    
+    public IndexerInput getInput(Modifiers modifiers) {
+        
+        IndexerInput input = new IndexerInput();
+        
+        List<String> sourceFolders = modifiers.getSourceFolders();
+        input.setSourceFolders(sourceFolders);
+        
+        List<String> libFolders = modifiers.getLibFolders();
+        input.setLibFolders(libFolders);
+        
+        List<String> jarFiles = modifiers.getJarFiles();
+        input.setJarFiles(jarFiles);
+        
+        List<String> zipFiles = modifiers.getZipFiles();
+        input.setZipFiles(zipFiles);
+        
+        String indexesFolder = modifiers.getIndexesFolder();
+        input.setIndexesFolder(indexesFolder);
+        
+        String suppressionsFile = modifiers.getSuppressionsFile();
+        input.setSuppressionsFile(suppressionsFile);
+        
+        String tmpFolder = modifiers.getTmpFolder();
+        input.setTmpFolder(tmpFolder);
+        
+        String type = modifiers.getType();
+        input.setType(type);
+        
+        return input;
+    }
 }

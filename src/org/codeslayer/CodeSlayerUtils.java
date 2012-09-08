@@ -17,28 +17,39 @@
  */
 package org.codeslayer;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.codeslayer.completion.CompletionCommand;
+import org.codeslayer.completion.CompletionCommandWrapper;
 import org.codeslayer.indexer.IndexerCommand;
+import org.codeslayer.indexer.IndexerCommandWrapper;
 import org.codeslayer.navigate.NavigateCommand;
+import org.codeslayer.navigate.NavigateCommandWrapper;
 import org.codeslayer.search.SearchCommand;
+import org.codeslayer.search.SearchCommandWrapper;
 import org.codeslayer.usage.UsageCommand;
+import org.codeslayer.usage.UsageCommandWrapper;
 
 public class CodeSlayerUtils {
     
     private static Logger logger = Logger.getLogger(CodeSlayerUtils.class);
 
+    private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
+
     public static Map<String, Command> getPrograms() {
         
         Map<String, Command> programs = new HashMap<String, Command>();
         
-        programs.put("usage", new UsageCommand());
-        programs.put("indexer", new IndexerCommand());
-        programs.put("navigate", new NavigateCommand());
-        programs.put("completion", new CompletionCommand());
-        programs.put("search", new SearchCommand());
+        programs.put("usage", new UsageCommandWrapper(new UsageCommand()));
+        programs.put("indexer", new IndexerCommandWrapper(new IndexerCommand()));
+        programs.put("navigate", new NavigateCommandWrapper(new NavigateCommand()));
+        programs.put("completion", new CompletionCommandWrapper(new CompletionCommand()));
+        programs.put("search", new SearchCommandWrapper(new SearchCommand()));
         
         return programs;
     }
@@ -60,4 +71,52 @@ public class CodeSlayerUtils {
         
         throw new IllegalArgumentException("There is not a program argument defined");
     }
+    
+    public static List<File> getFiles(String path) {
+
+        List<File> files = new ArrayList<File>();
+
+        File file = new File(path);
+        walkFileTree(file, files);
+
+        return files;
+    }
+
+    private static void walkFileTree(File file, List<File> files) {
+
+        if (file.isFile()) {
+            files.add(file);
+        }
+
+        File[] children = file.listFiles(JAVA_FILE_FILTER);
+        if (children != null) {
+            for (File child : children) {
+                walkFileTree(child, files);
+            }
+        }
+    }
+
+    private static class JavaFileFilter implements FileFilter {
+
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
+                return true;
+            }
+            
+            if (file.isHidden()) {
+                return false;
+            }
+
+            try {
+                if (!(file.getAbsolutePath().equals(file.getCanonicalPath()))) {
+                    return false;
+                }
+            } catch (Exception e) {
+                // cannot do anything
+            }
+            
+            String name = file.getName();
+            return name.endsWith(".java");
+        }
+    }    
 }

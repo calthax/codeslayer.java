@@ -30,7 +30,9 @@ import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
+import java.util.ArrayList;
 import org.apache.log4j.Logger;
+import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.Parameter;
@@ -57,7 +59,7 @@ public class MethodUsageScanner {
         UsageManager usageManager = new UsageManager();
         
         try {
-            JavacTask javacTask = SourceUtils.getJavacTask(usageInput.getSourceFolders());
+            JavacTask javacTask = SourceUtils.getJavacTask(getSourceFolders());
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
@@ -76,6 +78,21 @@ public class MethodUsageScanner {
         
         return usageManager.getUsages();
     }
+    
+    private File[] getSourceFolders() {
+        
+        List<File> results = new ArrayList<File>();
+
+        for (String sourceFolder : usageInput.getSourceFolders()) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("sourceFolder " + sourceFolder);
+            }
+            List<File> files = CodeSlayerUtils.getFiles(sourceFolder);
+            results.addAll(files);
+        }
+        
+        return results.toArray(new File[results.size()]);
+    }    
     
     private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
 

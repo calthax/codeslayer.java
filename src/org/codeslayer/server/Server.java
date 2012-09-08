@@ -27,6 +27,7 @@ import java.net.Socket;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.codeslayer.CodeSlayerUtils;
+import org.codeslayer.Modifiers;
 
 public class Server implements Runnable {
     
@@ -78,8 +79,9 @@ public class Server implements Runnable {
                     }
                     
                     String[] args = input.split("\\s");
-                    Command command =  CodeSlayerUtils.getCommand(args, programs);
-                    String output = command.execute(args);
+                    Command<Modifiers, String> command =  CodeSlayerUtils.getCommand(args, programs);
+                    Modifiers modifiers = new Modifiers(args);
+                    String output = command.execute(modifiers);
                     out.println(output);
                     out.flush();
                 }

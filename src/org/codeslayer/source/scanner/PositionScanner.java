@@ -48,8 +48,8 @@ public class PositionScanner {
         positionResult.setHierarchyManager(hierarchyManager);
         
         try {
-            File sourceFile = positionInput.getSourceFile();
-            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{sourceFile});
+            String sourceFile = positionInput.getSourceFile();
+            JavacTask javacTask = SourceUtils.getJavacTask(new File[]{new File(sourceFile)});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {

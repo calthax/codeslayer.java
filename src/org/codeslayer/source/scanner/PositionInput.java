@@ -17,11 +17,9 @@
  */
 package org.codeslayer.source.scanner;
 
-import java.io.File;
-
 public interface PositionInput {
     
-    public File getSourceFile();
+    public String getSourceFile();
     public int getPosition();
     public int getLineNumber();
 }

@@ -17,33 +17,21 @@
  */
 package org.codeslayer.completion;
 
-import java.io.File;
 import org.codeslayer.source.scanner.PositionInput;
 
 public class CompletionInput implements PositionInput {
     
-    private File[] sourceFolders;
-    private File indexesFolder;
+    private String indexesFolder;
     private int lineNumber;
-    private File sourceFile;
+    private String sourceFile;
     private int position;
 
-    public File[] getSourceFolders() {
-        
-        return sourceFolders;
-    }
-
-    public void setSourceFolders(File[] sourceFolders) {
-
-        this.sourceFolders = sourceFolders;
-    }
-
-    public File getIndexesFolder() {
+    public String getIndexesFolder() {
         
         return indexesFolder;
     }
 
-    public void setIndexesFolder(File indexesFolder) {
+    public void setIndexesFolder(String indexesFolder) {
      
         this.indexesFolder = indexesFolder;
     }
@@ -58,12 +46,12 @@ public class CompletionInput implements PositionInput {
         this.lineNumber = lineNumber;
     }
 
-    public File getSourceFile() {
+    public String getSourceFile() {
         
         return sourceFile;
     }
 
-    public void setSourceFile(File sourceFile) {
+    public void setSourceFile(String sourceFile) {
         
         this.sourceFile = sourceFile;
     }

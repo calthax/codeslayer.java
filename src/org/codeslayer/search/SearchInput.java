@@ -17,19 +17,17 @@
  */
 package org.codeslayer.search;
 
-import java.io.File;
-
 public class SearchInput {
     
-    private File indexesFolder;
+    private String indexesFolder;
     private String name;
 
-    public File getIndexesFolder() {
+    public String getIndexesFolder() {
         
         return indexesFolder;
     }
 
-    public void setIndexesFolder(File indexesFolder) {
+    public void setIndexesFolder(String indexesFolder) {
      
         this.indexesFolder = indexesFolder;
     }

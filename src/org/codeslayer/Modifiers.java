@@ -15,15 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.completion;
+package org.codeslayer;
 
 import java.util.*;
 
-public class CompletionModifiers {
+public class Modifiers {
 
     private Map<Modifier, String> modifiers = new HashMap<Modifier, String>();
 
-    public CompletionModifiers(String args[]) {
+    public Modifiers(String args[]) {
 
         Modifier lastModifier = null;
 
@@ -76,6 +76,64 @@ public class CompletionModifiers {
 
         return modifiers.get(Modifier.LINENUMBER);
     }
+    
+    public List<String> getLibFolders() {
+
+        String libFolder = modifiers.get(Modifier.LIBFOLDER);
+        if (libFolder != null) {
+            String[] split = libFolder.split(":");
+            return Arrays.asList(split);
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<String> getJarFiles() {
+
+        String jarFile = modifiers.get(Modifier.JARFILE);
+        if (jarFile != null) {
+            String[] split = jarFile.split(":");
+            return Arrays.asList(split);
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<String> getZipFiles() {
+
+        String zipFile = modifiers.get(Modifier.ZIPFILE);
+        if (zipFile != null) {
+            String[] split = zipFile.split(":");
+            return Arrays.asList(split);
+        }
+
+        return Collections.emptyList();
+    }
+
+    public String getTmpFolder() {
+
+        return modifiers.get(Modifier.TMPFOLDER);
+    }
+
+    public String getSuppressionsFile() {
+
+        return modifiers.get(Modifier.SUPPRESSIONSFILE);
+    }
+
+    public String getType() {
+
+        return modifiers.get(Modifier.TYPE);
+    }
+    
+    public String getName() {
+
+        return modifiers.get(Modifier.NAME);
+    }
+    
+    public String getMethodUsage() {
+
+        return modifiers.get(Modifier.METHODUSAGE);
+    }    
 
     @Override
     public String toString() {
@@ -90,8 +148,17 @@ public class CompletionModifiers {
         INDEXESFOLDER("-indexesfolder"),
         SOURCEFILE("-sourcefile"),
         LINENUMBER("-linenumber"),
-        POSITION("-position");
-        
+        POSITION("-position"),
+        LIBFOLDER("-libfolder"),
+        ZIPFILE("-zipfile"),
+        JARFILE("-jarfile"),
+        TYPE("-type"),
+        TMPFOLDER("-tmpfolder"),
+        SUPPRESSIONSFILE("-suppressionsfile"),
+        NAME("-name"),
+        METHODUSAGE("-methodusage")
+        ;
+
         private final String key;
 
         private Modifier(String key) {

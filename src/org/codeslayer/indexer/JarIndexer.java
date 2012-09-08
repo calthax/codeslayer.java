@@ -30,10 +30,10 @@ import java.util.jar.JarFile;
 
 public class JarIndexer implements Indexer {
 
-    private final File[] files;
+    private final List<File> files;
     private final List<String> suppressions;
 
-    public JarIndexer(File[] files, List<String> suppressions) {
+    public JarIndexer(List<File> files, List<String> suppressions) {
 
         this.files = files;
         this.suppressions = suppressions;
