@@ -33,7 +33,12 @@ public class NavigateCommandWrapper implements Command<Modifiers, String> {
     public String execute(Modifiers modifiers) {
         
         NavigateInput input = getInput(modifiers);
-        Navigate navigate = command.execute(input);        
+        Navigate navigate = command.execute(input);
+        
+        if (navigate == null) {
+            return "no results found";
+        }
+        
         return getOutput(navigate);
     }
     

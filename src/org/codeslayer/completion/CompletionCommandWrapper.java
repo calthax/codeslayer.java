@@ -35,6 +35,11 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         
         CompletionInput input = getInput(modifiers);
         List<Completion> completions = command.execute(input);
+        
+        if (completions.isEmpty()) {
+            return "no results found";
+        }
+        
         return getOutput(completions);
     }
     

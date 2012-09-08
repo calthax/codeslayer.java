@@ -81,7 +81,19 @@ public class Server implements Runnable {
                     String[] args = input.split("\\s");
                     Command<Modifiers, String> command =  CodeSlayerUtils.getCommand(args, programs);
                     Modifiers modifiers = new Modifiers(args);
-                    String output = command.execute(modifiers);
+                    
+                    String output;
+                    try {
+                        output = command.execute(modifiers);
+                    } catch (Exception e) {
+                        logger.debug("Program threw an exception", e);
+                        output = "program threw an exception";
+                    }
+                    
+                    if (output == null) {
+                        output = "program did not return any results";
+                    }
+                    
                     out.println(output);
                     out.flush();
                 }
