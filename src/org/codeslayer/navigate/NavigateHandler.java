@@ -111,10 +111,7 @@ public class NavigateHandler {
     public Symbol getSymbols() {
         
         String expression = input.getExpression();
-        
-        expression = ExpressionUtils.stripEnds(expression);
-        expression = expression.replaceAll("\\(", "");
-        expression = expression.replaceAll("\\)", "");
+        expression = ExpressionUtils.stripSpecialCharacters(expression);
         
         logger.debug("expression " + expression);
         

@@ -63,8 +63,7 @@ public class CompletionHandler {
     public Symbol getSymbols() {
         
         String expression = input.getExpression();
-        
-        expression = ExpressionUtils.stripEnds(expression);
+        expression = ExpressionUtils.stripSpecialCharacters(expression);
         
         logger.debug("expression " + expression);
         
@@ -75,8 +74,6 @@ public class CompletionHandler {
         if (values.length > 1) {
             for (int i = 1; i < values.length; i++) {
                 String value = values[i];
-                int indexOf = value.indexOf("(");
-                value = value.substring(0, indexOf);
                 symbol.setNextSymbol(new Symbol(value));
             }            
         }

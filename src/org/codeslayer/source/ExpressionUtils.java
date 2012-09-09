@@ -19,16 +19,22 @@ package org.codeslayer.source;
 
 public class ExpressionUtils {
     
-    public static String stripPathParameters(String path) {
+    public static String stripSpecialCharacters(String expression) {
         
-        StringBuilder sb = new StringBuilder();
-        
-        return sb.toString();
+        String results = stripBraces(expression);
+        results = stripEnds(results);
+
+        return results;
     }
-    
-    public static String stripComments(String expression) {
         
-        return expression.replaceAll("\"([^\"\\\\]*(\\.[^\"\\\\]*)*)\"", "");
+    public static String stripBraces(String expression) {
+        
+        String results = expression;
+        
+        results = results.replaceAll("\\(", "");
+        results = results.replaceAll("\\)", "");
+
+        return results;
     }
     
     public static String stripEnds(String expression) {
@@ -39,41 +45,4 @@ public class ExpressionUtils {
         
         return expression;
     }
-    
-//static gchar*
-//strip_path_parameters (gchar *path)
-//{
-//  gchar *result;
-//  GString *string;
-//  int brace = 0;
-//  
-//  string = g_string_new ("");
-//
-//  for (; *path != '\0'; ++path)
-//    {
-//      if (*path == ')')
-//        {
-//          brace++;
-//          if (brace == 1)
-//            string = g_string_append_c (string, *path);
-//          continue;
-//        }
-//      if (*path == '(')
-//        {
-//          brace--;
-//          if (brace == 0)
-//            string = g_string_append_c (string, *path);
-//          continue;
-//        }
-//      
-//      if (brace == 0)
-//        string = g_string_append_c (string, *path);
-//    }
-//  
-//  result = g_string_free (string, FALSE);
-//  g_strstrip(result);
-//    
-//  return result;
-//}
-    
 }
