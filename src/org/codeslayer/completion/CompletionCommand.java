@@ -37,8 +37,11 @@ public class CompletionCommand implements Command<CompletionInput, List<Completi
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            CompletionScanner completionScanner = new CompletionScanner(hierarchyManager, input);
-            List<Completion> completions = completionScanner.scan();
+            CompletionScanner completionScanner = new CompletionScanner(input);
+            CompletionContext completionContext = completionScanner.scan();
+             
+            CompletionHandler completionHandler = new CompletionHandler(input, hierarchyManager, completionContext);
+            List<Completion> completions = completionHandler.getCompletions();
             
             return completions;
         } catch (Exception e) {
