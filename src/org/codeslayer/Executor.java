@@ -46,11 +46,9 @@ public class Executor {
         String[] dummy = {"-program", "completion", 
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
-                            "-sourcefile", "/home/jeff/.codeslayer-dev/groups/java/TmpClass.java",
-                            "-linenumber", "67", 
-                            "-position", "2575"};
-        
-        //-program navigate -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java -symbol TableModel -linenumber 62 -sourcefolder /home/jeff/workspace/jmesaWeb/src:/home/jeff/workspace/jmesaWeb/test:/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesa/test: -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes        
+                            "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
+                            "-linenumber", "63", 
+                            "-expression", "presidentService."};
         
         Command<Modifiers, String> command = CodeSlayerUtils.getCommand(dummy, programs);
         

@@ -67,11 +67,6 @@ public class Modifiers {
         return modifiers.get(Modifier.SOURCEFILE);
     }
 
-    public String getPosition() {
-
-        return modifiers.get(Modifier.POSITION);
-    }
-
     public String getLineNumber() {
 
         return modifiers.get(Modifier.LINENUMBER);
@@ -153,7 +148,6 @@ public class Modifiers {
         INDEXESFOLDER("-indexesfolder"),
         SOURCEFILE("-sourcefile"),
         LINENUMBER("-linenumber"),
-        POSITION("-position"),
         LIBFOLDER("-libfolder"),
         ZIPFILE("-zipfile"),
         JARFILE("-jarfile"),
