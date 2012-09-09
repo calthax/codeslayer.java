@@ -103,7 +103,7 @@ public class CompletionHandler {
                         completion.setMethodName(split[3]);
                         completion.setMethodParameters(split[4]);
                         completion.setMethodParameterVariables(split[5]);
-                        completion.setMethodReturnType(split[7]);
+                        completion.setMethodReturnType(split[8]);
                         completions.add(completion);
                     }
                 } else if (!completions.isEmpty()) {
