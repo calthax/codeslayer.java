@@ -130,14 +130,14 @@ public class Modifiers {
         return modifiers.get(Modifier.NAME);
     }
     
-    public String getMethodUsage() {
-
-        return modifiers.get(Modifier.METHODUSAGE);
-    }    
-
     public String getSymbol() {
 
         return modifiers.get(Modifier.SYMBOL);
+    }    
+
+    public String getExpression() {
+
+        return modifiers.get(Modifier.EXPRESSION);
     }    
 
     @Override
@@ -161,8 +161,8 @@ public class Modifiers {
         TMPFOLDER("-tmpfolder"),
         SUPPRESSIONSFILE("-suppressionsfile"),
         NAME("-name"),
-        METHODUSAGE("-methodusage"),
-        SYMBOL("-symbol")
+        SYMBOL("-symbol"),
+        EXPRESSION("-expression")
         ;
 
         private final String key;

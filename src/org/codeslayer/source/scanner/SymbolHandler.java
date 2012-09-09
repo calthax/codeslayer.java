@@ -148,6 +148,10 @@ public class SymbolHandler {
         method.setClazz(clazz);
         
         for (Arg arg : symbol.getArgs()) {
+            if (arg.getSymbol() == null) {
+                continue;
+            }
+            
             Parameter parameter = new Parameter();
             parameter.setType(getType(arg.getSymbol(), scopeTree));
             method.addParameter(parameter);

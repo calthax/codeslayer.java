@@ -17,14 +17,12 @@
  */
 package org.codeslayer.completion;
 
-import org.codeslayer.source.scanner.PositionInput;
-
-public class CompletionInput implements PositionInput {
+public class CompletionInput {
     
     private String indexesFolder;
-    private int lineNumber;
     private String sourceFile;
-    private int position;
+    private int lineNumber;
+    private String expression;
 
     public String getIndexesFolder() {
         
@@ -36,16 +34,6 @@ public class CompletionInput implements PositionInput {
         this.indexesFolder = indexesFolder;
     }
     
-    public int getLineNumber() {
-        
-        return lineNumber;
-    }
-
-    public void setLineNumber(int lineNumber) {
-        
-        this.lineNumber = lineNumber;
-    }
-
     public String getSourceFile() {
         
         return sourceFile;
@@ -56,13 +44,23 @@ public class CompletionInput implements PositionInput {
         this.sourceFile = sourceFile;
     }
 
-    public int getPosition() {
+    public int getLineNumber() {
         
-        return position;
+        return lineNumber;
     }
 
-    public void setPosition(int position) {
+    public void setLineNumber(int lineNumber) {
+        
+        this.lineNumber = lineNumber;
+    }
+
+    public String getExpression() {
+        
+        return expression;
+    }
+
+    public void setExpression(String expression) {
      
-        this.position = position;
+        this.expression = expression;
     }
 }

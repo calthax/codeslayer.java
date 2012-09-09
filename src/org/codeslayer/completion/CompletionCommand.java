@@ -22,10 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.Command;
+import org.codeslayer.completion.scanner.CompletionScanner;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.scanner.PositionResult;
-import org.codeslayer.source.scanner.PositionScanner;
 
 public class CompletionCommand implements Command<CompletionInput, List<Completion>> {
     
@@ -38,11 +37,8 @@ public class CompletionCommand implements Command<CompletionInput, List<Completi
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            PositionScanner positionScanner = new PositionScanner(hierarchyManager, input);
-            PositionResult positionResult = positionScanner.scan();
-            
-            CompletionHandler completionHandler = new CompletionHandler(positionResult, input);
-            List<Completion> completions = completionHandler.getCompletions();
+            CompletionScanner completionScanner = new CompletionScanner(hierarchyManager, input);
+            List<Completion> completions = completionScanner.scan();
             
             return completions;
         } catch (Exception e) {

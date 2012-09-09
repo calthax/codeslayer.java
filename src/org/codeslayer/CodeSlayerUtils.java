@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.codeslayer.completion.CompletionCommand;
 import org.codeslayer.completion.CompletionCommandWrapper;
@@ -39,6 +40,9 @@ public class CodeSlayerUtils {
     
     private static Logger logger = Logger.getLogger(CodeSlayerUtils.class);
 
+    private final static String REGEX = "\"([^\"\\\\]*(\\.[^\"\\\\]*)*)\"";
+    public final static Pattern PATTERN = Pattern.compile(REGEX);
+    
     private static JavaFileFilter JAVA_FILE_FILTER = new JavaFileFilter();
 
     public static Map<String, Command> getPrograms() {

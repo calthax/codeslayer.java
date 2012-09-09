@@ -53,8 +53,8 @@ public class UsageCommandWrapper implements Command<Modifiers, String> {
         String lineNumber = modifiers.getLineNumber();
         input.setLineNumber(Integer.parseInt(lineNumber));
         
-        String methodUsage = modifiers.getMethodUsage();
-        input.setMethodUsage(methodUsage);
+        String symbol = modifiers.getSymbol();
+        input.setSymbol(symbol);
         
         return input;
     }

@@ -49,7 +49,7 @@ public class UsageInputScanner {
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getMethodUsage());
+                MethodScanner methodScanner = new MethodScanner(compilationUnitTree, sourcePositions, input.getSymbol());
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(methodScanner, scopeTree);
                 List<Method> methods = methodScanner.getScanResults();

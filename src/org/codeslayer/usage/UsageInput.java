@@ -25,27 +25,7 @@ public class UsageInput {
     private String indexesFolder;
     private String sourceFile;
     private int lineNumber;
-    private String methodUsage;
-
-    public String getMethodUsage() {
-        
-        return methodUsage;
-    }
-
-    public void setMethodUsage(String methodUsage) {
-        
-        this.methodUsage = methodUsage;
-    }
-
-    public int getLineNumber() {
-        
-        return lineNumber;
-    }
-
-    public void setLineNumber(int lineNumber) {
-        
-        this.lineNumber = lineNumber;
-    }
+    private String symbol;
 
     public List<String> getSourceFolders() {
         
@@ -75,5 +55,25 @@ public class UsageInput {
     public void setSourceFile(String sourceFile) {
         
         this.sourceFile = sourceFile;
+    }
+    
+    public int getLineNumber() {
+        
+        return lineNumber;
+    }
+
+    public void setLineNumber(int lineNumber) {
+        
+        this.lineNumber = lineNumber;
+    }
+
+    public String getSymbol() {
+        
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+     
+        this.symbol = symbol;
     }
 }

@@ -55,11 +55,11 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         String sourceFile = modifiers.getSourceFile();
         input.setSourceFile(sourceFile);
         
-        String position = modifiers.getPosition();
-        input.setPosition(Integer.parseInt(position));
-        
         String lineNumber = modifiers.getLineNumber();
         input.setLineNumber(Integer.parseInt(lineNumber));
+        
+        String expression = modifiers.getExpression();
+        input.setExpression(expression);
         
         return input;
     }
