@@ -22,11 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.codeslayer.source.ExpressionUtils;
-import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.ScopeTree;
-import org.codeslayer.source.SourceUtils;
-import org.codeslayer.source.Symbol;
+import org.codeslayer.source.*;
 import org.codeslayer.source.scanner.SymbolHandler;
 
 public class CompletionHandler {
@@ -35,29 +31,22 @@ public class CompletionHandler {
     
     private final CompletionInput input;
     private final HierarchyManager hierarchyManager;
-    private final CompletionContext completionContext;
+    private final ScopeContext scopeContext;
 
-    public CompletionHandler(CompletionInput input, HierarchyManager hierarchyManager, CompletionContext completionContext) {
+    public CompletionHandler(CompletionInput input, HierarchyManager hierarchyManager, ScopeContext scopeContext) {
     
         this.input = input;
         this.hierarchyManager = hierarchyManager;
-        this.completionContext = completionContext;
+        this.scopeContext = scopeContext;
     }
     
     public List<Completion> getCompletions() {
         
-        String expression = input.getExpression();
-        
-        expression = ExpressionUtils.stripEnds(expression);
-        
-        logger.debug("expression " + expression);
-        
-        ScopeTree scopeTree = completionContext.getScopeTree();
-        
-        String simpleType = scopeTree.getSimpleType(expression);
-        Symbol symbol = new Symbol(simpleType);
+        ScopeTree scopeTree = scopeContext.getScopeTree();
 
-        SymbolHandler symbolHandler = new SymbolHandler(completionContext.getCompilationUnitTree(), hierarchyManager);
+        Symbol symbol = getSymbols();
+
+        SymbolHandler symbolHandler = new SymbolHandler(scopeContext.getCompilationUnitTree(), hierarchyManager);
 
         String className = symbolHandler.getType(symbol, scopeTree);
 
@@ -69,6 +58,30 @@ public class CompletionHandler {
         List<Completion> completions = createCompletions(indexesFile, className);
 
         return completions;
+    }
+    
+    public Symbol getSymbols() {
+        
+        String expression = input.getExpression();
+        
+        expression = ExpressionUtils.stripEnds(expression);
+        
+        logger.debug("expression " + expression);
+        
+        String[] values = expression.split("\\.");
+        
+        Symbol symbol = new Symbol(values[0]);
+        
+        if (values.length > 1) {
+            for (int i = 1; i < values.length; i++) {
+                String value = values[i];
+                int indexOf = value.indexOf("(");
+                value = value.substring(0, indexOf);
+                symbol.setNextSymbol(new Symbol(value));
+            }            
+        }
+        
+        return symbol;
     }
     
     private List<Completion> createCompletions(File file, String className) {

@@ -47,8 +47,8 @@ public class Executor {
                             "-sourcefolder", "/home/jeff/workspace/jmesa/src:/home/jeff/workspace/jmesaWeb/src", 
                             "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
                             "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
-                            "-linenumber", "63", 
-                            "-expression", "presidentService."};
+                            "-linenumber", "113", 
+                            "-expression", "html.a().href().quote()."};
         
         Command<Modifiers, String> command = CodeSlayerUtils.getCommand(dummy, programs);
         

@@ -24,7 +24,6 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
 import org.apache.log4j.Logger;
-import org.codeslayer.completion.CompletionContext;
 import org.codeslayer.completion.CompletionInput;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
@@ -41,10 +40,10 @@ public class CompletionScanner {
         this.input = input;
     }
     
-    public CompletionContext scan() 
+    public ScopeContext scan() 
             throws Exception {
         
-        CompletionContext completionContext = new CompletionContext();
+        ScopeContext scopeContext = new ScopeContext();
         
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(new File[]{new File(input.getSourceFile())});
@@ -55,14 +54,14 @@ public class CompletionScanner {
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(scanner, scopeTree);
                 
-                completionContext.setScopeTree(scopeTree);
-                completionContext.setCompilationUnitTree(compilationUnitTree);
+                scopeContext.setScopeTree(scopeTree);
+                scopeContext.setCompilationUnitTree(compilationUnitTree);
             }
         } catch (Exception e) {
             logger.error("completion scan error", e);
         }
         
-        return completionContext;
+        return scopeContext;
     }
     
     private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {

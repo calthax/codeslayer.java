@@ -25,6 +25,7 @@ import org.codeslayer.Command;
 import org.codeslayer.completion.scanner.CompletionScanner;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.ScopeContext;
 
 public class CompletionCommand implements Command<CompletionInput, List<Completion>> {
     
@@ -38,9 +39,9 @@ public class CompletionCommand implements Command<CompletionInput, List<Completi
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
             CompletionScanner completionScanner = new CompletionScanner(input);
-            CompletionContext completionContext = completionScanner.scan();
+            ScopeContext scopeContext = completionScanner.scan();
              
-            CompletionHandler completionHandler = new CompletionHandler(input, hierarchyManager, completionContext);
+            CompletionHandler completionHandler = new CompletionHandler(input, hierarchyManager, scopeContext);
             List<Completion> completions = completionHandler.getCompletions();
             
             return completions;
