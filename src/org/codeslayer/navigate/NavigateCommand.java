@@ -21,9 +21,10 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.navigate.scanner.NavigateClassScanner;
 import org.codeslayer.navigate.scanner.NavigateMethodScanner;
+import org.codeslayer.navigate.scanner.NavigateScanner;
 import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.source.ScopeContext;
 import org.codeslayer.source.SourceUtils;
 
 public class NavigateCommand implements Command<NavigateInput, Navigate> {
@@ -36,9 +37,11 @@ public class NavigateCommand implements Command<NavigateInput, Navigate> {
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            if (SourceUtils.isClass(input.getSymbol())) {
-                NavigateClassScanner navigateClassScanner = new NavigateClassScanner(hierarchyManager, input);
-                Navigate navigate = navigateClassScanner.scan();
+            if (SourceUtils.isClass(input.getExpression())) {
+                NavigateScanner navigateScanner = new NavigateScanner(input);
+                ScopeContext scopeContext = navigateScanner.scan();                
+                NavigateHandler navigateClassHandler = new NavigateHandler(input, hierarchyManager, scopeContext);
+                Navigate navigate = navigateClassHandler.getNavigate();
                 return navigate;
             }
             
