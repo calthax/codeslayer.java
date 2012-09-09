@@ -58,8 +58,8 @@ public class NavigateCommandWrapper implements Command<Modifiers, String> {
         String lineNumber = modifiers.getLineNumber();
         input.setLineNumber(Integer.parseInt(lineNumber));
         
-        String expression = modifiers.getExpression();
-        input.setExpression(expression);
+        String symbol = modifiers.getSymbol();
+        input.setSymbol(symbol);
         
         return input;
     }

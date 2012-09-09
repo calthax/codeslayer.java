@@ -24,55 +24,58 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
 import org.apache.log4j.Logger;
+import org.codeslayer.navigate.Navigate;
 import org.codeslayer.navigate.NavigateInput;
+import org.codeslayer.navigate.NavigateManager;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.*;
 
-public class NavigateScanner {
+public class NavigateClassScanner {
     
-    private static Logger logger = Logger.getLogger(NavigateScanner.class);
+    private static Logger logger = Logger.getLogger(NavigateClassScanner.class);
     
+    private final HierarchyManager hierarchyManager;
     private final NavigateInput input;
 
-    public NavigateScanner(NavigateInput input) {
+    public NavigateClassScanner(HierarchyManager hierarchyManager, NavigateInput input) {
     
+        this.hierarchyManager = hierarchyManager;
         this.input = input;
     }
     
-    public ScopeContext scan() 
+    public Navigate scan() 
             throws Exception {
         
-        ScopeContext scopeContext = new ScopeContext();
+        NavigateManager navigateManager = new NavigateManager();
         
         try {
             JavacTask javacTask = SourceUtils.getJavacTask(new File[]{new File(input.getSourceFile())});
             SourcePositions sourcePositions = Trees.instance(javacTask).getSourcePositions();
             Iterable<? extends CompilationUnitTree> compilationUnitTrees = javacTask.parse();
             for (CompilationUnitTree compilationUnitTree : compilationUnitTrees) {
-                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions);
+                TreeScanner<ScopeTree, ScopeTree> scanner = new InternalScanner(compilationUnitTree, sourcePositions, navigateManager);
                 ScopeTree scopeTree = ScopeTree.newScopeTree(compilationUnitTree);
                 compilationUnitTree.accept(scanner, scopeTree);
-                
-                scopeContext.setScopeTree(scopeTree);
-                scopeContext.setCompilationUnitTree(compilationUnitTree);
             }
         } catch (Exception e) {
-            logger.error("completion scan error", e);
+            logger.error("method usage scan error", e);
         }
         
-        return scopeContext;
+        return navigateManager.getNavigate();
     }
     
     private class InternalScanner extends TreeScanner<ScopeTree, ScopeTree> {
 
         private final CompilationUnitTree compilationUnitTree;
         private final SourcePositions sourcePositions;
+        private final NavigateManager navigateManager;
 
-        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions) {
+        public InternalScanner(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, NavigateManager navigateManager) {
 
             this.compilationUnitTree = compilationUnitTree;
             this.sourcePositions = sourcePositions;
+            this.navigateManager = navigateManager;
         }
 
         @Override
@@ -96,12 +99,37 @@ public class NavigateScanner {
             String variable = variableTree.getName().toString();
             scopeTree.addSimpleType(variable, simpleType);
 
-            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, variableTree);
-            if (lineNumber <= input.getLineNumber()) {
+            return scopeTree;                    
+        }
+
+        @Override
+        public ScopeTree visitIdentifier(IdentifierTree identifierTree, ScopeTree scopeTree) {
+            
+            super.visitIdentifier(identifierTree, scopeTree);
+
+            int lineNumber = SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, identifierTree);
+            if (lineNumber != input.getLineNumber()) {
+                return scopeTree;
+            }
+
+            if (!input.getSymbol().equals(identifierTree.getName().toString())) {
+                return scopeTree;
+            }
+                
+            String className = SourceUtils.getClassName(scopeTree, identifierTree.getName().toString());
+            Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
+            if (hierarchy == null) {
                 return scopeTree;
             }
             
-            return scopeTree;                    
+            String filePath = hierarchy.getFilePath();
+
+            Navigate navigate = new Navigate();
+            navigate.setFilePath(filePath);
+            navigate.setLineNumber(0);
+            navigateManager.setNavigate(navigate);
+
+            return scopeTree;
         }
     }
 }

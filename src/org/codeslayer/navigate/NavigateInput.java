@@ -25,7 +25,7 @@ public class NavigateInput {
     private String indexesFolder;
     private String sourceFile;
     private int lineNumber;
-    private String expression;
+    private String symbol;
 
     public List<String> getSourceFolders() {
         
@@ -67,13 +67,13 @@ public class NavigateInput {
         this.lineNumber = lineNumber;
     }
 
-    public String getExpression() {
+    public String getSymbol() {
         
-        return expression;
+        return symbol;
     }
 
-    public void setExpression(String expression) {
+    public void setSymbol(String symbol) {
      
-        this.expression = expression;
+        this.symbol = symbol;
     }
 }
