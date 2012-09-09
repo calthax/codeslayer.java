@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.completion.scanner;
+package org.codeslayer.source.scanner;
 
 import java.io.File;
 import com.sun.source.util.JavacTask;
@@ -24,18 +24,17 @@ import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 import com.sun.source.tree.*;
 import org.apache.log4j.Logger;
-import org.codeslayer.completion.CompletionInput;
 import org.codeslayer.source.ScopeTree;
 import org.codeslayer.source.SourceUtils;
 import org.codeslayer.source.*;
 
-public class CompletionScanner {
+public class ScopeContextScanner {
     
-    private static Logger logger = Logger.getLogger(CompletionScanner.class);
+    private static Logger logger = Logger.getLogger(ScopeContextScanner.class);
     
-    private final CompletionInput input;
+    private final ScopeContextInput input;
 
-    public CompletionScanner(CompletionInput input) {
+    public ScopeContextScanner(ScopeContextInput input) {
     
         this.input = input;
     }

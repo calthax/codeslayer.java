@@ -17,7 +17,9 @@
  */
 package org.codeslayer.completion;
 
-public class CompletionInput {
+import org.codeslayer.source.ScopeContextInput;
+
+public class CompletionInput implements ScopeContextInput {
     
     private String indexesFolder;
     private String sourceFile;

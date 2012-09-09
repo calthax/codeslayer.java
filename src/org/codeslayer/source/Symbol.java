@@ -76,7 +76,9 @@ public class Symbol {
     public void setNextSymbol(Symbol nextSymbol) {
      
         this.nextSymbol = nextSymbol;
-        this.nextSymbol.setPrevSymbol(this);
+        if (nextSymbol != null) {
+            this.nextSymbol.setPrevSymbol(this);            
+        }
     }
     
     @Override

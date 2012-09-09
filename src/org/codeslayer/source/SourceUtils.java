@@ -525,6 +525,16 @@ public class SourceUtils {
         return symbol;
     }
     
+    public static Symbol findLastSymbol(Symbol symbol) {
+        
+        Symbol nextSymbol = symbol.getNextSymbol();
+        if (nextSymbol != null) {
+            return findLastSymbol(nextSymbol);
+        }
+        
+        return symbol;
+    }
+    
     public static String getClassLogInfo(CompilationUnitTree compilationUnitTree, SourcePositions sourcePositions, Tree tree) {
         
         return SourceUtils.getClassName(compilationUnitTree) + ":" + SourceUtils.getLineNumber(compilationUnitTree, sourcePositions, tree);

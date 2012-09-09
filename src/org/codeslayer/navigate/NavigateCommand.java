@@ -21,10 +21,9 @@ import java.io.File;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.navigate.scanner.NavigateClassScanner;
-import org.codeslayer.navigate.scanner.NavigateMethodScanner;
 import org.codeslayer.source.HierarchyManager;
-import org.codeslayer.source.SourceUtils;
+import org.codeslayer.source.ScopeContext;
+import org.codeslayer.source.scanner.ScopeContextScanner;
 
 public class NavigateCommand implements Command<NavigateInput, Navigate> {
     
@@ -36,14 +35,11 @@ public class NavigateCommand implements Command<NavigateInput, Navigate> {
             File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
             HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
             
-            if (SourceUtils.isClass(input.getSymbol())) {
-                NavigateClassScanner navigateClassScanner = new NavigateClassScanner(hierarchyManager, input);
-                Navigate navigate = navigateClassScanner.scan();
-                return navigate;
-            }
-            
-            NavigateMethodScanner navigateScanner = new NavigateMethodScanner(hierarchyManager, input);
-            Navigate navigate = navigateScanner.scan();
+            ScopeContextScanner scopeContextScanner = new ScopeContextScanner(input);
+            ScopeContext scopeContext = scopeContextScanner.scan();
+
+            NavigateHandler navigateHandler = new NavigateHandler(input, hierarchyManager, scopeContext);
+            Navigate navigate = navigateHandler.getNavigate();
             return navigate;
         } catch (Exception e) {
             logger.error("Not able to execute navigate command", e);

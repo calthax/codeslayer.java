@@ -18,14 +18,15 @@
 package org.codeslayer.navigate;
 
 import java.util.List;
+import org.codeslayer.source.ScopeContextInput;
 
-public class NavigateInput {
+public class NavigateInput implements ScopeContextInput {
     
     private List<String> sourceFolders;
     private String indexesFolder;
     private String sourceFile;
     private int lineNumber;
-    private String symbol;
+    private String expression;
 
     public List<String> getSourceFolders() {
         
@@ -67,13 +68,13 @@ public class NavigateInput {
         this.lineNumber = lineNumber;
     }
 
-    public String getSymbol() {
+    public String getExpression() {
         
-        return symbol;
+        return expression;
     }
 
-    public void setSymbol(String symbol) {
+    public void setExpression(String expression) {
      
-        this.symbol = symbol;
+        this.expression = expression;
     }
 }
