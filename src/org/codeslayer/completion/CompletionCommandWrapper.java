@@ -61,6 +61,9 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         String expression = modifiers.getExpression();
         input.setExpression(expression);
         
+        String type = modifiers.getType();
+        input.setType(type);
+        
         return input;
     }
     
@@ -69,10 +72,17 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         StringBuilder sb = new StringBuilder();
         
         for (Completion completion : completions) {
-            sb.append(completion.getMethodName()).append("\t").
-               append(completion.getMethodParameters()).append("\t").
-               append(completion.getMethodParameterVariables()).append("\t").
-               append(completion.getMethodReturnType()).append("\n");
+            
+            String simpleClassName = completion.getSimpleClassName();
+            
+            if (simpleClassName != null) {
+                sb.append(simpleClassName).append("\n");
+            } else {
+                sb.append(completion.getMethodName()).append("\t").
+                append(completion.getMethodParameters()).append("\t").
+                append(completion.getMethodParameterVariables()).append("\t").
+                append(completion.getMethodReturnType()).append("\n");
+            }
         }
         
         return sb.toString();

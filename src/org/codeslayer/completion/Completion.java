@@ -19,10 +19,21 @@ package org.codeslayer.completion;
 
 public class Completion {
     
+    private String simpleClassName;
     private String methodName;
     private String methodParameters;
     private String methodParameterVariables;
     private String methodReturnType;
+
+    public String getSimpleClassName() {
+        
+        return simpleClassName;
+    }
+
+    public void setSimpleClassName(String classSimpleName) {
+     
+        this.simpleClassName = classSimpleName;
+    }
 
     public String getMethodName() {
         

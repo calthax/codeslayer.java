@@ -25,6 +25,7 @@ public class CompletionInput implements ScopeContextInput {
     private String sourceFile;
     private int lineNumber;
     private String expression;
+    private String type;
 
     public String getIndexesFolder() {
         
@@ -64,5 +65,15 @@ public class CompletionInput implements ScopeContextInput {
     public void setExpression(String expression) {
      
         this.expression = expression;
+    }
+
+    public String getType() {
+        
+        return type;
+    }
+
+    public void setType(String type) {
+     
+        this.type = type;
     }
 }

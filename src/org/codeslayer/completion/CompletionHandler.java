@@ -42,9 +42,55 @@ public class CompletionHandler {
     
     public List<Completion> getCompletions() {
         
+        String type = input.getType();
+        
+        if (type.equals("method")) {
+            return getMethodCompletions();
+        }
+
+        return getClassCompletions();
+    }
+    
+    public List<Completion> getClassCompletions() {
+     
+        List<Completion> completions = new ArrayList<Completion>();
+        
+        File file = new File(input.getIndexesFolder(), "projects.classes");
+        
+        String expression = input.getExpression();
+        
+        try{
+            FileInputStream fstream = new FileInputStream(file);
+            DataInputStream in = new DataInputStream(fstream);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String strLine;
+            while ((strLine = br.readLine()) != null) {
+                if (strLine == null || strLine.trim().length() == 0) {
+                    continue;
+                }
+
+                String[] split = strLine.split("\\t");
+                
+                String simpleClassName = split[0];
+                if (simpleClassName.startsWith(expression)) {
+                    Completion completion = new Completion();
+                    completion.setSimpleClassName(simpleClassName);
+                    completions.add(completion);
+                }
+            }
+            in.close();
+        } catch (Exception e) {
+            logger.debug("Not able to get the class completions", e);
+        }
+
+        return completions;
+    }
+    
+    public List<Completion> getMethodCompletions() {
+        
         ScopeTree scopeTree = scopeContext.getScopeTree();
 
-        Symbol symbol = getSymbols();
+        Symbol symbol = getMethodSymbols();
 
         SymbolHandler symbolHandler = new SymbolHandler(scopeContext.getCompilationUnitTree(), hierarchyManager);
 
@@ -55,12 +101,12 @@ public class CompletionHandler {
         }
 
         File indexesFile = new File(input.getIndexesFolder(), "projects.indexes");
-        List<Completion> completions = createCompletions(indexesFile, className);
+        List<Completion> completions = createMethodCompletions(indexesFile, className);
 
         return completions;
     }
     
-    public Symbol getSymbols() {
+    private Symbol getMethodSymbols() {
         
         String expression = input.getExpression();
         expression = ExpressionUtils.stripSpecialCharacters(expression);
@@ -81,7 +127,7 @@ public class CompletionHandler {
         return symbol;
     }
     
-    private List<Completion> createCompletions(File file, String className) {
+    private List<Completion> createMethodCompletions(File file, String className) {
         
         List<Completion> completions = new ArrayList<Completion>();
 
