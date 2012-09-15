@@ -124,7 +124,14 @@ public class CompletionHandler {
 
         String className = getClassName(hierarchyManager, scopeTree, symbol);
         if (className == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not able to find projects class for " + symbol.getValue());                
+            }
             return Collections.emptyList();
+        }
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Try to find class '" + className + "' methods in projects");
         }
 
         List<Completion> completions = new ArrayList<Completion>();
@@ -132,6 +139,10 @@ public class CompletionHandler {
         if (completions.isEmpty()) {
             File projectsIndexesFile = new File(input.getIndexesFolder(), "projects.indexes");        
             for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Look in projects hierarchy file '" + hierarchy.getFilePath());
+                }
+
                 completions.addAll(createMethodCompletions(projectsIndexesFile, hierarchy.getClassName()));
             }
         }
@@ -147,13 +158,25 @@ public class CompletionHandler {
         HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
 
         String className = getClassName(hierarchyManager, scopeTree, symbol);
+        
         if (className == null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Not able to find libs class for " + symbol.getValue());                
+            }
             return Collections.emptyList();
         }
 
+        if (logger.isDebugEnabled()) {
+            logger.debug("Try to find class '" + className + "' methods in libs");
+        }
+        
         if (completions.isEmpty()) {
             File projectsIndexesFile = new File(input.getIndexesFolder(), "libs.indexes");        
-            for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {
+            for (Hierarchy hierarchy : hierarchyManager.getHierarchyList(className)) {                
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Look in libs hierarchy file '" + hierarchy.getFilePath());
+                }
+                
                 completions.addAll(createMethodCompletions(projectsIndexesFile, hierarchy.getClassName()));
             }
         }
@@ -166,7 +189,9 @@ public class CompletionHandler {
         String expression = input.getExpression();
         expression = ExpressionUtils.stripSpecialCharacters(expression);
         
-        logger.debug("expression " + expression);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Expression '" + expression + "'");
+        }
         
         String[] values = expression.split("\\.");
         

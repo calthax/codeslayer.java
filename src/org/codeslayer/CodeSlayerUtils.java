@@ -39,6 +39,8 @@ import org.codeslayer.usage.UsageCommandWrapper;
 public class CodeSlayerUtils {
     
     private static Logger logger = Logger.getLogger(CodeSlayerUtils.class);
+    
+    public static final String NO_RESULTS_FOUND = "NO_RESULTS_FOUND";
 
     private final static String REGEX = "\"([^\"\\\\]*(\\.[^\"\\\\]*)*)\"";
     public final static Pattern PATTERN = Pattern.compile(REGEX);

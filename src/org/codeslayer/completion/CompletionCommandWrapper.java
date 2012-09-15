@@ -18,6 +18,7 @@
 package org.codeslayer.completion;
 
 import java.util.List;
+import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.Modifiers;
 
@@ -37,7 +38,7 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         List<Completion> completions = command.execute(input);
         
         if (completions.isEmpty()) {
-            return "NO_RESULTS_FOUND";
+            return CodeSlayerUtils.NO_RESULTS_FOUND;
         }
         
         return getOutput(completions);

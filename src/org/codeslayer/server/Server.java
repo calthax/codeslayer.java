@@ -96,6 +96,10 @@ public class Server implements Runnable {
                         output = "Program did not return any results.";
                     }
                     
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("output: " + output);
+                    }
+
                     out.println(output);
                     out.flush();
                 }

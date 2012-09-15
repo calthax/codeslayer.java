@@ -247,12 +247,6 @@ public class SourceUtils {
             langPackage.add("Double");
             langPackage.add("Intger");
             langPackage.add("BigDecimal");
-            langPackage.add("List");
-            langPackage.add("ArrayList");
-            langPackage.add("Map");
-            langPackage.add("HashMap");
-            langPackage.add("Set");
-            langPackage.add("HashSet");
         }
 
         if (langPackage.contains(simpleName)) {

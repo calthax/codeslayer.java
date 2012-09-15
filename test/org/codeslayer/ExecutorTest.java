@@ -25,7 +25,7 @@ public class ExecutorTest {
     public void testExecutor() 
             throws Exception {
         
-        Executor.main(createArgs("-program completion -type method -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java -expression row. -linenumber 99 -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes"));
+        Executor.main(createArgs(" -program completion -type method -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/dao/PresidentDaoImpl.java -expression result. -linenumber 74 -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes"));
     }
     
     public static String[] createArgs(String input) {

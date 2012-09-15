@@ -18,6 +18,7 @@
 package org.codeslayer.navigate;
 
 import java.util.List;
+import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.Modifiers;
 
@@ -36,7 +37,7 @@ public class NavigateCommandWrapper implements Command<Modifiers, String> {
         Navigate navigate = command.execute(input);
         
         if (navigate == null) {
-            return "no results found";
+            return CodeSlayerUtils.NO_RESULTS_FOUND;
         }
         
         return getOutput(navigate);
