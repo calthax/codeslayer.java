@@ -43,18 +43,19 @@ public class Executor {
 //                          "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes", 
 //                          "-name", "Core"};
         
-        String[] dummy = {"-program", "completion", 
-                            "-type", "class", 
-                            "-indexesfolder", "/home/jeff/.codeslayer-dev/groups/java/indexes",
-                            "-sourcefile", "/home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java",
-                            "-linenumber", "68", 
-                            "-expression", "Lim"};
+//        String[] dummy = {"-program", "indexer", 
+//                            "-type", "libs", 
+//                            "-libfolder", "/home/jeff/workspace/jmesaWeb/web/WEB-INF/lib:/home/jeff/workspace/jmesa/lib:",
+//                            "-indexesfolder", "/home/jeff/indexes", 
+//                            "-suppressionsfile", "/home/jeff/indexes/indexes.suppressions", 
+//                            "-tmpfolder", "/home/jeff/indexes/tmp", 
+//                            "-zipfile", "/home/jeff/jdk1.6.0_30/src.zip"};
         
         //-program completion -type class -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java -expression Lim -linenumber 68 -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes        
         
-        Command<Modifiers, String> command = CodeSlayerUtils.getCommand(dummy, programs);
+        Command<Modifiers, String> command = CodeSlayerUtils.getCommand(args, programs);
         
-        Modifiers modifiers = new Modifiers(dummy);
+        Modifiers modifiers = new Modifiers(args);
         
         String output = command.execute(modifiers);
         
