@@ -26,12 +26,10 @@ public class SearchCommand implements Command<SearchInput, List<Search>> {
     
     private static Logger logger = Logger.getLogger(SearchCommand.class);
     
-    SearchCache cache = new SearchCache();
-    
     public List<Search> execute(SearchInput input) {
         
         try {
-            SearchHandler classHandler = new SearchHandler(input, cache);
+            SearchHandler classHandler = new SearchHandler(input);
             return classHandler.getSearchResults();
         } catch (Exception e) {
             logger.debug("Not able to execute search command", e);

@@ -27,37 +27,15 @@ public class SearchHandler {
     private static Logger logger = Logger.getLogger(SearchHandler.class);
 
     private final SearchInput input;
-    private final SearchCache cache;
     
-    public SearchHandler(SearchInput input, SearchCache cache) {
+    public SearchHandler(SearchInput input) {
      
         this.input = input;
-        this.cache = cache;
     }
     
     public List<Search> getSearchResults() {
         
-        if (cache.hasValues(input.getName())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Using cached search results");
-            }
-            return getSearchResultsFromCache();
-        }
-
         return getSearchResultsFromFile();
-    }
-
-    private List<Search> getSearchResultsFromCache() {
-        
-        List<Search> results = new ArrayList<Search>();
-        
-        for (Search search : cache.getValues()) {
-            if (search.getSimpleClassName().startsWith(input.getName())) {
-                results.add(search);
-            }
-        }
-        
-        return results;
     }
 
     private List<Search> getSearchResultsFromFile() {
@@ -67,8 +45,6 @@ public class SearchHandler {
         File file = new File(input.getIndexesFolder(), "projects.classes");
         
         String name = input.getName();
-        
-        cache.reset(name);
         
         try{
             FileInputStream fstream = new FileInputStream(file);
@@ -89,14 +65,11 @@ public class SearchHandler {
                     search.setClassName(split[1]);
                     search.setFilePath(split[2]);
                     results.add(search);
-                    
-                    cache.addValue(search);
                 }
             }
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("not able to load the libs.indexes file.");
+            logger.error("Not able to get search results from projects", e);
         }
 
         return results;
