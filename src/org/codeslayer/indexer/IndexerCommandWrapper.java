@@ -33,7 +33,7 @@ public class IndexerCommandWrapper implements Command<Modifiers, String> {
     @Override
     public String execute(Modifiers modifiers) {
         
-        IndexerInput input = command.getInput(modifiers);
+        IndexerInput input = getInput(modifiers);
         command.execute(input);
         return "success";
     }

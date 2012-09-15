@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.indexer.IndexerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.source.HierarchyManager;
+import org.codeslayer.indexer.HierarchyManager;
 import org.codeslayer.source.Method;
 import org.codeslayer.source.Parameter;
 import org.codeslayer.source.SourceUtils;

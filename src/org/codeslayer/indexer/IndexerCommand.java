@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.Command;
-import org.codeslayer.Modifiers;
 
 public class IndexerCommand implements Command<IndexerInput, Boolean> {
     
@@ -73,36 +72,5 @@ public class IndexerCommand implements Command<IndexerInput, Boolean> {
         }
         
         return Boolean.TRUE;
-    }
-    
-    public IndexerInput getInput(Modifiers modifiers) {
-        
-        IndexerInput input = new IndexerInput();
-        
-        List<String> sourceFolders = modifiers.getSourceFolders();
-        input.setSourceFolders(sourceFolders);
-        
-        List<String> libFolders = modifiers.getLibFolders();
-        input.setLibFolders(libFolders);
-        
-        List<String> jarFiles = modifiers.getJarFiles();
-        input.setJarFiles(jarFiles);
-        
-        List<String> zipFiles = modifiers.getZipFiles();
-        input.setZipFiles(zipFiles);
-        
-        String indexesFolder = modifiers.getIndexesFolder();
-        input.setIndexesFolder(indexesFolder);
-        
-        String suppressionsFile = modifiers.getSuppressionsFile();
-        input.setSuppressionsFile(suppressionsFile);
-        
-        String tmpFolder = modifiers.getTmpFolder();
-        input.setTmpFolder(tmpFolder);
-        
-        String type = modifiers.getType();
-        input.setType(type);
-        
-        return input;
     }
 }

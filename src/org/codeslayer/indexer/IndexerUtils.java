@@ -157,11 +157,21 @@ public class IndexerUtils {
                 }
 
                 String[] split = strLine.split("\\t");
+                
+                int length = split.length;
+                
                 Hierarchy hierarchy = new Hierarchy();
                 hierarchy.setClassName(split[0]);
                 hierarchy.setSuperClass(split[1]);
-                hierarchy.setInterfaces(getInterfaces(split[2]));
-                hierarchy.setFilePath(split[3]);
+                
+                if (length > 2) {
+                    hierarchy.setInterfaces(getInterfaces(split[2]));                    
+                }
+
+                if (length > 3) {
+                    hierarchy.setFilePath(split[3]);                    
+                }
+                
                 hierarchyManager.addHierarchy(hierarchy);
             }
             in.close();

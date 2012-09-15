@@ -17,6 +17,8 @@
  */
 package org.codeslayer.navigate;
 
+import org.codeslayer.indexer.HierarchyManager;
+import org.codeslayer.indexer.Hierarchy;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;

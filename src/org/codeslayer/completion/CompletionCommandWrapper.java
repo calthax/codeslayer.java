@@ -37,7 +37,7 @@ public class CompletionCommandWrapper implements Command<Modifiers, String> {
         List<Completion> completions = command.execute(input);
         
         if (completions.isEmpty()) {
-            return "no results found";
+            return "NO_RESULTS_FOUND";
         }
         
         return getOutput(completions);

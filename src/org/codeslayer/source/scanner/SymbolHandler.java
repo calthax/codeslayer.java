@@ -17,6 +17,8 @@
  */
 package org.codeslayer.source.scanner;
 
+import org.codeslayer.indexer.HierarchyManager;
+import org.codeslayer.indexer.Hierarchy;
 import org.codeslayer.source.Arg;
 import org.codeslayer.source.Symbol;
 import com.sun.source.tree.CompilationUnitTree;

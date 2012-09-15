@@ -17,6 +17,8 @@
  */
 package org.codeslayer.source;
 
+import org.codeslayer.indexer.HierarchyManager;
+import org.codeslayer.indexer.Hierarchy;
 import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;

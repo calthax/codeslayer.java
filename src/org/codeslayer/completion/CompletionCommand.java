@@ -17,13 +17,10 @@
  */
 package org.codeslayer.completion;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.codeslayer.Command;
-import org.codeslayer.indexer.IndexerUtils;
-import org.codeslayer.source.HierarchyManager;
 import org.codeslayer.source.ScopeContext;
 import org.codeslayer.source.scanner.ScopeContextScanner;
 
@@ -35,13 +32,10 @@ public class CompletionCommand implements Command<CompletionInput, List<Completi
     public List<Completion> execute(CompletionInput input) {
         
         try {
-            File hierarchyFile = new File(input.getIndexesFolder(), "projects.hierarchy");
-            HierarchyManager hierarchyManager = IndexerUtils.loadHierarchyFile(hierarchyFile);
-            
             ScopeContextScanner scopeContextScanner = new ScopeContextScanner(input);
             ScopeContext scopeContext = scopeContextScanner.scan();
              
-            CompletionHandler completionHandler = new CompletionHandler(input, hierarchyManager, scopeContext);
+            CompletionHandler completionHandler = new CompletionHandler(input, scopeContext);
             List<Completion> completions = completionHandler.getCompletions();
             
             return completions;

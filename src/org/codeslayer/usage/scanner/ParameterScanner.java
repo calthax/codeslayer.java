@@ -17,6 +17,7 @@
  */
 package org.codeslayer.usage.scanner;
 
+import org.codeslayer.indexer.HierarchyManager;
 import org.codeslayer.source.Symbol;
 import org.codeslayer.source.scanner.SymbolHandler;
 import org.codeslayer.source.scanner.SymbolScanner;

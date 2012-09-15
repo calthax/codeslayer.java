@@ -17,22 +17,19 @@
  */
 package org.codeslayer;
 
-import java.io.IOException;
-import java.util.Map;
+import org.junit.Test;
 
-public class Executor {
-    
-    public static void main(String[] args) 
-            throws IOException {
+public class ExecutorTest {
         
-        Map<String, Command> programs = CodeSlayerUtils.getPrograms();
-
-        Command<Modifiers, String> command = CodeSlayerUtils.getCommand(args, programs);
+    @Test
+    public void testExecutor() 
+            throws Exception {
         
-        Modifiers modifiers = new Modifiers(args);
-        
-        String output = command.execute(modifiers);
-        
-        System.out.println(output);
+        Executor.main(createArgs("-program completion -type method -sourcefile /home/jeff/workspace/jmesaWeb/src/org/jmesaweb/controller/BasicPresidentController.java -expression row. -linenumber 99 -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes"));
     }
+    
+    public static String[] createArgs(String input) {
+        
+        return input.split("\\s");
+    }    
 }
