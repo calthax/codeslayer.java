@@ -58,18 +58,26 @@ public class NavigateHandler {
         return getByMethod(symbol);
     }
 
-    public Navigate getByClass() {
+    private Navigate getByClass() {
         
         ScopeTree scopeTree = scopeContext.getScopeTree();
         
         String className = SourceUtils.getClassName(scopeTree, input.getExpression());
         Hierarchy hierarchy = hierarchyManager.getHierarchy(className);
         
+        if (logger.isDebugEnabled()) {            
+            logger.debug("Navigate to class " + className);
+        }
+        
         if (hierarchy == null) {
             return null;
         }
 
         String filePath = hierarchy.getFilePath();
+
+        if (logger.isDebugEnabled()) {            
+            logger.debug("Navigate to filePath " + filePath);
+        }
 
         Navigate navigate = new Navigate();
         navigate.setFilePath(filePath);
@@ -78,7 +86,7 @@ public class NavigateHandler {
         return navigate;
     }
     
-    public Navigate getByMethod(Symbol symbol) {
+    private Navigate getByMethod(Symbol symbol) {
         
         ScopeTree scopeTree = scopeContext.getScopeTree();
 
@@ -110,12 +118,14 @@ public class NavigateHandler {
         return createNavigate(method);
     }
     
-    public Symbol getSymbols() {
+    private Symbol getSymbols() {
         
         String expression = input.getExpression();
         expression = ExpressionUtils.stripSpecialCharacters(expression);
         
-        logger.debug("expression " + expression);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Expression '" + expression + "'");
+        }
         
         String[] values = expression.split("\\.");
         
@@ -153,7 +163,7 @@ public class NavigateHandler {
                 }                    
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Not able to create the navigate", e);
         }
 
         return navigate;

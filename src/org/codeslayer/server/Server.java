@@ -44,14 +44,14 @@ public class Server implements Runnable {
         try {
             serverSocket.close();            
         } catch (Exception e) {
-            logger.error("could not close the server socket");
+            logger.error("Could not close the server socket");
         }
     }
 
     @Override
     public void run() {
         
-        logger.debug("server starting up");
+        logger.debug("Server starting up");
         
         while (running) {
             
@@ -59,7 +59,7 @@ public class Server implements Runnable {
                 try {
                     serverSocket = new ServerSocket(4444);
                 } catch (IOException e) {
-                    logger.error("could not listen on port 4444");
+                    logger.error("Could not listen on port 4444");
                 }
             }
 
@@ -67,7 +67,7 @@ public class Server implements Runnable {
             try {
                 clientSocket = serverSocket.accept();
             } catch (IOException e) {
-                logger.error("could not accept client socket");
+                logger.error("Could not accept client socket");
             }
             
             try {
@@ -89,11 +89,11 @@ public class Server implements Runnable {
                         output = command.execute(modifiers);
                     } catch (Exception e) {
                         logger.debug("Program threw an exception", e);
-                        output = "program threw an exception";
+                        output = "Program threw an exception.";
                     }
                     
                     if (output == null) {
-                        output = "program did not return any results";
+                        output = "Program did not return any results.";
                     }
                     
                     out.println(output);
@@ -104,7 +104,7 @@ public class Server implements Runnable {
                 in.close();
                 clientSocket.close();
             } catch (Exception e) {
-                logger.debug("could not read from the client socket");
+                logger.error("Could not read from the client socket", e);
             }
         }
         
