@@ -1,0 +1,1 @@
+java -XX:MaxPermSize=256m -cp .:../lib/tools.jar:../lib/log4j-1.2.17.jar:../dist/codeslayer.java.jar org.codeslayer.server.Startup

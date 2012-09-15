@@ -51,6 +51,8 @@ public class Server implements Runnable {
     @Override
     public void run() {
         
+        logger.debug("server starting up");
+        
         while (running) {
             
             if (serverSocket == null) {
@@ -105,5 +107,7 @@ public class Server implements Runnable {
                 logger.debug("could not read from the client socket");
             }
         }
+        
+        logger.info("server shutting down");
     }
 }
