@@ -18,6 +18,7 @@
 package org.codeslayer.usage;
 
 import java.util.List;
+import org.codeslayer.CodeSlayerUtils;
 import org.codeslayer.Command;
 import org.codeslayer.Modifiers;
 
@@ -33,7 +34,12 @@ public class UsageCommandWrapper implements Command<Modifiers, String> {
     public String execute(Modifiers modifiers) {
         
        UsageInput input = getInput(modifiers);
+
        List<Usage> usages = command.execute(input);
+        if (usages.isEmpty()) {
+            return CodeSlayerUtils.NO_RESULTS_FOUND;
+        }
+        
        return getOutput(usages);
     }
     
