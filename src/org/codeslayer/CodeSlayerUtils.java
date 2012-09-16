@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.codeslayer.completion.CompletionCommand;
 import org.codeslayer.completion.CompletionCommandWrapper;
+import org.codeslayer.imp.ImportCommand;
+import org.codeslayer.imp.ImportCommandWrapper;
 import org.codeslayer.indexer.IndexerCommand;
 import org.codeslayer.indexer.IndexerCommandWrapper;
 import org.codeslayer.navigate.NavigateCommand;
@@ -56,6 +58,7 @@ public class CodeSlayerUtils {
         programs.put("navigate", new NavigateCommandWrapper(new NavigateCommand()));
         programs.put("completion", new CompletionCommandWrapper(new CompletionCommand()));
         programs.put("search", new SearchCommandWrapper(new SearchCommand()));
+        programs.put("import", new ImportCommandWrapper(new ImportCommand()));
         
         return programs;
     }

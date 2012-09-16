@@ -15,31 +15,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.search;
+package org.codeslayer.imp;
 
 import java.util.List;
 import org.codeslayer.Command;
 import org.codeslayer.Modifiers;
 
-public class SearchCommandWrapper implements Command<Modifiers, String> {
+public class ImportCommandWrapper implements Command<Modifiers, String> {
 
-    private final SearchCommand command;
+    private final ImportCommand command;
 
-    public SearchCommandWrapper(SearchCommand command) {
+    public ImportCommandWrapper(ImportCommand command) {
      
         this.command = command;
     }
     
     public String execute(Modifiers modifiers) {
         
-        SearchInput input = getInput(modifiers);
-        List<Search> searches = command.execute(input);
-        return getOutput(searches);
+        ImportInput input = getInput(modifiers);
+        List<Import> imports = command.execute(input);
+        return getOutput(imports);
     }
     
-    private SearchInput getInput(Modifiers modifiers) {
+    private ImportInput getInput(Modifiers modifiers) {
         
-        SearchInput input = new SearchInput();
+        ImportInput input = new ImportInput();
         
         String indexesFolder = modifiers.getIndexesFolder();
         input.setIndexesFolder(indexesFolder);
@@ -50,12 +50,12 @@ public class SearchCommandWrapper implements Command<Modifiers, String> {
         return input;
     }
     
-    private String getOutput(List<Search> searches) {
+    private String getOutput(List<Import> imports) {
         
         StringBuilder sb = new StringBuilder();
         
-        for (Search search : searches) {
-            sb.append(search.getSimpleClassName()).append("\t").append(search.getClassName()).append("\t").append(search.getFilePath()).append("\n");
+        for (Import imp : imports) {
+            sb.append(imp.getClassName()).append("\n");
         }
         
         return sb.toString();

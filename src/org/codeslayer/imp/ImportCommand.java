@@ -15,21 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer;
+package org.codeslayer.imp;
 
-import org.junit.Test;
+import java.util.Collections;
+import java.util.List;
+import org.apache.log4j.Logger;
+import org.codeslayer.Command;
 
-public class ExecutorTest {
-        
-    @Test
-    public void testExecutor() 
-            throws Exception {
-        
-        Executor.main(createArgs("-program search -name P -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes"));
-    }
+public class ImportCommand implements Command<ImportInput, List<Import>> {
     
-    public static String[] createArgs(String input) {
+    private static Logger logger = Logger.getLogger(ImportCommand.class);
+    
+    public List<Import> execute(ImportInput input) {
         
-        return input.split("\\s");
-    }    
+        try {
+            ImportHandler importHandler = new ImportHandler(input);
+            return importHandler.getImportResults();
+        } catch (Exception e) {
+            logger.debug("Not able to execute import command", e);
+        }
+        
+        return Collections.emptyList();
+    }
 }

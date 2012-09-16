@@ -29,8 +29,8 @@ public class SearchCommand implements Command<SearchInput, List<Search>> {
     public List<Search> execute(SearchInput input) {
         
         try {
-            SearchHandler classHandler = new SearchHandler(input);
-            return classHandler.getSearchResults();
+            SearchHandler searchHandler = new SearchHandler(input);
+            return searchHandler.getSearchResults();
         } catch (Exception e) {
             logger.debug("Not able to execute search command", e);
         }

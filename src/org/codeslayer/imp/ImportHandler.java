@@ -15,27 +15,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer.search;
+package org.codeslayer.imp;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 
-public class SearchHandler {
+public class ImportHandler {
  
-    private static Logger logger = Logger.getLogger(SearchHandler.class);
+    private static Logger logger = Logger.getLogger(ImportHandler.class);
 
-    private final SearchInput input;
+    private final ImportInput input;
     
-    public SearchHandler(SearchInput input) {
+    public ImportHandler(ImportInput input) {
      
         this.input = input;
     }
     
-    public List<Search> getSearchResults() {
+    public List<Import> getImportResults() {
         
-        List<Search> results = new ArrayList<Search>();
+        List<Import> results = new ArrayList<Import>();
         
         File file = new File(input.getIndexesFolder(), "projects.classes");
         
@@ -54,12 +54,10 @@ public class SearchHandler {
                 String[] split = strLine.split("\\t");
                 
                 String simpleClassName = split[0];
-                if (simpleClassName.startsWith(name)) {
-                    Search search = new Search();
-                    search.setSimpleClassName(simpleClassName);
-                    search.setClassName(split[1]);
-                    search.setFilePath(split[2]);
-                    results.add(search);
+                if (simpleClassName.equals(name)) {
+                    Import imp = new Import();
+                    imp.setClassName(split[1]);
+                    results.add(imp);
                 }
             }
             in.close();

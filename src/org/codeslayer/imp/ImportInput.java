@@ -15,21 +15,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-package org.codeslayer;
+package org.codeslayer.imp;
 
-import org.junit.Test;
-
-public class ExecutorTest {
-        
-    @Test
-    public void testExecutor() 
-            throws Exception {
-        
-        Executor.main(createArgs("-program search -name P -indexesfolder /home/jeff/.codeslayer-dev/groups/java/indexes"));
-    }
+public class ImportInput {
     
-    public static String[] createArgs(String input) {
+    private String indexesFolder;
+    private String name;
+
+    public String getIndexesFolder() {
         
-        return input.split("\\s");
-    }    
+        return indexesFolder;
+    }
+
+    public void setIndexesFolder(String indexesFolder) {
+     
+        this.indexesFolder = indexesFolder;
+    }
+
+    public String getName() {
+        
+        return name;
+    }
+
+    public void setName(String name) {
+     
+        this.name = name;
+    }
 }
