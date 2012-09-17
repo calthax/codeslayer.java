@@ -21,9 +21,11 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.codeslayer.source.*;
+import org.apache.log4j.Logger;
 
 public class IndexerUtils {
+
+    private static Logger logger = Logger.getLogger(IndexerUtils.class);
 
     public static List<String> getSuppressions(String path) {
 
@@ -46,7 +48,7 @@ public class IndexerUtils {
             }
             in.close();
         } catch (Exception e) {
-            System.err.println("not able to load the suppressions file.");
+            logger.error("Not able to load the suppressions file " + path, e);
         }
 
         return results;
@@ -124,8 +126,7 @@ public class IndexerUtils {
                 files.add(file);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e);
+            logger.error("Not able to extract the zip file " + path + " into tmp folder " + tmpPath, e);
         }
         
         return files;
@@ -176,8 +177,7 @@ public class IndexerUtils {
             }
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("not able to load the libs.indexes file.");
+            logger.error("Not able to load the heirarchy file " + file.getPath(), e);
         }
 
         return hierarchyManager;
