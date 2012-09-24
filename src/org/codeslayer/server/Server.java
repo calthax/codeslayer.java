@@ -18,16 +18,11 @@
 package org.codeslayer.server;
 
 import org.codeslayer.Command;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.codeslayer.CodeSlayerUtils;
-import org.codeslayer.Modifiers;
 
 public class Server implements Runnable {
     
@@ -63,55 +58,15 @@ public class Server implements Runnable {
                 }
             }
 
-            Socket clientSocket = null;
             try {
-                clientSocket = serverSocket.accept();
+                Client client = new Client(serverSocket.accept(), programs);
+                Thread thread = new Thread(client);
+                thread.start();                
             } catch (IOException e) {
                 logger.error("Could not accept client socket");
-            }
-            
-            try {
-                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                String input;
-                
-                while ((input = in.readLine()) != null) {
-                    if (input.equals("quit")) {
-                        break;
-                    }
-                    
-                    String[] args = input.split("\\s");
-                    Command<Modifiers, String> command =  CodeSlayerUtils.getCommand(args, programs);
-                    Modifiers modifiers = new Modifiers(args);
-                    
-                    String output;
-                    try {
-                        output = command.execute(modifiers);
-                    } catch (Exception e) {
-                        logger.debug("Program threw an exception", e);
-                        output = "Program threw an exception.";
-                    }
-                    
-                    if (output == null) {
-                        output = "Program did not return any results.";
-                    }
-                    
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("output: " + output);
-                    }
-
-                    out.println(output);
-                    out.flush();
-                }
-                
-                out.close();
-                in.close();
-                clientSocket.close();
-            } catch (Exception e) {
-                logger.error("Could not read from the client socket", e);
-            }
+            }            
         }
         
-        logger.info("server shutting down");
+        logger.info("Server shutting down");
     }
 }
